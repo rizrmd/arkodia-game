@@ -1,0 +1,60 @@
+{
+  "status": "PASS",
+  "channel": "runtime-demo",
+  "releaseId": "f492bfd67d00eb1183aaa9d8e194c560",
+  "documents": [
+    {
+      "id": "runtime-demo-grove",
+      "revision": 1,
+      "sha256": "d534eaaa7c9fa7965917a89f8eaaafcd00fd4d8908d82ac2c683eb3e4cc48fe9"
+    },
+    {
+      "id": "runtime-demo-tree",
+      "revision": 1,
+      "sha256": "276b611502f99623b5c49f9ab4c7182da1f112a4816994b9d5198a6b3aa52170"
+    },
+    {
+      "id": "runtime-demo-walk",
+      "revision": 1,
+      "sha256": "caad27135a0079d4233b7f450b553517bcde0d86d955e87aa40bdd83d7977496"
+    }
+  ],
+  "assets": [
+    {
+      "sha256": "3652ec9531907553561b61212869b73724c3bf381439c3f068f6779eaa805722",
+      "size": 730200,
+      "mediaType": "image/webp"
+    },
+    {
+      "sha256": "45679b6146ccb6af5c134f076277f3f6cdcf8c591446cf6c8abbadafa43f5f48",
+      "size": 234381,
+      "mediaType": "image/png"
+    },
+    {
+      "sha256": "983ec9e7d626d512fd2e9e1d2f17d4f7f65c61608539cc5d9224533e0da23d72",
+      "size": 88244,
+      "mediaType": "audio/wave"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://arkodia.online/assets/characters/hero.png",
+      "sha256": "3652ec9531907553561b61212869b73724c3bf381439c3f068f6779eaa805722"
+    },
+    {
+      "url": "https://arkodia.online/starter-wilds-review/v1/golden-tree.png",
+      "sha256": "45679b6146ccb6af5c134f076277f3f6cdcf8c591446cf6c8abbadafa43f5f48"
+    },
+    {
+      "url": "synthetic:test-chime-220Hz-2s",
+      "sha256": "983ec9e7d626d512fd2e9e1d2f17d4f7f65c61608539cc5d9224533e0da23d72"
+    }
+  ],
+  "checks": [
+    "ordinary asset POST",
+    "author draft Save",
+    "author draft reload",
+    "publisher immutable release",
+    "unauthenticated public document hashes"
+  ]
+}

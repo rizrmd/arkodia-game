@@ -17,4 +17,4 @@ if [ -d docs/runtime/evidence ]; then
   cp docs/runtime/evidence/* .deploy-runtime/dist/evidence/
 fi
 node -e 'const fs=require("fs"),cp=require("child_process");fs.writeFileSync(".deploy-runtime/dist/build.json",JSON.stringify({commit:cp.execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim(),application:"arkodia-pixi-runtime",contentAPI:"https://content.arkodia.online",channel:"runtime-demo"}))'
-fural-agent sandboxes serve --name arkodia-runtime --slug arkodia-runtime --project PJ8758f22f61165f3d3215e454 --dir .deploy-runtime --cmd 'cd "$HOME"; exec node server.mjs' --port 3000
+fural-agent sandboxes serve --name arkodia-runtime --slug arkodia-runtime --project PJ8758f22f61165f3d3215e454 --dir "$PWD/.deploy-runtime" --cmd 'cd "$HOME"; exec node server.mjs' --port 3000

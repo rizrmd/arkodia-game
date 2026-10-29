@@ -1,0 +1,35 @@
+name: Asset storage
+on:
+  pull_request:
+  push:
+permissions:
+  contents: read
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+          persist-credentials: false
+      - name: Test asset tooling
+        run: python3 -m unittest discover -s tools/asset-storage -p 'test_*.py'
+      - name: Check every introduced commit against trusted base policy
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The first policy installation has no policy at its parent. Its baseline
+          # is reviewed once; subsequent commits cannot bless their own binaries.
+          if [[ -z "$BASE" || "$BASE" =~ ^0+$ ]]; then
+            BASE=$(git rev-parse "$HEAD^")
+          fi
+          if git cat-file -e "$BASE:.asset-policy.json" 2>/dev/null; then
+            git show "$BASE:tools/asset-storage/assets.py" > /tmp/trusted-assets.py
+            python3 /tmp/trusted-assets.py guard --base "$BASE" --head "$HEAD"
+          else
+            echo 'Initial policy installation: review baseline and manifests.'
+          fi

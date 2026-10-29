@@ -1,0 +1,103 @@
+{
+  "assets": [
+    {
+      "path": "docs/runtime/evidence/desktop.png",
+      "role": "evidence",
+      "sha256": "311083057b2acf28dd01e7540f800d10dc0556fb5609d10d00105272c0d97517",
+      "size": 263840,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/evidence/error.png",
+      "role": "evidence",
+      "sha256": "50be2b948a142c33ff1f1f51132bedbe90dd3e0386f5ddc42bcfad604cc0487c",
+      "size": 30472,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/evidence/mobile.png",
+      "role": "evidence",
+      "sha256": "496b9ff2b79e25be073466a17115e4f2ee661ad7298e166d5e2cae056c689025",
+      "size": 59106,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/stronghold/evidence/error-mobile.png",
+      "role": "evidence",
+      "sha256": "a5b223b142ca3cd72b75178a059d8c07d57fe112afca4d7cb6dddeee160dbd96",
+      "size": 14045,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/stronghold/evidence/original-picker-desktop.png",
+      "role": "evidence",
+      "sha256": "24d5e311e89ae7d7b2337fcc664413dd50d34b02bdb01bf747cc8404ac65628b",
+      "size": 2237563,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/stronghold/evidence/original-world-desktop.png",
+      "role": "evidence",
+      "sha256": "ed1244277b3ec91a48094f1c5573866b43cd7912f8d122af2083b14ccde50ede",
+      "size": 2120160,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/stronghold/evidence/picker-desktop.png",
+      "role": "evidence",
+      "sha256": "0d48215a914a1dd3920a97c0dce5cabbb5057c94fd729c62f65e6948cba9266d",
+      "size": 2318072,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/stronghold/evidence/picker-landscape.png",
+      "role": "evidence",
+      "sha256": "244c690bfb59b57024990dd52c42221be1af88802aaf903d12b6e7ef1a40acd0",
+      "size": 709135,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/stronghold/evidence/picker-mobile.png",
+      "role": "evidence",
+      "sha256": "245c40b79d393fd323986b8d3c084e78268fb24e00d8b93ec2b590b509a459e5",
+      "size": 705013,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/stronghold/evidence/world-desktop.png",
+      "role": "evidence",
+      "sha256": "0727096102a6cd4831487f3f9cf7a72493255a2cb5139a4359740dae81f31688",
+      "size": 2820914,
+      "source": {
+        "type": "archive"
+      }
+    },
+    {
+      "path": "docs/runtime/stronghold/evidence/world-mobile.png",
+      "role": "evidence",
+      "sha256": "693bb1679c1c22dc8f7f0853a341f8519ba5328c1be0f394a61b626be768c14c",
+      "size": 724613,
+      "source": {
+        "type": "archive"
+      }
+    }
+  ]
+}

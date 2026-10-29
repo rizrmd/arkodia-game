@@ -1,8 +1,10 @@
+import {startStorageMonitor} from './storage-monitor.mjs';
 // Foreground boot supervisor: exits if either required child fails; platform supervises boot.
 import {spawn} from 'node:child_process';
 import {mkdirSync,existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {randomBytes} from 'node:crypto';
 const home=process.env.HOME;
+startStorageMonitor(home);
 const root=`${home}/.local/content-postgres`;
 const pg=`${root}/usr/libexec/postgresql18`;
 const env={...process.env,LD_LIBRARY_PATH:`${root}/usr/lib`};

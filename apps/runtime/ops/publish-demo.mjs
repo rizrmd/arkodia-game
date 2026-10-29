@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 const config = JSON.parse(
   readFileSync(`${process.env.HOME}/private/content.env.json`, "utf8"),
 );
-const origin = "https://content.arkodia.online";
+const origin = process.env.CONTENT_API_ORIGIN || "https://content.arkodia.online";
 async function request(method, path, body, token, expected = 200) {
   const headers = {
     "Idempotency-Key": `runtime-demo-v1-${method}-${path}-${createHash("sha256")
@@ -29,11 +29,16 @@ async function request(method, path, body, token, expected = 200) {
   return result;
 }
 async function asset(path) {
-  const r = await fetch("https://arkodia.online" + path, {
-    signal: AbortSignal.timeout(30000),
-  });
-  if (!r.ok) throw new Error(`Existing test asset unavailable: ${path}`);
-  const bytes = Buffer.from(await r.arrayBuffer());
+  let bytes;
+  if (process.env.ARKODIA_RESTORE_ASSETS) {
+    bytes = readFileSync(process.env.ARKODIA_RESTORE_ASSETS + path);
+  } else {
+    const r = await fetch("https://arkodia.online" + path, {
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!r.ok) throw new Error(`Existing test asset unavailable: ${path}`);
+    bytes = Buffer.from(await r.arrayBuffer());
+  }
   const a = await request(
     "POST",
     "/v1/assets",
@@ -80,9 +85,9 @@ const audio = {
   path: "synthetic:test-chime-220Hz-2s",
   bytes: wav,
 };
-const manifest = await (
-  await fetch("https://arkodia.online/assets/characters/manifest.json")
-).json();
+const manifest = process.env.ARKODIA_RESTORE_ASSETS
+  ? JSON.parse(readFileSync(process.env.ARKODIA_RESTORE_ASSETS + "/assets/characters/manifest.json", "utf8"))
+  : await (await fetch("https://arkodia.online/assets/characters/manifest.json")).json();
 const atlas = manifest.characters.hero;
 const frame = (i) => {
   const f = atlas.frames[i];

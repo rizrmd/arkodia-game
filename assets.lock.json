@@ -1,0 +1,11 @@
+{
+  "repository": "arkodia-game",
+  "schemaVersion": 1,
+  "shards": [
+    {
+      "path": "asset-lock/part-000.json",
+      "sha256": "0ea9400930188c8a53fa02b10554de1dcab5078bd95872bccf3fb008aabebbb1"
+    }
+  ],
+  "sourceCommit": "8adc0bad7e80788ae5a8c28a3a79a2e695a06d70"
+}

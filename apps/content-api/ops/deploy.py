@@ -33,7 +33,7 @@ with tempfile.TemporaryDirectory(prefix='content-deploy-') as tmp:
  binary_sha=hashlib.sha256(binary.read_bytes()).hexdigest()
  with gzip.open(stage/'content-api.gz','wb') as f:f.write(binary.read_bytes())
  binary.unlink()
- for name in ['boot.sh','supervise.mjs','install-postgres.py','verify-live.mjs']:shutil.copyfile(OPS/name,stage/name)
+ for name in ['boot.sh','supervise.mjs','storage-monitor.mjs','backup.sh','install-postgres.py','verify-live.mjs']:shutil.copyfile(OPS/name,stage/name)
  route=secrets.token_urlsafe(24)
  class Handler(http.server.SimpleHTTPRequestHandler):
   def __init__(self,*a,**kw):super().__init__(*a,directory=str(stage),**kw)

@@ -1,0 +1,253 @@
+{
+  "schema": "arkodia.buildings",
+  "version": 1,
+  "coordinateSystem": "percent-map/pixel-local",
+  "templates": [
+    {
+      "id": "gateway-grand.png",
+      "name": "Stone Gateway",
+      "parts": [
+        {
+          "id": "base",
+          "name": "Original artwork",
+          "asset": "gateway-grand.png",
+          "kind": "sprite",
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    {
+      "id": "wall-broken.png",
+      "name": "Broken Wall",
+      "parts": [
+        {
+          "id": "base",
+          "name": "Original artwork",
+          "asset": "wall-broken.png",
+          "kind": "sprite",
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    {
+      "id": "bastion.png",
+      "name": "Bastion",
+      "parts": [
+        {
+          "id": "base",
+          "name": "Original artwork",
+          "asset": "bastion.png",
+          "kind": "sprite",
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    {
+      "id": "core.png",
+      "name": "Stronghold Core",
+      "parts": [
+        {
+          "id": "base",
+          "name": "Original artwork",
+          "asset": "core.png",
+          "kind": "sprite",
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    {
+      "id": "forge.png",
+      "name": "Forge",
+      "parts": [
+        {
+          "id": "base",
+          "name": "Original artwork",
+          "asset": "forge.png",
+          "kind": "sprite",
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0,
+          "color": "#ffffff"
+        },
+        {
+          "id": "pillar",
+          "name": "Altar pillar",
+          "asset": "",
+          "kind": "pillar",
+          "x": 55,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0,
+          "color": "#e9ac4c"
+        }
+      ]
+    },
+    {
+      "id": "barracks.png",
+      "name": "Barracks",
+      "parts": [
+        {
+          "id": "base",
+          "name": "Original artwork",
+          "asset": "barracks.png",
+          "kind": "sprite",
+          "x": 0,
+          "y": 0,
+          "scale": 1,
+          "rotation": 0,
+          "color": "#ffffff"
+        }
+      ]
+    }
+  ],
+  "instances": [
+    {
+      "id": "forge",
+      "name": "Forge",
+      "asset": "forge.png",
+      "category": "Buildings",
+      "x": 48,
+      "y": 56,
+      "scale": 0.85,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "definition": {
+        "id": "forge.png",
+        "name": "Forge",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/forge.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff"
+          },
+          {
+            "id": "pillar",
+            "name": "Altar pillar",
+            "asset": "",
+            "kind": "pillar",
+            "x": 55,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#e9ac4c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "barracks",
+      "name": "Barracks",
+      "asset": "barracks.png",
+      "category": "Buildings",
+      "x": 73,
+      "y": 40,
+      "scale": 0.75,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "definition": {
+        "id": "barracks.png",
+        "name": "Barracks",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/barracks.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "core",
+      "name": "Stronghold Core",
+      "asset": "core.png",
+      "category": "Buildings",
+      "x": 37,
+      "y": 28,
+      "scale": 0.9,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "definition": {
+        "id": "core.png",
+        "name": "Stronghold Core",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/core.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "tower",
+      "name": "Bastion",
+      "asset": "bastion.png",
+      "category": "Buildings",
+      "x": 15,
+      "y": 47,
+      "scale": 0.7,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "definition": {
+        "id": "bastion.png",
+        "name": "Bastion",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/bastion.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff"
+          }
+        ]
+      }
+    }
+  ]
+}

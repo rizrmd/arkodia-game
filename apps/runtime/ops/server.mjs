@@ -24,7 +24,7 @@ export const server = http.createServer(async (req, res) => {
     res.setHeader("Referrer-Policy", "no-referrer");
     res.setHeader(
       "Content-Security-Policy",
-      "default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'self'",
+      "default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' https://editor.arkodia.online blob: data:; connect-src 'self' https://editor.arkodia.online; media-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'self'",
     );
     if (req.method !== "GET" && req.method !== "HEAD") {
       res.writeHead(405);

@@ -16,6 +16,12 @@ spec.loader.exec_module(a)
 
 class StorageTests(unittest.TestCase):
     def setUp(self):
+        # Hosted runners may exceed the production 80% threshold. Exercise real
+        # file I/O against a deterministic capacity probe; the threshold test
+        # overrides this probe independently.
+        capacity_probe = patch.object(a.shutil, 'disk_usage', return_value=shutil_usage(1024**4, 1024**3, 1024**4 - 1024**3))
+        capacity_probe.start()
+        self.addCleanup(capacity_probe.stop)
         self.tmp = tempfile.TemporaryDirectory()
         self.home = Path(self.tmp.name)
         self.root = self.home / 'repo'

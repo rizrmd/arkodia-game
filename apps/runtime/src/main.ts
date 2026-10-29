@@ -87,7 +87,13 @@ function draw() {
       .fill({ color: 0x0c1620, alpha: 0.96 }),
   );
   uiText("ARKODIA", 24, 18, 25, 0xe0eadc);
-  uiText("CONTENT RUNTIME  /  FIELD STUDY 01", 24, 54, 11, 0x8faeae);
+  uiText(
+    w < 650 ? "CONTENT RUNTIME" : "CONTENT RUNTIME  /  FIELD STUDY 01",
+    24,
+    54,
+    11,
+    0x8faeae,
+  );
   if (state !== "ready") {
     const y = Math.max(125, h * 0.35);
     uiText(
@@ -141,7 +147,7 @@ function draw() {
   }
   uiText(
     w < 650
-      ? "WASD / arrows · Tap ground to move"
+      ? "Tap ground · WASD / arrows"
       : "WASD / arrow keys to explore   ·   Click or tap ground to move   ·   Camera follows the knight",
     24,
     h - 50,

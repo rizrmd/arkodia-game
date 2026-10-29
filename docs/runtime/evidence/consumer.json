@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "origin": "https://runtime.arkodia.online/content",
+  "release": "f492bfd67d00eb1183aaa9d8e194c560",
+  "schemaDigest": "09a37562ce4c4ff4f3c62c967546592593f2e73448f182c9db712a0cbeade314",
+  "documents": [
+    {
+      "id": "runtime-demo-grove",
+      "sha256": "d534eaaa7c9fa7965917a89f8eaaafcd00fd4d8908d82ac2c683eb3e4cc48fe9"
+    },
+    {
+      "id": "runtime-demo-tree",
+      "sha256": "276b611502f99623b5c49f9ab4c7182da1f112a4816994b9d5198a6b3aa52170"
+    },
+    {
+      "id": "runtime-demo-walk",
+      "sha256": "caad27135a0079d4233b7f450b553517bcde0d86d955e87aa40bdd83d7977496"
+    }
+  ],
+  "assets": [
+    {
+      "sha256": "3652ec9531907553561b61212869b73724c3bf381439c3f068f6779eaa805722",
+      "size": 730200
+    },
+    {
+      "sha256": "45679b6146ccb6af5c134f076277f3f6cdcf8c591446cf6c8abbadafa43f5f48",
+      "size": 234381
+    },
+    {
+      "sha256": "983ec9e7d626d512fd2e9e1d2f17d4f7f65c61608539cc5d9224533e0da23d72",
+      "size": 88244
+    }
+  ],
+  "entities": [
+    "knight",
+    "tree-0",
+    "tree-1",
+    "tree-2",
+    "tree-3",
+    "tree-4",
+    "tree-5"
+  ],
+  "checks": [
+    "real consumer loader",
+    "contract and profile compatibility",
+    "release pinning",
+    "document and asset SHA-256",
+    "entity/clip bindings"
+  ]
+}

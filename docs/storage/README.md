@@ -1,6 +1,6 @@
 ## Asset storage operations
 
-The shared Python tool is vendored byte-for-byte in `arkadia`, `arkodia-editor`, and `arkodia-game`. Run it with Python 3.12+ from a repo root. Update and test all three copies together. No npm package or service credential is needed for audit, archive or cache operations.
+The shared Python tool is vendored byte-for-byte in the active `arkodia-editor` and `arkodia-game` repos. A legacy-repo patch is retained separately because another session is moving `arkodia-archived` into a shared archive sandbox. Run the tool with Python 3.12+ from a repo root. Update and test both active copies together. No npm package or service credential is needed for audit, archive or cache operations.
 
 ```sh
 python3 tools/asset-storage/assets.py audit --output "$HOME/reports/storage-audit.json"
@@ -35,7 +35,7 @@ The workflow checks every commit in a PR or push, including binaries added and t
 
 The first policy installation requires review because its parent has no policy. Protect the default branch and require the `Asset storage / policy` check through repository settings. Regenerating `audit --baseline` is an operator action, never an automatic CI step. The manifest and policy are split into shards so they also meet the 1 MiB limit.
 
-The parallel cleanup task migrated legacy `arkadia` assets to LFS. This tooling preserves that choice. Do not rewrite history again or remove `.gitattributes`. Editor/game history is retained. Untracking binaries later does not remove historical Git/LFS storage. Use partial clones and selective LFS fetches for code work.
+The parallel task owns legacy cleanup and archiving. Do not rewrite or publish that repository from this task. This tool can preserve existing LFS bytes without another history rewrite. Editor/game history is retained. Untracking binaries later does not remove historical Git/LFS storage. Use partial clones and selective LFS fetches for code work.
 
 ## Capacity, retention and restore
 
@@ -49,7 +49,7 @@ For a restore drill, copy the archive/indexes into a separate directory, run `ve
 
 ## Migration safety
 
-Current manifests are prepared and private archives verified before any source is untracked. Active asset tracking is deliberately retained until Content API publication, compatibility builds and an independent archive backup are verified. Existing Knowledge/review URLs must keep serving or be updated before evidence is removed. Never add broad ignore rules for whole asset folders while they still contain source JSON or scripts.
+Editor runtime assets have been published and verified, retained in a private archive on another node, and untracked from Git. Build/dev hydrates their original paths from the pinned public release. The remaining evidence/master tracking is retained until its references and independent backup are verified. Existing Knowledge/review URLs must keep serving or be updated before evidence is removed. Never add broad ignore rules for whole asset folders while they still contain source JSON or scripts.
 
 Content API restoration in this task rebuilds from Git with a new database at the user's request. Only content reconstructible from Git is republished with new IDs. Unpublished drafts and previous database-only release history are not recoverable without a backup. The deleted dev/runtime/wildlife sandboxes are not recreated.
 

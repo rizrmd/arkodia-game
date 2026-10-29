@@ -413,7 +413,8 @@ def guard(args):
         if hashlib.sha256(raw).hexdigest() != shard['sha256']:
             raise AssetError('Policy shard integrity mismatch')
         policy['legacy'].extend(json.loads(raw))
-    legacy = {(e['path'], e['gitOid']) for e in policy['legacy']}
+    present = {e['path'] for e in entries(args.root, args.base)}
+    legacy = {(e['path'], e['gitOid']) for e in policy['legacy'] if e['path'] in present}
     fixtures = {(e['path'], e['sha256']) for e in policy.get('fixtures', []) if e['size'] <= 256 * 1024}
     commits = git(args.root, 'rev-list', '--reverse', args.base + '..' + args.head).decode().splitlines()
     failures = []
@@ -435,7 +436,7 @@ def guard(args):
                     if (e['path'], e['oid']) in legacy:
                         continue
                     # Existing binaries may become LFS pointers with identical bytes only.
-                    if ptr and any(p['path'] == e['path'] and p['sha256'] == ptr[1].decode() and p['size'] == int(ptr[2]) for p in policy['legacy']):
+                    if ptr and e['path'] in present and any(p['path'] == e['path'] and p['sha256'] == ptr[1].decode() and p['size'] == int(ptr[2]) for p in policy['legacy']):
                         continue
                     if binary(e['path'], data) or ptr:
                         if len(data) <= 256 * 1024 and (e['path'], hashlib.sha256(data).hexdigest()) in fixtures:

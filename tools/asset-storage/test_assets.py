@@ -111,6 +111,16 @@ class StorageTests(unittest.TestCase):
         self.args.base, self.args.head = self.base, 'HEAD'
         with self.assertRaisesRegex(a.AssetError, 'extra.png'):
             a.guard(self.args)
+    def test_guard_rejects_reintroducing_retired_binary(self):
+        self.seed()
+        data = (self.root / 'public/one.png').read_bytes()
+        (self.root / 'public/one.png').unlink()
+        retired = self.commit('migrate binary out of Git')
+        (self.root / 'public/one.png').write_bytes(data)
+        self.commit('accidental reintroduction')
+        self.args.base, self.args.head = retired, 'HEAD'
+        with self.assertRaisesRegex(a.AssetError, 'one.png'):
+            a.guard(self.args)
     def test_guard_unchanged_lfs_conversion_only(self):
         self.seed()
         b = (self.root / 'public/one.png').read_bytes()

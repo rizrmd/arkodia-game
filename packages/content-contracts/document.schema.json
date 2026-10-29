@@ -1,98 +1,209 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://content.arkodia.online/contracts/document.schema.json",
-  "title": "Arkodia content document v1",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "schemaVersion",
-    "kind",
-    "name",
-    "assets",
-    "data"
-  ],
-  "properties": {
-    "schemaVersion": {
-      "const": 1
-    },
-    "kind": {
-      "enum": [
-        "environment",
-        "base",
-        "character",
-        "animation",
-        "vfx"
-      ]
-    },
-    "name": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 160
-    },
-    "assets": {
-      "type": "array",
-      "maxItems": 1024,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "pattern": "^[a-f0-9]{64}$"
-      }
-    },
-    "data": {
-      "type": "object"
-    }
-  },
-  "allOf": [
+  "title": "Arkodia shared content v1 and audited legacy profiles v2",
+  "oneOf": [
     {
-      "if": {
-        "properties": {
-          "kind": {
-            "enum": [
-              "environment",
-              "base"
-            ]
+      "title": "Arkodia content document v1",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "name",
+        "assets",
+        "data"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "kind": {
+          "enum": [
+            "environment",
+            "base",
+            "character",
+            "animation",
+            "vfx"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "assets": {
+          "type": "array",
+          "maxItems": 1024,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
           }
+        },
+        "data": {
+          "type": "object"
         }
       },
-      "then": {
-        "properties": {
-          "data": {
-            "type": "object",
-            "required": [
-              "width",
-              "height",
-              "layers"
-            ],
+      "allOf": [
+        {
+          "if": {
             "properties": {
-              "width": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 16384
-              },
-              "height": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 16384
-              },
-              "layers": {
-                "type": "array",
-                "maxItems": 256,
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "id",
-                    "objects"
-                  ],
-                  "properties": {
-                    "id": {
+              "kind": {
+                "enum": [
+                  "environment",
+                  "base"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "data": {
+                "type": "object",
+                "required": [
+                  "width",
+                  "height",
+                  "layers"
+                ],
+                "properties": {
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 16384
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 16384
+                  },
+                  "layers": {
+                    "type": "array",
+                    "maxItems": 256,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "objects"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "objects": {
+                          "type": "array",
+                          "maxItems": 100000,
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "character"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "data": {
+                "type": "object",
+                "required": [
+                  "animations"
+                ],
+                "properties": {
+                  "animations": {
+                    "type": "object",
+                    "additionalProperties": {
                       "type": "string",
-                      "minLength": 1
-                    },
-                    "objects": {
-                      "type": "array",
-                      "maxItems": 100000,
-                      "items": {
-                        "type": "object"
+                      "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "animation",
+                  "vfx"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "data": {
+                "type": "object",
+                "required": [
+                  "frames",
+                  "fps",
+                  "loop"
+                ],
+                "properties": {
+                  "fps": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 240
+                  },
+                  "loop": {
+                    "type": "boolean"
+                  },
+                  "frames": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 4096,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "asset",
+                        "x",
+                        "y",
+                        "width",
+                        "height"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "asset": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        },
+                        "x": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 16384
+                        },
+                        "y": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 16384
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 16384
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 16384
+                        }
                       }
                     }
                   }
@@ -101,105 +212,2509 @@
             }
           }
         }
-      }
+      ]
     },
     {
-      "if": {
-        "properties": {
-          "kind": {
-            "enum": [
-              "character"
-            ]
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "kind",
+        "name",
+        "assets",
+        "dependencies",
+        "provenance",
+        "data"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 2
+        },
+        "kind": {
+          "enum": [
+            "animation",
+            "asset-manifest",
+            "base",
+            "character",
+            "environment",
+            "environment-catalog",
+            "skill",
+            "vfx"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "assets": {
+          "type": "array",
+          "maxItems": 2048,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
           }
-        }
-      },
-      "then": {
-        "properties": {
-          "data": {
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
             "type": "object",
             "required": [
-              "animations"
+              "id",
+              "kind",
+              "revision"
             ],
             "properties": {
-              "animations": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string",
-                  "pattern": "^[a-zA-Z0-9_-]{1,100}$"
-                }
+              "id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_-]{1,100}$"
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "repository",
+            "sourcePath",
+            "selector",
+            "sourceSha256",
+            "legacyId"
+          ],
+          "properties": {
+            "repository": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sourcePath": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selector": {
+              "type": "string"
+            },
+            "sourceSha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "legacyId": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "data": {
+          "type": "object",
+          "required": [
+            "format",
+            "payload",
+            "bindings"
+          ],
+          "properties": {
+            "format": {
+              "enum": [
+                "arkadia.environment-map.v1",
+                "arkadia.environment-catalog.v1",
+                "arkadia.world-map.v1",
+                "arkadia.frontier.v1",
+                "arkadia.stronghold-prefab.v1",
+                "arkadia.character-atlas.v1",
+                "arkadia.equipment-atlas.v1",
+                "arkadia.hero-glb.v1",
+                "arkadia.sprite-sheet.v1",
+                "arkadia.gltf.v2",
+                "arkadia.skill-catalog.v1",
+                "arkadia.economy-rules.v1",
+                "arkadia.combat-rules.v1",
+                "arkadia.nixie-effect.v1",
+                "arkadia.fx-profile.v1",
+                "arkadia.visual-patches.v1",
+                "arkadia.asset-manifest.v1"
+              ]
+            },
+            "payload": {
+              "type": "object"
+            },
+            "bindings": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
               }
             }
           }
         }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "kind": {
-            "enum": [
-              "animation",
-              "vfx"
-            ]
-          }
-        }
       },
-      "then": {
-        "properties": {
-          "data": {
-            "type": "object",
-            "required": [
-              "frames",
-              "fps",
-              "loop"
-            ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
             "properties": {
-              "fps": {
-                "type": "number",
-                "exclusiveMinimum": 0,
-                "maximum": 240
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.environment-map.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "environment"
               },
-              "loop": {
-                "type": "boolean"
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "schema",
+                      "revision",
+                      "name",
+                      "objects"
+                    ],
+                    "properties": {
+                      "schema": {
+                        "const": 1
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "name": {
+                        "type": "string",
+                        "maxLength": 80
+                      },
+                      "objects": {
+                        "type": "array",
+                        "maxItems": 1000,
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "asset",
+                            "u",
+                            "v"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "asset": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "u": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 936
+                            },
+                            "v": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 936
+                            },
+                            "count": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 50
+                            },
+                            "radius": {
+                              "type": "number",
+                              "minimum": 0.5,
+                              "maximum": 150
+                            },
+                            "interval": {
+                              "type": "number",
+                              "minimum": 0.5,
+                              "maximum": 3600
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.environment-catalog.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "environment-catalog"
               },
-              "frames": {
-                "type": "array",
-                "minItems": 1,
-                "maxItems": 4096,
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "asset",
-                    "x",
-                    "y",
-                    "width",
-                    "height"
-                  ],
-                  "additionalProperties": false,
-                  "properties": {
-                    "asset": {
-                      "type": "string",
-                      "pattern": "^[a-f0-9]{64}$"
-                    },
-                    "x": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 16384
-                    },
-                    "y": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 16384
-                    },
-                    "width": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 16384
-                    },
-                    "height": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 16384
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "version",
+                      "occupied",
+                      "assets"
+                    ],
+                    "properties": {
+                      "version": {
+                        "const": 1
+                      },
+                      "occupied": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "minItems": 4,
+                          "maxItems": 4,
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "assets": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "label",
+                            "file",
+                            "width",
+                            "height",
+                            "pivot",
+                            "blocks",
+                            "layer",
+                            "footprint"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "file": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "height": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "pivot": {
+                              "type": "array",
+                              "minItems": 2,
+                              "maxItems": 2,
+                              "items": {
+                                "type": "number"
+                              }
+                            },
+                            "frame": {
+                              "type": "array",
+                              "minItems": 4,
+                              "maxItems": 4,
+                              "items": {
+                                "type": "number"
+                              }
+                            },
+                            "blocks": {
+                              "type": "array",
+                              "items": {
+                                "type": "array",
+                                "minItems": 4,
+                                "maxItems": 4,
+                                "items": {
+                                  "type": "number"
+                                }
+                              }
+                            },
+                            "layer": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "footprint": {
+                              "type": "number"
+                            },
+                            "columns": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "required": [
+                                  "x",
+                                  "w",
+                                  "back",
+                                  "front"
+                                ],
+                                "properties": {
+                                  "x": {
+                                    "type": "number"
+                                  },
+                                  "w": {
+                                    "type": "number",
+                                    "exclusiveMinimum": 0
+                                  },
+                                  "back": {
+                                    "type": "number"
+                                  },
+                                  "front": {
+                                    "type": "number"
+                                  }
+                                }
+                              }
+                            },
+                            "components": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "required": [
+                                  "file",
+                                  "width",
+                                  "foot",
+                                  "dx",
+                                  "dy",
+                                  "shear",
+                                  "vertical"
+                                ],
+                                "properties": {
+                                  "file": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "width": {
+                                    "type": "number",
+                                    "exclusiveMinimum": 0
+                                  },
+                                  "foot": {
+                                    "type": "number"
+                                  },
+                                  "dx": {
+                                    "type": "number"
+                                  },
+                                  "dy": {
+                                    "type": "number"
+                                  },
+                                  "shear": {
+                                    "type": "number"
+                                  },
+                                  "vertical": {
+                                    "type": "number"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.world-map.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "environment"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "version",
+                      "name",
+                      "sizeTiles",
+                      "metersPerTile",
+                      "chunkTiles",
+                      "seed",
+                      "prefabs"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "version": {
+                        "const": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "sizeTiles": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "metersPerTile": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "chunkTiles": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "seed": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "prefabs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "prefab",
+                            "at"
+                          ],
+                          "properties": {
+                            "prefab": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "at": {
+                              "type": "object",
+                              "required": [
+                                "u",
+                                "v"
+                              ],
+                              "properties": {
+                                "u": {
+                                  "type": "number"
+                                },
+                                "v": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "terrain": {
+                        "type": "object",
+                        "required": [
+                          "pxPerMeter",
+                          "maxStepM",
+                          "features"
+                        ],
+                        "properties": {
+                          "pxPerMeter": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "maxStepM": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "features": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "type",
+                                "u0",
+                                "v0",
+                                "u1",
+                                "v1"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "type": {
+                                  "enum": [
+                                    "plateau",
+                                    "ramp",
+                                    "hill"
+                                  ]
+                                },
+                                "u0": {
+                                  "type": "number"
+                                },
+                                "v0": {
+                                  "type": "number"
+                                },
+                                "u1": {
+                                  "type": "number"
+                                },
+                                "v1": {
+                                  "type": "number"
+                                },
+                                "heightM": {
+                                  "type": "number"
+                                },
+                                "baseM": {
+                                  "type": "number"
+                                },
+                                "topM": {
+                                  "type": "number"
+                                },
+                                "ascend": {
+                                  "enum": [
+                                    "-u",
+                                    "+u",
+                                    "-v",
+                                    "+v"
+                                  ]
+                                },
+                                "outline": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "array",
+                                    "minItems": 2,
+                                    "maxItems": 2,
+                                    "items": {
+                                      "type": "number"
+                                    }
+                                  }
+                                },
+                                "connectsTo": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.frontier.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "environment"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "version",
+                      "map",
+                      "terrain",
+                      "kit",
+                      "placements"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "version": {
+                        "const": 1
+                      },
+                      "map": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "terrain": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "type",
+                            "u0",
+                            "v0",
+                            "u1",
+                            "v1"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "type": {
+                              "enum": [
+                                "plateau",
+                                "ramp",
+                                "hill"
+                              ]
+                            },
+                            "u0": {
+                              "type": "number"
+                            },
+                            "v0": {
+                              "type": "number"
+                            },
+                            "u1": {
+                              "type": "number"
+                            },
+                            "v1": {
+                              "type": "number"
+                            },
+                            "heightM": {
+                              "type": "number"
+                            },
+                            "baseM": {
+                              "type": "number"
+                            },
+                            "topM": {
+                              "type": "number"
+                            },
+                            "ascend": {
+                              "enum": [
+                                "-u",
+                                "+u",
+                                "-v",
+                                "+v"
+                              ]
+                            },
+                            "outline": {
+                              "type": "array",
+                              "items": {
+                                "type": "array",
+                                "minItems": 2,
+                                "maxItems": 2,
+                                "items": {
+                                  "type": "number"
+                                }
+                              }
+                            },
+                            "connectsTo": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        }
+                      },
+                      "kit": {
+                        "type": "object"
+                      },
+                      "placements": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "a",
+                            "u",
+                            "v"
+                          ],
+                          "properties": {
+                            "a": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "u": {
+                              "type": "number"
+                            },
+                            "v": {
+                              "type": "number"
+                            },
+                            "s": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "lift": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.stronghold-prefab.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "base"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "version",
+                      "anchor",
+                      "world",
+                      "court",
+                      "gate",
+                      "safeZone",
+                      "heroSpawn",
+                      "buildings",
+                      "props",
+                      "lights"
+                    ],
+                    "properties": {
+                      "id": {
+                        "const": "stronghold"
+                      },
+                      "version": {
+                        "const": 1
+                      },
+                      "anchor": {
+                        "type": "object",
+                        "required": [
+                          "u",
+                          "v"
+                        ],
+                        "properties": {
+                          "u": {
+                            "type": "number"
+                          },
+                          "v": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "world": {
+                        "type": "object",
+                        "required": [
+                          "width",
+                          "height"
+                        ],
+                        "properties": {
+                          "width": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "height": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          }
+                        }
+                      },
+                      "court": {
+                        "type": "object",
+                        "required": [
+                          "size",
+                          "origin",
+                          "walkInset",
+                          "openSnowFrom"
+                        ],
+                        "properties": {
+                          "size": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "origin": {
+                            "type": "object",
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "properties": {
+                              "x": {
+                                "type": "number"
+                              },
+                              "y": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "walkInset": {
+                            "type": "number"
+                          },
+                          "openSnowFrom": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "gate": {
+                        "type": "object",
+                        "required": [
+                          "x",
+                          "threshold",
+                          "passageFromY",
+                          "archHalfWidth",
+                          "towerHalfSpan",
+                          "towerFront",
+                          "towerDepth",
+                          "columnStep",
+                          "doors",
+                          "trigger",
+                          "frontY",
+                          "footprintHeight",
+                          "apron",
+                          "frames",
+                          "passableAt"
+                        ],
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "threshold": {
+                            "type": "object",
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "properties": {
+                              "x": {
+                                "type": "number"
+                              },
+                              "y": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "passageFromY": {
+                            "type": "number"
+                          },
+                          "archHalfWidth": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "towerHalfSpan": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "towerFront": {
+                            "type": "object",
+                            "required": [
+                              "knee",
+                              "base",
+                              "rise",
+                              "peak",
+                              "fall"
+                            ],
+                            "properties": {
+                              "knee": {
+                                "type": "number"
+                              },
+                              "base": {
+                                "type": "number"
+                              },
+                              "rise": {
+                                "type": "number"
+                              },
+                              "peak": {
+                                "type": "number"
+                              },
+                              "fall": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "towerDepth": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "columnStep": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "doors": {
+                            "type": "object",
+                            "required": [
+                              "halfWidth",
+                              "back",
+                              "front"
+                            ],
+                            "properties": {
+                              "halfWidth": {
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                              },
+                              "back": {
+                                "type": "number"
+                              },
+                              "front": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "trigger": {
+                            "type": "object",
+                            "required": [
+                              "y",
+                              "closed",
+                              "open"
+                            ],
+                            "properties": {
+                              "y": {
+                                "type": "number"
+                              },
+                              "closed": {
+                                "type": "object",
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "properties": {
+                                  "x": {
+                                    "type": "number"
+                                  },
+                                  "y": {
+                                    "type": "number"
+                                  }
+                                }
+                              },
+                              "open": {
+                                "type": "object",
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "properties": {
+                                  "x": {
+                                    "type": "number"
+                                  },
+                                  "y": {
+                                    "type": "number"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "frontY": {
+                            "type": "number"
+                          },
+                          "footprintHeight": {
+                            "type": "object",
+                            "required": [
+                              "tower",
+                              "doors"
+                            ],
+                            "properties": {
+                              "tower": {
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                              },
+                              "doors": {
+                                "type": "number",
+                                "exclusiveMinimum": 0
+                              }
+                            }
+                          },
+                          "apron": {
+                            "type": "object"
+                          },
+                          "frames": {
+                            "type": "integer",
+                            "minimum": 2
+                          },
+                          "passableAt": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "safeZone": {
+                        "type": "object",
+                        "required": [
+                          "metersPerTile",
+                          "center",
+                          "spawnDistanceM"
+                        ],
+                        "properties": {
+                          "metersPerTile": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "center": {
+                            "type": "object",
+                            "required": [
+                              "u",
+                              "v"
+                            ],
+                            "properties": {
+                              "u": {
+                                "type": "number"
+                              },
+                              "v": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "spawnDistanceM": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          }
+                        }
+                      },
+                      "heroSpawn": {
+                        "type": "object",
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "y": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "buildings": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "pivot",
+                            "asset",
+                            "groundEdges"
+                          ],
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            },
+                            "width": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "pivot": {
+                              "type": "number"
+                            },
+                            "asset": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "groundEdges": {
+                              "type": "object"
+                            }
+                          }
+                        }
+                      },
+                      "props": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "group",
+                            "id",
+                            "u",
+                            "v",
+                            "width"
+                          ],
+                          "properties": {
+                            "group": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "u": {
+                              "type": "number"
+                            },
+                            "v": {
+                              "type": "number"
+                            },
+                            "width": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            }
+                          }
+                        }
+                      },
+                      "lights": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "u",
+                            "v",
+                            "lift",
+                            "wall"
+                          ],
+                          "properties": {
+                            "u": {
+                              "type": "number"
+                            },
+                            "v": {
+                              "type": "number"
+                            },
+                            "lift": {
+                              "type": "number"
+                            },
+                            "wall": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.character-atlas.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "character"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "image",
+                      "atlasSize",
+                      "scale",
+                      "gutter",
+                      "cell",
+                      "direction",
+                      "clips",
+                      "frames"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "image": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "atlasSize": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      },
+                      "scale": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "gutter": {
+                        "type": "number"
+                      },
+                      "cell": {
+                        "type": "object",
+                        "required": [
+                          "w",
+                          "h",
+                          "pivot"
+                        ],
+                        "properties": {
+                          "w": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "h": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "pivot": {
+                            "type": "object",
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "properties": {
+                              "x": {
+                                "type": "number"
+                              },
+                              "y": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "direction": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "clips": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "required": [
+                            "fps",
+                            "loop",
+                            "frames"
+                          ],
+                          "properties": {
+                            "fps": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "loop": {
+                              "type": "boolean"
+                            },
+                            "frames": {
+                              "type": "array",
+                              "minItems": 1,
+                              "items": {
+                                "type": "integer",
+                                "minimum": 0
+                              }
+                            },
+                            "impact": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "strideScale": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            }
+                          }
+                        }
+                      },
+                      "frames": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "row",
+                            "col",
+                            "x",
+                            "y",
+                            "w",
+                            "h",
+                            "source"
+                          ],
+                          "properties": {
+                            "row": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "col": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            },
+                            "w": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "h": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "source": {
+                              "type": "object"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.equipment-atlas.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "character"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "image",
+                      "atlasSize",
+                      "icon",
+                      "items"
+                    ],
+                    "properties": {
+                      "image": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "atlasSize": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                          "type": "number"
+                        }
+                      },
+                      "icon": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "x",
+                            "y",
+                            "w",
+                            "h",
+                            "source"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            },
+                            "w": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "h": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "source": {
+                              "type": "object"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.hero-glb.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "character"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "hero",
+                      "name",
+                      "glb",
+                      "thumbnail",
+                      "animations"
+                    ],
+                    "properties": {
+                      "hero": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "glb": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "thumbnail": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "animations": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "slug",
+                            "label",
+                            "loop"
+                          ],
+                          "properties": {
+                            "slug": {
+                              "enum": [
+                                "idle",
+                                "run",
+                                "idle_cast",
+                                "run_cast",
+                                "hit",
+                                "death"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "loop": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.sprite-sheet.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "animation"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "title",
+                      "source",
+                      "columns",
+                      "rows",
+                      "fps",
+                      "pivot"
+                    ],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "columns": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 256
+                      },
+                      "rows": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 256
+                      },
+                      "frameCount": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "fps": {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 60
+                      },
+                      "pivot": {
+                        "type": "object",
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "properties": {
+                          "x": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "y": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          }
+                        }
+                      },
+                      "loop": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.gltf.v2"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "animation"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "asset",
+                      "animations",
+                      "nodes",
+                      "accessors"
+                    ],
+                    "properties": {
+                      "asset": {
+                        "type": "object",
+                        "required": [
+                          "version"
+                        ],
+                        "properties": {
+                          "version": {
+                            "const": "2.0"
+                          }
+                        }
+                      },
+                      "animations": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "samplers",
+                            "channels"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "samplers": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "channels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "nodes": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      },
+                      "accessors": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.skill-catalog.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "skill"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "cards",
+                      "maxSlots",
+                      "maxLearned",
+                      "aoeRadiusTiles",
+                      "rankSamples"
+                    ],
+                    "properties": {
+                      "cards": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "description",
+                            "kind",
+                            "badge",
+                            "icon"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "description": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "kind": {
+                              "enum": [
+                                "active",
+                                "passive"
+                              ]
+                            },
+                            "badge": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "icon": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "cooldownMs": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            }
+                          }
+                        }
+                      },
+                      "maxSlots": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "maxLearned": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "aoeRadiusTiles": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      },
+                      "rankSamples": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.economy-rules.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "base"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "balance",
+                      "buildings",
+                      "startBuilt",
+                      "upgradeSamples",
+                      "defenseBranches",
+                      "defenseMinCore",
+                      "defenseCost",
+                      "defenseCombat"
+                    ],
+                    "properties": {
+                      "balance": {
+                        "type": "object",
+                        "required": [
+                          "hours",
+                          "goldPerHour",
+                          "manaPerHour",
+                          "maxLevel",
+                          "upgradeBase",
+                          "start"
+                        ],
+                        "properties": {
+                          "hours": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "goldPerHour": {
+                            "type": "number"
+                          },
+                          "manaPerHour": {
+                            "type": "number"
+                          },
+                          "maxLevel": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "upgradeBase": {
+                            "type": "number"
+                          },
+                          "start": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      "buildings": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "startBuilt": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "upgradeSamples": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "building",
+                            "level",
+                            "cost"
+                          ],
+                          "properties": {
+                            "building": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "level": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "cost": {
+                              "type": "object",
+                              "required": [
+                                "gold",
+                                "mana",
+                                "souls"
+                              ],
+                              "properties": {
+                                "gold": {
+                                  "type": "number"
+                                },
+                                "mana": {
+                                  "type": "number"
+                                },
+                                "souls": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "defenseBranches": {
+                        "type": "object"
+                      },
+                      "defenseMinCore": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "defenseCost": {
+                        "type": "object"
+                      },
+                      "defenseCombat": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.combat-rules.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "skill"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "stats",
+                      "cleave"
+                    ],
+                    "properties": {
+                      "stats": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "required": [
+                            "hp",
+                            "speed",
+                            "reach",
+                            "damage"
+                          ],
+                          "properties": {
+                            "hp": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "speed": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "reach": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "damage": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      },
+                      "cleave": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.nixie-effect.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "vfx"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "app",
+                      "kind",
+                      "version",
+                      "targetProfile",
+                      "id",
+                      "name",
+                      "timeline",
+                      "emitters"
+                    ],
+                    "properties": {
+                      "app": {
+                        "const": "vfx-editor"
+                      },
+                      "kind": {
+                        "const": "particle-effect"
+                      },
+                      "version": {
+                        "const": 1
+                      },
+                      "targetProfile": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "timeline": {
+                        "type": "object",
+                        "required": [
+                          "frameRate",
+                          "duration",
+                          "loop"
+                        ],
+                        "properties": {
+                          "frameRate": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "duration": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "loop": {
+                            "type": "object",
+                            "required": [
+                              "enabled",
+                              "start",
+                              "end"
+                            ],
+                            "properties": {
+                              "enabled": {
+                                "type": "boolean"
+                              },
+                              "start": {
+                                "type": "number"
+                              },
+                              "end": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "emitters": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "name",
+                            "enabled",
+                            "maxParticles",
+                            "spawn",
+                            "render",
+                            "modules"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "maxParticles": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 100000
+                            },
+                            "spawn": {
+                              "type": "object"
+                            },
+                            "render": {
+                              "type": "object"
+                            },
+                            "modules": {
+                              "type": "object"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.fx-profile.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "vfx"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "cues"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "extends": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "cues": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "oneOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "required": [
+                                  "effect"
+                                ],
+                                "properties": {
+                                  "effect": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "required": [
+                                "layers"
+                              ],
+                              "properties": {
+                                "layers": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "effect"
+                                    ],
+                                    "properties": {
+                                      "effect": {
+                                        "type": "string",
+                                        "minLength": 1
+                                      }
+                                    }
+                                  }
+                                },
+                                "baseRadius": {
+                                  "type": "number",
+                                  "exclusiveMinimum": 0
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.visual-patches.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "vfx"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "version",
+                      "revision",
+                      "effects"
+                    ],
+                    "properties": {
+                      "version": {
+                        "const": 1
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "effects": {
+                        "type": "object",
+                        "maxProperties": 128,
+                        "propertyNames": {
+                          "pattern": "^[a-zA-Z0-9_./-]{1,160}$"
+                        },
+                        "additionalProperties": {
+                          "type": "object",
+                          "maxProperties": 64,
+                          "propertyNames": {
+                            "pattern": "^[a-zA-Z0-9_./-]{1,160}$"
+                          },
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "order": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 512
+                              },
+                              "opacity": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "size": {
+                                "type": "number",
+                                "minimum": 0.02,
+                                "maximum": 8
+                              },
+                              "count": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 4
+                              },
+                              "rate": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 4
+                              },
+                              "lifetime": {
+                                "type": "number",
+                                "minimum": 0.05,
+                                "maximum": 8
+                              },
+                              "speed": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 8
+                              },
+                              "direction": {
+                                "type": "number",
+                                "minimum": -180,
+                                "maximum": 180
+                              },
+                              "spread": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 360
+                              },
+                              "gravity": {
+                                "type": "number",
+                                "minimum": -20,
+                                "maximum": 20
+                              },
+                              "x": {
+                                "type": "number",
+                                "minimum": -10,
+                                "maximum": 10
+                              },
+                              "y": {
+                                "type": "number",
+                                "minimum": -10,
+                                "maximum": 10
+                              },
+                              "z": {
+                                "type": "number",
+                                "minimum": -10,
+                                "maximum": 10
+                              },
+                              "delay": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 10
+                              },
+                              "duration": {
+                                "type": "number",
+                                "minimum": 0.01,
+                                "maximum": 10
+                              },
+                              "columns": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 16
+                              },
+                              "rows": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 16
+                              },
+                              "fps": {
+                                "type": "number",
+                                "minimum": 1,
+                                "maximum": 120
+                              },
+                              "frameCount": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 256
+                              },
+                              "pivotX": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "pivotY": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "name": {
+                                "type": "string",
+                                "maxLength": 120
+                              },
+                              "source": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "texture": {
+                                "type": "string",
+                                "pattern": "^[a-zA-Z0-9_./-]{1,160}$"
+                              },
+                              "color": {
+                                "type": "string",
+                                "pattern": "^#[a-fA-F0-9]{6}$"
+                              },
+                              "blend": {
+                                "enum": [
+                                  "alpha",
+                                  "additive",
+                                  "screen",
+                                  "multiply"
+                                ]
+                              },
+                              "deleted": {
+                                "type": "boolean"
+                              },
+                              "loop": {
+                                "type": "boolean"
+                              },
+                              "enabled": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "format": {
+                    "const": "arkadia.asset-manifest.v1"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "asset-manifest"
+              },
+              "data": {
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "required": [
+                      "entries"
+                    ],
+                    "properties": {
+                      "entries": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "path",
+                            "sha256",
+                            "size",
+                            "mediaType"
+                          ],
+                          "properties": {
+                            "path": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "sha256": {
+                              "type": "string",
+                              "pattern": "^[a-f0-9]{64}$"
+                            },
+                            "size": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "mediaType": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -207,7 +2722,7 @@
             }
           }
         }
-      }
+      ]
     }
   ]
 }

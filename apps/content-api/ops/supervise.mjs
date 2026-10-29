@@ -9,7 +9,10 @@ const env={...process.env,LD_LIBRARY_PATH:`${root}/usr/lib`};
 for(const dir of ['data','data/assets','private','run']) mkdirSync(`${home}/${dir}`,{recursive:true,mode:0o700});
 const envPath=`${home}/private/content.env.json`;
 if(!existsSync(envPath)) writeFileSync(envPath,JSON.stringify({CONTENT_API_TOKEN:randomBytes(48).toString('hex')}),{mode:0o600,flag:'wx'});
-Object.assign(env,JSON.parse(readFileSync(envPath,'utf8')));
+const privateConfig=JSON.parse(readFileSync(envPath,'utf8'));
+let changed=false;for(const key of ['CONTENT_API_AUTHOR_TOKEN','CONTENT_API_PUBLISHER_TOKEN'])if(!privateConfig[key]){privateConfig[key]=randomBytes(48).toString('hex');changed=true;}
+if(changed)writeFileSync(envPath,JSON.stringify(privateConfig),{mode:0o600});
+Object.assign(env,privateConfig);
 if(!existsSync(`${home}/data/postgres/PG_VERSION`)) {
  const init=spawn(`${pg}/initdb`,['-D',`${home}/data/postgres`,'--username=content','--auth-local=trust','--auth-host=trust','--no-locale','-E','UTF8'],{env,stdio:'inherit'});
  await new Promise((resolve,reject)=>{init.on('error',reject);init.on('exit',code=>code===0?resolve():reject(new Error(`initdb exited ${code}`)));});

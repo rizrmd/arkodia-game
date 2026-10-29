@@ -1,0 +1,52 @@
+{
+  "id": "map",
+  "format": "arkadia.environment-map.v1",
+  "kind": "environment",
+  "provenance": {
+    "repository": "https://arkodia.online",
+    "sourcePath": "/api/environment/published",
+    "selector": "published read snapshot, selected existing ground and spawn objects",
+    "sourceSha256": "4aaf8961d8a4840d0244a1132d13c3b0a6df01d3888147bc7421ebb34eeb982e",
+    "legacyId": "map"
+  },
+  "payload": {
+    "schema": 1,
+    "revision": 3,
+    "name": "Arkodia published environment",
+    "objects": [
+      {
+        "id": "frozen-v1-surface-0--1",
+        "asset": "ground:frozen-region-0--1",
+        "u": 389.4921875,
+        "v": 452.5078125
+      },
+      {
+        "id": "skeleton-gateway",
+        "asset": "spawn",
+        "u": 479,
+        "v": 479,
+        "count": 3,
+        "radius": 6,
+        "interval": 5
+      },
+      {
+        "id": "skeleton-west",
+        "asset": "spawn",
+        "u": 442,
+        "v": 480,
+        "count": 3,
+        "radius": 9,
+        "interval": 8
+      },
+      {
+        "id": "skeleton-north",
+        "asset": "spawn",
+        "u": 480,
+        "v": 440,
+        "count": 2,
+        "radius": 9,
+        "interval": 10
+      }
+    ]
+  }
+}

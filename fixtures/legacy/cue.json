@@ -1,0 +1,23 @@
+{
+  "id": "cue",
+  "format": "arkadia.fx-profile.v1",
+  "kind": "vfx",
+  "provenance": {
+    "repository": "rizrmd/arkadia",
+    "sourcePath": "src/fx/heroes/shared.ts",
+    "selector": "id and hit.normal cue only",
+    "sourceSha256": "cb5eeb7de2b4d12ddd38267efe8c8c9466ebe6787ab6d0e12c870e81c2f4fcaf",
+    "legacyId": "cue"
+  },
+  "payload": {
+    "id": "shared",
+    "cues": {
+      "hit.normal": [
+        {
+          "effect": "shared/hit.normal",
+          "aim": "random"
+        }
+      ]
+    }
+  }
+}

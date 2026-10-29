@@ -1,0 +1,186 @@
+{
+  "id": "equipment",
+  "format": "arkadia.equipment-atlas.v1",
+  "kind": "character",
+  "provenance": {
+    "repository": "rizrmd/arkadia",
+    "sourcePath": "public/assets/characters/manifest.json",
+    "selector": "equipment",
+    "sourceSha256": "c1d8b73412760081d770c7ee10da8b52ac3e16a38edaa0cc7d521b038909c804",
+    "legacyId": "equipment"
+  },
+  "payload": {
+    "image": "equipment.png",
+    "source": "equipment-v1.png",
+    "sourceSize": [
+      1448,
+      1086
+    ],
+    "atlasSize": [
+      532,
+      400
+    ],
+    "icon": 128,
+    "gutter": 4,
+    "specks": 2,
+    "droppedSpeckPx": 0,
+    "items": [
+      {
+        "id": "sword",
+        "x": 4,
+        "y": 4,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 48,
+          "y": 42,
+          "w": 267,
+          "h": 308
+        }
+      },
+      {
+        "id": "axe",
+        "x": 136,
+        "y": 4,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 389,
+          "y": 17,
+          "w": 307,
+          "h": 339
+        }
+      },
+      {
+        "id": "spear",
+        "x": 268,
+        "y": 4,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 770,
+          "y": 21,
+          "w": 302,
+          "h": 329
+        }
+      },
+      {
+        "id": "staff",
+        "x": 400,
+        "y": 4,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 1114,
+          "y": 17,
+          "w": 305,
+          "h": 342
+        }
+      },
+      {
+        "id": "helm",
+        "x": 4,
+        "y": 136,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 68,
+          "y": 380,
+          "w": 234,
+          "h": 315
+        }
+      },
+      {
+        "id": "armor",
+        "x": 136,
+        "y": 136,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 395,
+          "y": 378,
+          "w": 307,
+          "h": 325
+        }
+      },
+      {
+        "id": "cloak",
+        "x": 268,
+        "y": 136,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 761,
+          "y": 372,
+          "w": 291,
+          "h": 344
+        }
+      },
+      {
+        "id": "shield",
+        "x": 400,
+        "y": 136,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 1117,
+          "y": 384,
+          "w": 300,
+          "h": 306
+        }
+      },
+      {
+        "id": "potion",
+        "x": 4,
+        "y": 268,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 59,
+          "y": 730,
+          "w": 225,
+          "h": 310
+        }
+      },
+      {
+        "id": "backpack",
+        "x": 136,
+        "y": 268,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 372,
+          "y": 719,
+          "w": 318,
+          "h": 323
+        }
+      },
+      {
+        "id": "map",
+        "x": 268,
+        "y": 268,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 741,
+          "y": 733,
+          "w": 339,
+          "h": 295
+        }
+      },
+      {
+        "id": "soul-shard",
+        "x": 400,
+        "y": 268,
+        "w": 128,
+        "h": 128,
+        "source": {
+          "x": 1195,
+          "y": 733,
+          "w": 206,
+          "h": 302
+        }
+      }
+    ]
+  }
+}

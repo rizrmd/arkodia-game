@@ -1,0 +1,259 @@
+{
+  "id": "economy",
+  "format": "arkadia.economy-rules.v1",
+  "kind": "base",
+  "provenance": {
+    "repository": "rizrmd/arkadia",
+    "sourcePath": "src/stronghold/economy.ts",
+    "selector": "exported constants and sampled existing pure functions; no mechanics invented",
+    "sourceSha256": "42e61d81475783c21305d216f1436a413513cabba6a1af4f4750432b064bdecd",
+    "legacyId": "economy"
+  },
+  "payload": {
+    "balance": {
+      "hours": 10,
+      "goldPerHour": 120,
+      "manaPerHour": 12,
+      "start": {
+        "gold": 600,
+        "mana": 80,
+        "souls": 20
+      },
+      "maxLevel": 3,
+      "upgradeBase": 100,
+      "heroCost": 10,
+      "trainingCost": 80,
+      "craftCost": 60,
+      "rerollCost": 30,
+      "skillCost": 30
+    },
+    "buildings": [
+      "mine",
+      "altar",
+      "barracks",
+      "forge",
+      "mage",
+      "expedition",
+      "gate"
+    ],
+    "startBuilt": [
+      "expedition",
+      "gate"
+    ],
+    "upgradeSamples": [
+      {
+        "building": "mine",
+        "level": 1,
+        "cost": {
+          "gold": 100,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "mine",
+        "level": 2,
+        "cost": {
+          "gold": 400,
+          "mana": 0,
+          "souls": 5
+        }
+      },
+      {
+        "building": "mine",
+        "level": 3,
+        "cost": {
+          "gold": 900,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "altar",
+        "level": 1,
+        "cost": {
+          "gold": 100,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "altar",
+        "level": 2,
+        "cost": {
+          "gold": 400,
+          "mana": 0,
+          "souls": 5
+        }
+      },
+      {
+        "building": "altar",
+        "level": 3,
+        "cost": {
+          "gold": 900,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "barracks",
+        "level": 1,
+        "cost": {
+          "gold": 100,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "barracks",
+        "level": 2,
+        "cost": {
+          "gold": 400,
+          "mana": 0,
+          "souls": 5
+        }
+      },
+      {
+        "building": "barracks",
+        "level": 3,
+        "cost": {
+          "gold": 900,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "forge",
+        "level": 1,
+        "cost": {
+          "gold": 100,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "forge",
+        "level": 2,
+        "cost": {
+          "gold": 400,
+          "mana": 0,
+          "souls": 5
+        }
+      },
+      {
+        "building": "forge",
+        "level": 3,
+        "cost": {
+          "gold": 900,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "mage",
+        "level": 1,
+        "cost": {
+          "gold": 100,
+          "mana": 20,
+          "souls": 0
+        }
+      },
+      {
+        "building": "mage",
+        "level": 2,
+        "cost": {
+          "gold": 400,
+          "mana": 40,
+          "souls": 5
+        }
+      },
+      {
+        "building": "mage",
+        "level": 3,
+        "cost": {
+          "gold": 900,
+          "mana": 60,
+          "souls": 0
+        }
+      },
+      {
+        "building": "expedition",
+        "level": 1,
+        "cost": {
+          "gold": 100,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "expedition",
+        "level": 2,
+        "cost": {
+          "gold": 400,
+          "mana": 0,
+          "souls": 5
+        }
+      },
+      {
+        "building": "expedition",
+        "level": 3,
+        "cost": {
+          "gold": 900,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "gate",
+        "level": 1,
+        "cost": {
+          "gold": 100,
+          "mana": 0,
+          "souls": 0
+        }
+      },
+      {
+        "building": "gate",
+        "level": 2,
+        "cost": {
+          "gold": 400,
+          "mana": 0,
+          "souls": 5
+        }
+      },
+      {
+        "building": "gate",
+        "level": 3,
+        "cost": {
+          "gold": 900,
+          "mana": 0,
+          "souls": 0
+        }
+      }
+    ],
+    "defenseBranches": {
+      "rift-runner": {
+        "name": "Stormshade",
+        "hero": "Rift Runner",
+        "defense": "watchtower",
+        "label": "Watchtower"
+      },
+      "ember-warden": {
+        "name": "Runeseekers",
+        "hero": "Amber Warden",
+        "defense": "arcane-tower",
+        "label": "Runetower"
+      }
+    },
+    "defenseMinCore": 12,
+    "defenseCost": {
+      "gold": 100,
+      "wood": 25
+    },
+    "defenseCombat": {
+      "damage": 10,
+      "range": 12,
+      "interval": 1500
+    }
+  }
+}

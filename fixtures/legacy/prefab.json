@@ -1,0 +1,895 @@
+{
+  "id": "prefab",
+  "format": "arkadia.stronghold-prefab.v1",
+  "kind": "base",
+  "provenance": {
+    "repository": "rizrmd/arkadia",
+    "sourcePath": "src/stronghold/prefabs/stronghold.json",
+    "selector": "",
+    "sourceSha256": "5a0b3caed1a2605b2049c0043ad7819869bf1eb58b4bae3ea1910d7d9c2fe23d",
+    "legacyId": "prefab"
+  },
+  "payload": {
+    "id": "stronghold",
+    "version": 1,
+    "notes": [
+      "The Stronghold court prefab: every court-local number the client (src/stronghold/prefabs/stronghold.ts) and the co-op server (server/internal/sim/prefab.go) share.",
+      "Tile coordinates (u, v) are court-local ground tiles, 1 tile = 3 m; world px are the 2:1 projection (src/isometric.ts) plus court.origin.",
+      "server/internal/sim/stronghold.json is a byte-identical copy embedded in the Go binary; go test fails when they differ.",
+      "Props render in this order within equal layer and depth. layer is derived from (u, v): ground ids, rear rows (u or v <= 0) backdrop, front rows (u or v >= court.size) foreground, else world.",
+      "Perimeter scenery keeps a snow gap from the enclosure (scripts/verify-wall-clearance.mjs); drifts never lie under a wall line; no braziers at the front corner, the gateway covers them.",
+      "layout: legacy props appear only with ?buildings=all (the old layout); assetSet v1 loads from /modular-stronghold/ instead of /modular-stronghold/v2/.",
+      "gate.frontY is the walk-behind line under the arch and beyond the towers; gate.apron is the snow-to-paving fade in front of the gateway (edge y = edge - |x - gate.x| * slope); gate.footprintHeight gives the shadow height of the tower and door columns."
+    ],
+    "anchor": {
+      "u": 7.5,
+      "v": 7.5
+    },
+    "world": {
+      "width": 1155,
+      "height": 770
+    },
+    "court": {
+      "size": 15,
+      "origin": {
+        "x": 577,
+        "y": -160
+      },
+      "walkInset": 0.5,
+      "openSnowFrom": 16.5
+    },
+    "gate": {
+      "x": 577,
+      "threshold": {
+        "x": 577,
+        "y": 798
+      },
+      "passageFromY": 710,
+      "archHalfWidth": 36,
+      "towerHalfSpan": 135,
+      "towerFront": {
+        "knee": 86,
+        "base": 782,
+        "rise": 0.42,
+        "peak": 803,
+        "fall": 0.62
+      },
+      "towerDepth": 34,
+      "columnStep": 3,
+      "doors": {
+        "halfWidth": 35,
+        "back": 771,
+        "front": 783
+      },
+      "trigger": {
+        "y": 778,
+        "closed": {
+          "x": 48,
+          "y": 66
+        },
+        "open": {
+          "x": 65,
+          "y": 88
+        }
+      },
+      "frontY": 778,
+      "footprintHeight": {
+        "tower": 110,
+        "doors": 105
+      },
+      "apron": {
+        "x": 417,
+        "y": 700,
+        "width": 320,
+        "height": 140,
+        "edge": 785,
+        "slope": 0.35
+      },
+      "frames": 16,
+      "passableAt": 0.8
+    },
+    "safeZone": {
+      "metersPerTile": 3,
+      "center": {
+        "u": 7.5,
+        "v": 7.5
+      },
+      "spawnDistanceM": 10
+    },
+    "heroSpawn": {
+      "x": 590,
+      "y": 420
+    },
+    "buildings": {
+      "forge": {
+        "x": 235,
+        "y": 348,
+        "width": 345,
+        "pivot": 0.95,
+        "asset": "stronghold/forge",
+        "groundEdges": {
+          "rising": [
+            [
+              278,
+              420
+            ],
+            [
+              510,
+              296
+            ]
+          ],
+          "falling": [
+            [
+              27,
+              285
+            ],
+            [
+              278,
+              420
+            ]
+          ]
+        }
+      },
+      "barracks": {
+        "x": 600,
+        "y": 270,
+        "width": 300,
+        "pivot": 0.95,
+        "asset": "stronghold/barracks",
+        "groundEdges": {
+          "rising": [
+            [
+              228,
+              386
+            ],
+            [
+              555,
+              269
+            ]
+          ],
+          "falling": [
+            [
+              20,
+              305
+            ],
+            [
+              216,
+              399
+            ]
+          ]
+        }
+      },
+      "altar": {
+        "x": 950,
+        "y": 390,
+        "width": 245,
+        "pivot": 0.95,
+        "asset": "stronghold/altar",
+        "groundEdges": {
+          "rising": [
+            [
+              362,
+              621
+            ],
+            [
+              615,
+              522
+            ]
+          ],
+          "falling": [
+            [
+              12,
+              497
+            ],
+            [
+              362,
+              621
+            ]
+          ]
+        }
+      },
+      "mage": {
+        "x": 245,
+        "y": 605,
+        "width": 225,
+        "pivot": 0.95,
+        "asset": "stronghold/mage",
+        "groundEdges": {
+          "rising": [
+            [
+              304,
+              631
+            ],
+            [
+              380,
+              604
+            ]
+          ],
+          "falling": [
+            [
+              272,
+              617
+            ],
+            [
+              304,
+              631
+            ]
+          ]
+        }
+      },
+      "expedition": {
+        "x": 577,
+        "y": 320,
+        "legacy": {
+          "x": 565,
+          "y": 500
+        },
+        "width": 210,
+        "pivot": 0.95,
+        "asset": "stronghold/expedition-tent",
+        "groundEdges": {
+          "rising": [
+            [
+              760,
+              920
+            ],
+            [
+              1350,
+              600
+            ]
+          ],
+          "falling": [
+            [
+              400,
+              800
+            ],
+            [
+              760,
+              920
+            ]
+          ]
+        }
+      },
+      "mine": {
+        "x": 905,
+        "y": 620,
+        "width": 330,
+        "pivot": 0.95,
+        "asset": "stronghold/mine",
+        "groundEdges": {
+          "rising": [
+            [
+              393,
+              402
+            ],
+            [
+              499,
+              363
+            ]
+          ],
+          "falling": [
+            [
+              245,
+              282
+            ],
+            [
+              466,
+              402
+            ]
+          ]
+        }
+      },
+      "gate": {
+        "x": 577,
+        "y": 798,
+        "width": 270,
+        "pivot": 0.97,
+        "asset": "stronghold/gate",
+        "groundEdges": {
+          "rising": [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          "falling": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        }
+      }
+    },
+    "props": [
+      {
+        "group": "rampart",
+        "id": "rampart-se",
+        "u": 2.5,
+        "v": 0,
+        "width": 356,
+        "foot": 0.7,
+        "shear": 0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-ne",
+        "u": 0,
+        "v": 2.5,
+        "width": 356,
+        "foot": 0.7,
+        "shear": -0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-se",
+        "u": 2.5,
+        "v": 15.5,
+        "width": 356,
+        "foot": 0.7,
+        "shear": 0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-ne",
+        "u": 15.5,
+        "v": 2.5,
+        "width": 356,
+        "foot": 0.7,
+        "shear": -0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-se",
+        "u": 7.5,
+        "v": 0,
+        "width": 356,
+        "foot": 0.7,
+        "shear": 0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-ne",
+        "u": 0,
+        "v": 7.5,
+        "width": 356,
+        "foot": 0.7,
+        "shear": -0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-se",
+        "u": 7.5,
+        "v": 15.5,
+        "width": 356,
+        "foot": 0.7,
+        "shear": 0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-ne",
+        "u": 15.5,
+        "v": 7.5,
+        "width": 356,
+        "foot": 0.7,
+        "shear": -0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-se",
+        "u": 12.5,
+        "v": 0,
+        "width": 356,
+        "foot": 0.7,
+        "shear": 0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-ne",
+        "u": 0,
+        "v": 12.5,
+        "width": 356,
+        "foot": 0.7,
+        "shear": -0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-se",
+        "u": 11.25,
+        "v": 15.5,
+        "width": 356,
+        "foot": 0.7,
+        "shear": 0.03
+      },
+      {
+        "group": "rampart",
+        "id": "rampart-ne",
+        "u": 15.5,
+        "v": 11.25,
+        "width": 356,
+        "foot": 0.7,
+        "shear": -0.03
+      },
+      {
+        "group": "bastion",
+        "id": "bastion",
+        "u": 0,
+        "v": 0,
+        "width": 180
+      },
+      {
+        "group": "bastion",
+        "id": "bastion",
+        "u": 15,
+        "v": 0,
+        "width": 180
+      },
+      {
+        "group": "bastion",
+        "id": "bastion",
+        "u": 0,
+        "v": 15,
+        "width": 180
+      },
+      {
+        "group": "tree",
+        "id": "fir-young",
+        "u": -3,
+        "v": 3,
+        "width": 135
+      },
+      {
+        "group": "tree",
+        "id": "spruce-mature",
+        "u": -3,
+        "v": 5,
+        "width": 154
+      },
+      {
+        "group": "tree",
+        "id": "spruce-mature",
+        "u": -3,
+        "v": 9,
+        "width": 173
+      },
+      {
+        "group": "tree",
+        "id": "fir-young",
+        "u": 2,
+        "v": -3,
+        "width": 192
+      },
+      {
+        "group": "tree",
+        "id": "spruce-mature",
+        "u": 5,
+        "v": -3,
+        "width": 135
+      },
+      {
+        "group": "tree",
+        "id": "spruce-mature",
+        "u": 9,
+        "v": -3,
+        "width": 154
+      },
+      {
+        "group": "tree",
+        "id": "fir-young",
+        "u": 13,
+        "v": -3,
+        "width": 173
+      },
+      {
+        "group": "tree",
+        "id": "spruce-mature",
+        "u": 20,
+        "v": 4,
+        "width": 192
+      },
+      {
+        "group": "tree",
+        "id": "spruce-mature",
+        "u": 20,
+        "v": 10,
+        "width": 135
+      },
+      {
+        "group": "tree",
+        "id": "fir-young",
+        "u": 4,
+        "v": 20,
+        "width": 154
+      },
+      {
+        "group": "tree",
+        "id": "spruce-mature",
+        "u": 10,
+        "v": 20,
+        "width": 173
+      },
+      {
+        "group": "cliff",
+        "id": "cliff-snow",
+        "u": -3.8,
+        "v": 4,
+        "width": 320
+      },
+      {
+        "group": "cliff",
+        "id": "cliff-snow",
+        "u": 4,
+        "v": -3.8,
+        "width": 320
+      },
+      {
+        "group": "cliff",
+        "id": "cliff-snow",
+        "u": 11,
+        "v": -3.8,
+        "width": 320
+      },
+      {
+        "group": "cliff",
+        "id": "cliff-snow",
+        "u": 19.5,
+        "v": 7,
+        "width": 320
+      },
+      {
+        "group": "cliff",
+        "id": "cliff-snow",
+        "u": 7,
+        "v": 19.5,
+        "width": 320
+      },
+      {
+        "group": "boulders",
+        "id": "boulders-snow",
+        "u": -3,
+        "v": 11,
+        "width": 185
+      },
+      {
+        "group": "boulders",
+        "id": "boulders-snow",
+        "u": 11,
+        "v": -3,
+        "width": 185
+      },
+      {
+        "group": "boulders",
+        "id": "boulders-snow",
+        "u": 18,
+        "v": 11,
+        "width": 185
+      },
+      {
+        "group": "boulders",
+        "id": "boulders-snow",
+        "u": 11,
+        "v": 18,
+        "width": 185
+      },
+      {
+        "group": "court-edge",
+        "id": "paving-worn",
+        "u": 1,
+        "v": 4,
+        "width": 195,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "weeds-edge",
+        "u": 1,
+        "v": 8,
+        "width": 125,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "weeds-edge",
+        "u": 1,
+        "v": 12,
+        "width": 125,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "paving-worn",
+        "u": 4,
+        "v": 1,
+        "width": 195,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "weeds-edge",
+        "u": 8,
+        "v": 1,
+        "width": 125,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "weeds-edge",
+        "u": 12,
+        "v": 1,
+        "width": 125,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "paving-worn",
+        "u": 14,
+        "v": 5,
+        "width": 195,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "weeds-edge",
+        "u": 14,
+        "v": 9,
+        "width": 125,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "weeds-edge",
+        "u": 5,
+        "v": 14,
+        "width": 125,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "paving-worn",
+        "u": 9,
+        "v": 14,
+        "width": 195,
+        "depth": 1
+      },
+      {
+        "group": "court-edge",
+        "id": "weeds-edge",
+        "u": 12,
+        "v": 13,
+        "width": 125,
+        "depth": 1
+      },
+      {
+        "group": "snowdrift",
+        "id": "snowdrift-edge",
+        "u": -3.5,
+        "v": 7,
+        "width": 200,
+        "depth": 1
+      },
+      {
+        "group": "snowdrift",
+        "id": "snowdrift-edge",
+        "u": 7,
+        "v": -3.5,
+        "width": 200,
+        "depth": 1
+      },
+      {
+        "group": "snowdrift",
+        "id": "snowdrift-edge",
+        "u": 16.2,
+        "v": 6,
+        "width": 200,
+        "depth": 1
+      },
+      {
+        "group": "snowdrift",
+        "id": "snowdrift-edge",
+        "u": 16.2,
+        "v": 12,
+        "width": 200,
+        "depth": 1
+      },
+      {
+        "group": "snowdrift",
+        "id": "snowdrift-edge",
+        "u": 6,
+        "v": 16.2,
+        "width": 200,
+        "depth": 1
+      },
+      {
+        "group": "snowdrift",
+        "id": "snowdrift-edge",
+        "u": 12,
+        "v": 16.2,
+        "width": 200,
+        "depth": 1
+      },
+      {
+        "group": "worn-paving",
+        "id": "paving-worn",
+        "u": 7,
+        "v": 11,
+        "width": 160,
+        "depth": 1,
+        "opacity": 0.7
+      },
+      {
+        "group": "worn-paving",
+        "id": "paving-worn",
+        "u": 12,
+        "v": 8,
+        "width": 160,
+        "depth": 1,
+        "opacity": 0.7
+      },
+      {
+        "group": "worn-paving",
+        "id": "paving-worn",
+        "u": 10,
+        "v": 13,
+        "width": 160,
+        "depth": 1,
+        "opacity": 0.7
+      },
+      {
+        "group": "worn-paving",
+        "id": "paving-worn",
+        "u": 9,
+        "v": 7,
+        "width": 160,
+        "depth": 1,
+        "opacity": 0.7
+      },
+      {
+        "group": "ruin",
+        "id": "wall-broken",
+        "u": 1.5,
+        "v": 14.7,
+        "width": 170
+      },
+      {
+        "group": "camp-supplies",
+        "id": "supply-cart",
+        "u": 4.5,
+        "v": 10,
+        "width": 82,
+        "layout": "legacy"
+      },
+      {
+        "group": "camp-supplies",
+        "id": "brazier",
+        "u": 13.2,
+        "v": 5,
+        "width": 32,
+        "layout": "legacy"
+      },
+      {
+        "group": "camp-supplies",
+        "id": "crate",
+        "u": 5.3,
+        "v": 10.6,
+        "width": 34,
+        "assetSet": "v1",
+        "layout": "legacy"
+      },
+      {
+        "group": "camp-supplies",
+        "id": "barrel",
+        "u": 5.1,
+        "v": 11.1,
+        "width": 27,
+        "assetSet": "v1",
+        "layout": "legacy"
+      }
+    ],
+    "lights": [
+      {
+        "u": 3,
+        "v": 0,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 0,
+        "v": 3,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 3,
+        "v": 15.5,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 15.5,
+        "v": 3,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 7.5,
+        "v": 0,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 0,
+        "v": 7.5,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 7.5,
+        "v": 15.5,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 15.5,
+        "v": 7.5,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 12,
+        "v": 0,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 0,
+        "v": 12,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 12,
+        "v": 15.5,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 15.5,
+        "v": 12,
+        "lift": 65,
+        "wall": true
+      },
+      {
+        "u": 4.5,
+        "v": 4.5,
+        "lift": 48,
+        "wall": false
+      },
+      {
+        "u": 4.5,
+        "v": 10.5,
+        "lift": 48,
+        "wall": false
+      },
+      {
+        "u": 10.5,
+        "v": 4.5,
+        "lift": 48,
+        "wall": false
+      },
+      {
+        "u": 12,
+        "v": 12,
+        "lift": 48,
+        "wall": false
+      }
+    ]
+  }
+}

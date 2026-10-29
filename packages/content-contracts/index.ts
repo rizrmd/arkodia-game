@@ -1,14 +1,16 @@
+import type {LegacyDocument} from './legacy-types';
+export * from './legacy-types';
 /** Framework-independent contracts for future Pixi editors and game clients. */
 export type ContentKind = 'environment' | 'base' | 'character' | 'animation' | 'vfx';
 export type SceneData = { width: number; height: number; layers: { id: string; objects: Record<string, unknown>[]; [key: string]: unknown }[]; [key: string]: unknown };
 export type Frame = { asset: string; x: number; y: number; width: number; height: number };
 export type AnimationData = { fps: number; loop: boolean; frames: Frame[]; [key: string]: unknown };
 type Envelope<K extends ContentKind, D> = { schemaVersion: 1; kind: K; name: string; assets: string[]; data: D };
-export type ContentDocument = Envelope<'environment' | 'base', SceneData> | Envelope<'character', { animations: Record<string, string>; [key: string]: unknown }> | Envelope<'animation' | 'vfx', AnimationData>;
+export type ContentDocument = LegacyDocument | Envelope<'environment' | 'base', SceneData> | Envelope<'character', { animations: Record<string, string>; [key: string]: unknown }> | Envelope<'animation' | 'vfx', AnimationData>;
 export type Draft = { id: string; revision: number; document: ContentDocument };
 export type Asset = { sha256: string; size: number; mediaType: string; url: string };
 export type Selection = { id: string; revision: number };
-export type Manifest = { schemaVersion: 1; id: string; createdAt: string; documents: (Selection & { sha256: string; url: string })[]; assets: Asset[] };
+export type Manifest = { schemaVersion: 1; id: string; createdAt: string; documents: (Selection & { sha256: string; url: string; kind?: string; schemaVersion?: number; format?: string })[]; assets: Asset[] };
 export class ContentAPIError extends Error {
  constructor(public status: number, public code: string) { super(code); }
  get isConflict() { return this.status === 409; }
@@ -26,10 +28,11 @@ export class ContentClient {
  listDrafts() { return this.request<Draft[]>('/v1/drafts', {}, true); }
  loadDraft(id: string) { return this.request<Draft>(`/v1/drafts/${encodeURIComponent(id)}`, {}, true); }
  /** revision 0 creates; use the returned revision for subsequent saves. Never silently overwrite a 409. */
- saveDraft(id: string, revision: number, document: ContentDocument) { return this.request<Draft>(`/v1/drafts/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify({ revision, document }) }, true); }
+ saveDraft(id: string, revision: number, document: ContentDocument, idempotencyKey?: string) { return this.request<Draft>(`/v1/drafts/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify({ revision, document }), headers: idempotencyKey ? {'Idempotency-Key': idempotencyKey} : {} }, true); }
  deleteDraft(id: string, revision: number) { return this.request<void>(`/v1/drafts/${encodeURIComponent(id)}`, { method: 'DELETE', headers: { 'If-Match': `"${revision}"` } }, true); }
  uploadAsset(bytes: Blob) { return this.request<Asset>('/v1/assets', { method: 'POST', body: bytes }, true); }
- publish(channel: string, documents: Selection[]) { return this.request<Manifest>('/v1/releases', { method: 'POST', body: JSON.stringify({ channel, documents }) }, true); }
+ publish(channel: string, documents: Selection[], idempotencyKey?: string) { return this.request<Manifest>('/v1/releases', { method: 'POST', body: JSON.stringify({ channel, documents }), headers: idempotencyKey ? {'Idempotency-Key': idempotencyKey} : {} }, true); }
+ rollbackChannel(channel: string, releaseId: string, expectedReleaseId: string, idempotencyKey?: string) { return this.request<{releaseId:string}>(`/v1/channels/${encodeURIComponent(channel)}`, {method:'PUT',body:JSON.stringify({releaseId,expectedReleaseId}),headers:idempotencyKey?{'Idempotency-Key':idempotencyKey}:{}},true); }
  /** Game client needs no editor token. Pin the returned release for the complete load. */
  async loadChannel(channel = 'stable') {
   const pointer = await this.request<{releaseId: string; manifestUrl: string}>(`/v1/channels/${encodeURIComponent(channel)}`);

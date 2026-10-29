@@ -1,0 +1,25 @@
+{
+  "id": "sheet",
+  "format": "arkadia.sprite-sheet.v1",
+  "kind": "animation",
+  "provenance": {
+    "repository": "rizrmd/arkadia",
+    "sourcePath": "public/flame-burst/clip.json",
+    "selector": "",
+    "sourceSha256": "261687c7ea702f6b67472034d52ba4a0543e501756d724ec5da8c37a0cb0ee7e",
+    "legacyId": "sheet"
+  },
+  "payload": {
+    "title": "Flame Burst",
+    "source": "source.png",
+    "columns": 4,
+    "rows": 4,
+    "frameCount": 16,
+    "fps": 16,
+    "pivot": {
+      "x": 0.5,
+      "y": 1
+    },
+    "loop": true
+  }
+}

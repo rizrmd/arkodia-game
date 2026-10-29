@@ -1,0 +1,192 @@
+{
+  "repository": "rizrmd/arkadia",
+  "auditCommit": "7d80d69a1bf626fdd87b97e9903f7cd330a318d2",
+  "readOnly": true,
+  "sources": [
+    {
+      "path": "src/environment/model.ts",
+      "sha256": "c6c01f890955d36ecd49e6fd27b60cdd534834b619e35bee7ac1ccbdce9f9930",
+      "bytes": 3319
+    },
+    {
+      "path": "src/environment/catalog.json",
+      "sha256": "c6e92e7625c8c4750bf43e9add62b927e0d578c2df9159bd7a5763ba254f5805",
+      "bytes": 526327
+    },
+    {
+      "path": "server/internal/environment/map.go",
+      "sha256": "8f8824b672a3fc1a0fd07f23eb65d4fa5fdfe77730fd87354158514c19c3ee5a",
+      "bytes": 5842
+    },
+    {
+      "path": "server/internal/environment/catalog.json",
+      "sha256": "c6e92e7625c8c4750bf43e9add62b927e0d578c2df9159bd7a5763ba254f5805",
+      "bytes": 526327
+    },
+    {
+      "path": "src/isometric.ts",
+      "sha256": "fa29f688c611f2e4c67219fa316b9dd0a4ca18cb8652e0743855af47ee717a21",
+      "bytes": 916
+    },
+    {
+      "path": "src/world/map.ts",
+      "sha256": "ddc2226e13d44e693897d8673e8d7e7c0f1a68fd57ff2d9d00de6cbf75cde59a",
+      "bytes": 1616
+    },
+    {
+      "path": "src/world/relief.ts",
+      "sha256": "a90e25561df077dd4e51ddf41947a4437eae7e78caf7edbf149d77cdcadc86a0",
+      "bytes": 7043
+    },
+    {
+      "path": "src/world/frontier.ts",
+      "sha256": "36b010dd7cbbcc99dcdf877878b265d4216b302d57c2df793541b1e559fbda18",
+      "bytes": 4637
+    },
+    {
+      "path": "src/world/maps/arkodia-01.json",
+      "sha256": "e12739cf4a749792ab1f854a1faa2da168abfc6645bf819cc08f316d1a8512c9",
+      "bytes": 4144
+    },
+    {
+      "path": "src/world/maps/frozen-frontier.json",
+      "sha256": "db8cd73b25ecbbe7873eb73bb8a3e7aa12c51ce979707af8ac193e92827150b4",
+      "bytes": 85268
+    },
+    {
+      "path": "src/stronghold/prefabs/stronghold.ts",
+      "sha256": "0e33df0e8f8f798f7004c1fcac0ebf9ad49dfb5761cb9354c8b618d7ee8e4c24",
+      "bytes": 1936
+    },
+    {
+      "path": "src/stronghold/prefabs/stronghold.json",
+      "sha256": "5a0b3caed1a2605b2049c0043ad7819869bf1eb58b4bae3ea1910d7d9c2fe23d",
+      "bytes": 8904
+    },
+    {
+      "path": "server/internal/sim/prefab.go",
+      "sha256": "2f9ea5df47eb6d405d217e6a14ea6f9e6c051af65aad59d62ae02de5aa4171e6",
+      "bytes": 2383
+    },
+    {
+      "path": "src/stronghold/economy.ts",
+      "sha256": "42e61d81475783c21305d216f1436a413513cabba6a1af4f4750432b064bdecd",
+      "bytes": 5790
+    },
+    {
+      "path": "src/stronghold/building-branches.ts",
+      "sha256": "9d63feb8343870ab5f1696cdde7bae2d1f26956f82e2ce3341e608205749ac48",
+      "bytes": 2728
+    },
+    {
+      "path": "src/stronghold/core-placement.ts",
+      "sha256": "97284eefb3d6b8d98a8ac3d334a7006a4b821a64cccd6cc62cf609f3c6ee96ea",
+      "bytes": 946
+    },
+    {
+      "path": "src/stronghold/gathering-rules.ts",
+      "sha256": "d5da4ffc28458c079678d342bcc3b4a82b9774390ad5ef5235254f445c622897",
+      "bytes": 4415
+    },
+    {
+      "path": "src/stronghold/items.ts",
+      "sha256": "cf32ca61291ed589d729e79207ead6907d97dac3ef3a5df6b91c88c322bd741d",
+      "bytes": 1625
+    },
+    {
+      "path": "src/characters/sprites.ts",
+      "sha256": "6f21df4ca036d2384ab94c6f05a096cbec469b8270892320e84041234a4f0812",
+      "bytes": 2669
+    },
+    {
+      "path": "src/characters/combat.ts",
+      "sha256": "bbb9db318f0a528d5f12d47085d72178b9ac3a6fddf00a7635109400e1357cd7",
+      "bytes": 3962
+    },
+    {
+      "path": "src/stronghold/heroes.ts",
+      "sha256": "7d16ace2768c5cb1a49917a126dca836e351c4cb99c02eef5ca421a82ab46a02",
+      "bytes": 2934
+    },
+    {
+      "path": "src/stronghold/hero-3d.ts",
+      "sha256": "f03c316e44d7ec7982d8a9dedf42803452e665d01f05889f3939f3a41289efc6",
+      "bytes": 46652
+    },
+    {
+      "path": "src/stronghold/progression.ts",
+      "sha256": "c7c0c2953dd85c03c342ceecfc9f9a44cda075859b907a072f0fa3405eed4cc6",
+      "bytes": 18239
+    },
+    {
+      "path": "src/stronghold/skill-unlocks.ts",
+      "sha256": "9b08af7c1eb2f8576cf616c9110169fc29c9c3e89da4dc47fd34d4d0b52c4503",
+      "bytes": 2281
+    },
+    {
+      "path": "src/stronghold/skill-tree.ts",
+      "sha256": "08c8d75a1272979accdf0517e0f09a307fcee2d1e17bda163eb8dbaf9f81818a",
+      "bytes": 36212
+    },
+    {
+      "path": "src/stronghold/combat-vfx.ts",
+      "sha256": "d9b72a181b5286357b33bd9c3e60709fc8f43dcdad6c82b8908fe065936d8eef",
+      "bytes": 45414
+    },
+    {
+      "path": "src/stronghold/encounters.ts",
+      "sha256": "711e65c1bce87355b3f7ee20cc50aea2794fe6f0e3548aa23c2ed5fc2241f22c",
+      "bytes": 58707
+    },
+    {
+      "path": "src/sprite-sheet/playback.ts",
+      "sha256": "41acb1766992f9be7b311a2d550eac59419976193df476b5270821c20f40b076",
+      "bytes": 3733
+    },
+    {
+      "path": "src/fx/cues.ts",
+      "sha256": "a0582f39dbf6da3f7fa67c5af1f42511dfafe55bbd0c896722a2d4aa95c60000",
+      "bytes": 3576
+    },
+    {
+      "path": "src/fx/space.ts",
+      "sha256": "db889cb1c2300ed1424b182a44f78be8ce90e0d9702f8a854c5eba1c05770dbe",
+      "bytes": 2368
+    },
+    {
+      "path": "src/fx/visuals.ts",
+      "sha256": "3825f08550b6ba42cb861ad8093c30c4324915d92641f7fb549729470c7bd14d",
+      "bytes": 11663
+    },
+    {
+      "path": "src/fx/heroes/shared.ts",
+      "sha256": "cb5eeb7de2b4d12ddd38267efe8c8c9466ebe6787ab6d0e12c870e81c2f4fcaf",
+      "bytes": 1606
+    },
+    {
+      "path": "src/fx/stage.ts",
+      "sha256": "9a44ac303edcc3aad31bb084391790f1814e6d3382ec0fb25e449466468c1534",
+      "bytes": 47030
+    },
+    {
+      "path": "server/internal/vfx/store.go",
+      "sha256": "942a14f8556ccb65d21580b0280f76a9d592b8b8993fa541ce1c093633fbfb49",
+      "bytes": 6148
+    },
+    {
+      "path": "vfx/README.md",
+      "sha256": "06a92cd9ba043585d5c937e21cf59382cfda4a9f31dacb4852c209a1c8ddafea",
+      "bytes": 4683
+    },
+    {
+      "path": "public/assets/characters/manifest.json",
+      "sha256": "c1d8b73412760081d770c7ee10da8b52ac3e16a38edaa0cc7d521b038909c804",
+      "bytes": 74372
+    },
+    {
+      "path": "public/assets/characters/3d/manifest.json",
+      "sha256": "2696b8e7c080dbe7393d9ef92388223032af75f490db0a9d2c57c09086242e68",
+      "bytes": 2515
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "auditCommit": "7d80d69a1bf626fdd87b97e9903f7cd330a318d2",
+  "scope": "API contract fixtures only; not imported, migrated, or wired into runtime",
+  "entries": [
+    {
+      "id": "character-hero",
+      "sourcePath": "public/assets/characters/manifest.json",
+      "selector": "characters.hero",
+      "sourceSha256": "c1d8b73412760081d770c7ee10da8b52ac3e16a38edaa0cc7d521b038909c804",
+      "format": "arkadia.character-atlas.v1"
+    },
+    {
+      "id": "equipment",
+      "sourcePath": "public/assets/characters/manifest.json",
+      "selector": "equipment",
+      "sourceSha256": "c1d8b73412760081d770c7ee10da8b52ac3e16a38edaa0cc7d521b038909c804",
+      "format": "arkadia.equipment-atlas.v1"
+    },
+    {
+      "id": "hero-rift",
+      "sourcePath": "public/assets/characters/3d/manifest.json",
+      "selector": "heroes.rift-runner",
+      "sourceSha256": "2696b8e7c080dbe7393d9ef92388223032af75f490db0a9d2c57c09086242e68",
+      "format": "arkadia.hero-glb.v1"
+    },
+    {
+      "id": "prefab",
+      "sourcePath": "src/stronghold/prefabs/stronghold.json",
+      "selector": "",
+      "sourceSha256": "5a0b3caed1a2605b2049c0043ad7819869bf1eb58b4bae3ea1910d7d9c2fe23d",
+      "format": "arkadia.stronghold-prefab.v1"
+    },
+    {
+      "id": "world",
+      "sourcePath": "src/world/maps/arkodia-01.json",
+      "selector": "",
+      "sourceSha256": "e12739cf4a749792ab1f854a1faa2da168abfc6645bf819cc08f316d1a8512c9",
+      "format": "arkadia.world-map.v1"
+    },
+    {
+      "id": "frontier",
+      "sourcePath": "src/world/maps/frozen-frontier.json",
+      "selector": "",
+      "sourceSha256": "db8cd73b25ecbbe7873eb73bb8a3e7aa12c51ce979707af8ac193e92827150b4",
+      "format": "arkadia.frontier.v1"
+    },
+    {
+      "id": "sheet",
+      "sourcePath": "public/flame-burst/clip.json",
+      "selector": "",
+      "sourceSha256": "261687c7ea702f6b67472034d52ba4a0543e501756d724ec5da8c37a0cb0ee7e",
+      "format": "arkadia.sprite-sheet.v1"
+    },
+    {
+      "id": "effect",
+      "sourcePath": "vfx/effects/shared/hit.normal.json",
+      "selector": "",
+      "sourceSha256": "e3609f36cfc3691c3412b320da9620a072e6c5b751d302de20e0488181242b92",
+      "format": "arkadia.nixie-effect.v1"
+    },
+    {
+      "id": "catalog",
+      "sourcePath": "src/environment/catalog.json",
+      "selector": "assets[id=spawn or ground:frozen-region-0--1]; occupied unchanged",
+      "sourceSha256": "c6e92e7625c8c4750bf43e9add62b927e0d578c2df9159bd7a5763ba254f5805",
+      "format": "arkadia.environment-catalog.v1"
+    },
+    {
+      "id": "map",
+      "sourcePath": "/api/environment/published",
+      "selector": "published read snapshot, selected existing ground and spawn objects",
+      "sourceSha256": "4aaf8961d8a4840d0244a1132d13c3b0a6df01d3888147bc7421ebb34eeb982e",
+      "format": "arkadia.environment-map.v1",
+      "sourceRepository": "https://arkodia.online"
+    },
+    {
+      "id": "skills",
+      "sourcePath": "src/stronghold/progression.ts",
+      "selector": "exported constants and sampled existing pure functions; no mechanics invented",
+      "sourceSha256": "c7c0c2953dd85c03c342ceecfc9f9a44cda075859b907a072f0fa3405eed4cc6",
+      "format": "arkadia.skill-catalog.v1"
+    },
+    {
+      "id": "economy",
+      "sourcePath": "src/stronghold/economy.ts",
+      "selector": "exported constants and sampled existing pure functions; no mechanics invented",
+      "sourceSha256": "42e61d81475783c21305d216f1436a413513cabba6a1af4f4750432b064bdecd",
+      "format": "arkadia.economy-rules.v1"
+    },
+    {
+      "id": "combat",
+      "sourcePath": "src/characters/combat.ts",
+      "selector": "exported constants and sampled existing pure functions; no mechanics invented",
+      "sourceSha256": "bbb9db318f0a528d5f12d47085d72178b9ac3a6fddf00a7635109400e1357cd7",
+      "format": "arkadia.combat-rules.v1"
+    },
+    {
+      "id": "gltf-rift",
+      "sourcePath": "public/assets/characters/3d/rift-runner.glb",
+      "selector": "GLB JSON chunk",
+      "sourceSha256": "3276bc7887c1a0873e75db67e9653318e0f882ce19575f6873040eae1e173767",
+      "format": "arkadia.gltf.v2"
+    },
+    {
+      "id": "cue",
+      "sourcePath": "src/fx/heroes/shared.ts",
+      "selector": "id and hit.normal cue only",
+      "sourceSha256": "cb5eeb7de2b4d12ddd38267efe8c8c9466ebe6787ab6d0e12c870e81c2f4fcaf",
+      "format": "arkadia.fx-profile.v1"
+    }
+  ]
+}

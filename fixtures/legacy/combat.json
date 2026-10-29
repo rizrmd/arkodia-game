@@ -1,0 +1,29 @@
+{
+  "id": "combat",
+  "format": "arkadia.combat-rules.v1",
+  "kind": "skill",
+  "provenance": {
+    "repository": "rizrmd/arkadia",
+    "sourcePath": "src/characters/combat.ts",
+    "selector": "exported constants and sampled existing pure functions; no mechanics invented",
+    "sourceSha256": "bbb9db318f0a528d5f12d47085d72178b9ac3a6fddf00a7635109400e1357cd7",
+    "legacyId": "combat"
+  },
+  "payload": {
+    "stats": {
+      "hero": {
+        "hp": 100,
+        "speed": 2.2,
+        "reach": 1.15,
+        "damage": 1
+      },
+      "revenant": {
+        "hp": 2,
+        "speed": 0.8,
+        "reach": 0.85,
+        "damage": 4
+      }
+    },
+    "cleave": 3
+  }
+}

@@ -2,3 +2,6 @@
 *.test
 bin/
 artifacts/
+
+__pycache__/
+*.pyc

@@ -21,6 +21,7 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"runtime/debug"
 	"sort"
 	"strings"
 	"syscall"
@@ -32,7 +33,14 @@ var ddl string
 var identifier = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,100}$`)
 var digest = regexp.MustCompile(`^[a-f0-9]{64}$`)
 
+type Dependency struct {
+	ID       string `json:"id"`
+	Kind     string `json:"kind"`
+	Revision int64  `json:"revision"`
+}
 type Document struct {
+	Dependencies  []Dependency   `json:"dependencies,omitempty"`
+	Provenance    map[string]any `json:"provenance,omitempty"`
 	SchemaVersion int            `json:"schemaVersion"`
 	Kind          string         `json:"kind"`
 	Name          string         `json:"name"`
@@ -59,10 +67,13 @@ type Asset struct {
 	URL       string `json:"url"`
 }
 type Entry struct {
-	ID       string `json:"id"`
-	Revision int64  `json:"revision"`
-	SHA256   string `json:"sha256"`
-	URL      string `json:"url"`
+	Kind          string `json:"kind"`
+	SchemaVersion int    `json:"schemaVersion"`
+	Format        string `json:"format,omitempty"`
+	ID            string `json:"id"`
+	Revision      int64  `json:"revision"`
+	SHA256        string `json:"sha256"`
+	URL           string `json:"url"`
 }
 type Manifest struct {
 	SchemaVersion int     `json:"schemaVersion"`
@@ -103,21 +114,27 @@ func decode(w http.ResponseWriter, r *http.Request, v any) bool {
 	}
 	return true
 }
-func (a *API) auth(h http.HandlerFunc) http.HandlerFunc {
+func (a *API) auth(h http.HandlerFunc) http.HandlerFunc { return a.authorize("author", h) }
+func (a *API) authorize(role string, h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		got := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-		if !strings.HasPrefix(r.Header.Get("Authorization"), "Bearer ") || a.Token == "" || subtle.ConstantTimeCompare([]byte(got), []byte(a.Token)) != 1 {
+		roleToken := os.Getenv("CONTENT_API_AUTHOR_TOKEN")
+		if role == "publisher" {
+			roleToken = os.Getenv("CONTENT_API_PUBLISHER_TOKEN")
+		}
+		allowed := subtle.ConstantTimeCompare([]byte(got), []byte(a.Token)) == 1 || len(roleToken) >= 32 && subtle.ConstantTimeCompare([]byte(got), []byte(roleToken)) == 1
+		if !strings.HasPrefix(r.Header.Get("Authorization"), "Bearer ") || a.Token == "" || !allowed {
 			fail(w, 401, "unauthorized")
 			return
 		}
-		h(w, r)
+		a.idempotent(h)(w, r)
 	}
 }
 func (a *API) handler() http.Handler {
 	m := http.NewServeMux()
 	m.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		respond(w, 200, map[string]string{"service": "Arkodia Content API", "version": "1", "health": "/healthz", "schema": "/contracts/document.schema.json"})
+		respond(w, 200, map[string]string{"service": "Arkodia Content API", "version": "1", "commit": buildRevision(), "health": "/healthz", "schema": "/contracts/document.schema.json"})
 	})
 	m.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
@@ -126,19 +143,22 @@ func (a *API) handler() http.Handler {
 			fail(w, 503, "database_unavailable")
 			return
 		}
-		respond(w, 200, map[string]string{"status": "ok"})
+		respond(w, 200, map[string]string{"status": "ok", "commit": buildRevision()})
 	})
 	m.HandleFunc("GET /contracts/document.schema.json", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/schema+json")
 		io.WriteString(w, contracts.DocumentSchema)
 	})
+	m.HandleFunc("GET /v1/contracts", a.contractRegistry)
+	m.HandleFunc("GET /contracts/{version}/document.schema.json", a.versionedSchema)
 	m.HandleFunc("GET /v1/drafts", a.auth(a.listDrafts))
 	m.HandleFunc("GET /v1/drafts/{id}", a.auth(a.getDraft))
 	m.HandleFunc("PUT /v1/drafts/{id}", a.auth(a.saveDraft))
 	m.HandleFunc("DELETE /v1/drafts/{id}", a.auth(a.deleteDraft))
 	m.HandleFunc("POST /v1/assets", a.auth(a.upload))
 	m.HandleFunc("GET /v1/assets/{sha}", a.auth(a.previewAsset))
-	m.HandleFunc("POST /v1/releases", a.auth(a.publish))
+	m.HandleFunc("PUT /v1/channels/{channel}", a.authorize("publisher", a.rollbackChannel))
+	m.HandleFunc("POST /v1/releases", a.authorize("publisher", a.publish))
 	m.HandleFunc("GET /v1/channels/{channel}", a.channel)
 	m.HandleFunc("GET /v1/releases/{release}", a.manifest)
 	m.HandleFunc("GET /v1/releases/{release}/documents/{id}", a.publishedDocument)
@@ -149,9 +169,9 @@ func (a *API) handler() http.Handler {
 		if origin := r.Header.Get("Origin"); origin != "" && a.Origins[origin] {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
-			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, If-Match")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, If-Match, Idempotency-Key")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST, OPTIONS")
-			w.Header().Set("Access-Control-Expose-Headers", "ETag")
+			w.Header().Set("Access-Control-Expose-Headers", "ETag, Idempotency-Replayed")
 		}
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(204)
@@ -163,7 +183,7 @@ func (a *API) handler() http.Handler {
 	})
 }
 func (a *API) listDrafts(w http.ResponseWriter, r *http.Request) {
-	rows, err := a.DB.Query(r.Context(), "SELECT id,revision,document FROM content_drafts ORDER BY id LIMIT 1000")
+	rows, err := a.query(r.Context()).Query(r.Context(), "SELECT id,revision,document FROM content_drafts ORDER BY id LIMIT 1000")
 	if err != nil {
 		fail(w, 500, "database_error")
 		return
@@ -186,7 +206,7 @@ func (a *API) listDrafts(w http.ResponseWriter, r *http.Request) {
 }
 func (a *API) getDraft(w http.ResponseWriter, r *http.Request) {
 	var d Draft
-	err := a.DB.QueryRow(r.Context(), "SELECT id,revision,document FROM content_drafts WHERE id=$1", r.PathValue("id")).Scan(&d.ID, &d.Revision, &d.Document)
+	err := a.query(r.Context()).QueryRow(r.Context(), "SELECT id,revision,document FROM content_drafts WHERE id=$1", r.PathValue("id")).Scan(&d.ID, &d.Revision, &d.Document)
 	if errors.Is(err, pgx.ErrNoRows) {
 		fail(w, 404, "draft_not_found")
 		return
@@ -207,6 +227,9 @@ func (a *API) validate(ctx context.Context, raw json.RawMessage) (Document, erro
 	if err := a.Schema.Validate(value); err != nil {
 		return d, errors.New("schema_validation_failed")
 	}
+	if err := contracts.ValidateV2(value.(map[string]any)); err != nil {
+		return d, err
+	}
 	if json.Unmarshal(raw, &d) != nil {
 		return d, errors.New("invalid_document")
 	}
@@ -214,7 +237,7 @@ func (a *API) validate(ctx context.Context, raw json.RawMessage) (Document, erro
 	for _, s := range d.Assets {
 		allowed[s] = true
 		var exists bool
-		if err := a.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM content_assets WHERE sha256=$1)", s).Scan(&exists); err != nil {
+		if err := a.query(ctx).QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM content_assets WHERE sha256=$1)", s).Scan(&exists); err != nil {
 			return d, err
 		}
 		if !exists {
@@ -229,7 +252,16 @@ func (a *API) validate(ctx context.Context, raw json.RawMessage) (Document, erro
 			}
 		}
 	}
+	if err := a.validateBinaryMetadata(ctx, d); err != nil {
+		return d, err
+	}
 	return d, nil
+}
+func valueOrEmpty(v any) any {
+	if v == nil {
+		return ""
+	}
+	return v
 }
 func (a *API) saveDraft(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
@@ -255,9 +287,9 @@ func (a *API) saveDraft(w http.ResponseWriter, r *http.Request) {
 	}
 	var rev int64
 	if in.Revision == 0 {
-		err = a.DB.QueryRow(r.Context(), "INSERT INTO content_drafts(id,kind,revision,document) VALUES($1,$2,1,$3) ON CONFLICT DO NOTHING RETURNING revision", id, doc.Kind, in.Document).Scan(&rev)
+		err = a.query(r.Context()).QueryRow(r.Context(), "INSERT INTO content_drafts(id,kind,revision,document) VALUES($1,$2,1,$3) ON CONFLICT DO NOTHING RETURNING revision", id, doc.Kind, in.Document).Scan(&rev)
 	} else {
-		err = a.DB.QueryRow(r.Context(), "UPDATE content_drafts SET document=$1,revision=revision+1,updated_at=now() WHERE id=$2 AND revision=$3 AND kind=$4 RETURNING revision", in.Document, id, in.Revision, doc.Kind).Scan(&rev)
+		err = a.query(r.Context()).QueryRow(r.Context(), "UPDATE content_drafts SET document=$1,revision=revision+1,updated_at=now() WHERE id=$2 AND revision=$3 AND kind=$4 AND document->>'schemaVersion'=$5 AND COALESCE(document#>>'{data,format}','')=$6 AND COALESCE(document#>>'{provenance,legacyId}','')=$7 RETURNING revision", in.Document, id, in.Revision, doc.Kind, fmt.Sprint(doc.SchemaVersion), fmt.Sprint(valueOrEmpty(doc.Data["format"])), fmt.Sprint(valueOrEmpty(doc.Provenance["legacyId"]))).Scan(&rev)
 	}
 	if errors.Is(err, pgx.ErrNoRows) {
 		fail(w, 409, "revision_conflict")
@@ -276,7 +308,7 @@ func (a *API) deleteDraft(w http.ResponseWriter, r *http.Request) {
 		fail(w, 428, "quoted_revision_if_match_required")
 		return
 	}
-	tag, err := a.DB.Exec(r.Context(), "DELETE FROM content_drafts WHERE id=$1 AND revision=$2", r.PathValue("id"), rev)
+	tag, err := a.query(r.Context()).Exec(r.Context(), "DELETE FROM content_drafts WHERE id=$1 AND revision=$2", r.PathValue("id"), rev)
 	if err != nil {
 		fail(w, 500, "database_error")
 		return
@@ -305,7 +337,7 @@ func (a *API) upload(w http.ResponseWriter, r *http.Request) {
 		fail(w, 503, "object_store_error")
 		return
 	}
-	_, err = a.DB.Exec(r.Context(), "INSERT INTO content_assets(sha256,size,media_type) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", key, len(b), mime)
+	_, err = a.query(r.Context()).Exec(r.Context(), "INSERT INTO content_assets(sha256,size,media_type) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", key, len(b), mime)
 	if err != nil {
 		fail(w, 500, "database_error")
 		return
@@ -321,7 +353,7 @@ func (a *API) serveAsset(w http.ResponseWriter, r *http.Request, key string, pub
 		return
 	}
 	var mime string
-	if a.DB.QueryRow(r.Context(), "SELECT media_type FROM content_assets WHERE sha256=$1", key).Scan(&mime) != nil {
+	if a.query(r.Context()).QueryRow(r.Context(), "SELECT media_type FROM content_assets WHERE sha256=$1", key).Scan(&mime) != nil {
 		fail(w, 404, "asset_not_found")
 		return
 	}
@@ -351,7 +383,7 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 		fail(w, 400, "invalid_release_selection")
 		return
 	}
-	tx, err := a.DB.BeginTx(r.Context(), pgx.TxOptions{IsoLevel: pgx.Serializable})
+	tx, err := a.begin(r.Context())
 	if err != nil {
 		fail(w, 500, "database_error")
 		return
@@ -388,11 +420,23 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 			assetSet[key] = true
 		}
 	}
+	bundle := map[string]map[string]any{}
+	revisions := map[string]int64{}
+	for _, d := range drafts {
+		var doc map[string]any
+		json.Unmarshal(d.Document, &doc)
+		bundle[d.ID] = doc
+		revisions[d.ID] = d.Revision
+	}
+	if err := contracts.ValidateClosure(bundle, revisions); err != nil {
+		fail(w, 422, err.Error())
+		return
+	}
 	// Character animation references must resolve within this complete release.
 	for _, d := range drafts {
 		var doc Document
 		_ = json.Unmarshal(d.Document, &doc)
-		if doc.Kind == "character" {
+		if doc.SchemaVersion == 1 && doc.Kind == "character" {
 			refs, _ := doc.Data["animations"].(map[string]any)
 			for _, v := range refs {
 				if selected[v.(string)] != "animation" {
@@ -411,7 +455,7 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 	base := a.PublicURL + "/v1/releases/" + release
 	manifest := Manifest{1, release, time.Now().UTC().Format(time.RFC3339Nano), []Entry{}, []Asset{}}
 	for _, d := range drafts {
-		manifest.Documents = append(manifest.Documents, Entry{d.ID, d.Revision, hash(d.Document), base + "/documents/" + d.ID})
+		manifest.Documents = append(manifest.Documents, Entry{ID: d.ID, Revision: d.Revision, SHA256: hash(d.Document), URL: base + "/documents/" + d.ID, Kind: fmt.Sprint(bundle[d.ID]["kind"]), SchemaVersion: int(bundle[d.ID]["schemaVersion"].(float64)), Format: fmt.Sprint(valueOrEmpty(bundle[d.ID]["data"].(map[string]any)["format"]))})
 	}
 	keys := []string{}
 	for k := range assetSet {
@@ -449,8 +493,13 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+	var previous *string
+	_ = tx.QueryRow(r.Context(), "SELECT release_id FROM content_channels WHERE name=$1", in.Channel).Scan(&previous)
 	if err == nil {
 		_, err = tx.Exec(r.Context(), "INSERT INTO content_channels(name,release_id) VALUES($1,$2) ON CONFLICT(name) DO UPDATE SET release_id=EXCLUDED.release_id", in.Channel, release)
+	}
+	if err == nil {
+		_, err = tx.Exec(r.Context(), "INSERT INTO content_channel_events(channel,previous_release,release_id,action) VALUES($1,$2,$3,'publish')", in.Channel, previous, release)
 	}
 	if err == nil {
 		err = tx.Commit(r.Context())
@@ -468,7 +517,7 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 }
 func (a *API) channel(w http.ResponseWriter, r *http.Request) {
 	var id string
-	if err := a.DB.QueryRow(r.Context(), "SELECT release_id FROM content_channels WHERE name=$1", r.PathValue("channel")).Scan(&id); err != nil {
+	if err := a.query(r.Context()).QueryRow(r.Context(), "SELECT release_id FROM content_channels WHERE name=$1", r.PathValue("channel")).Scan(&id); err != nil {
 		fail(w, 404, "channel_not_found")
 		return
 	}
@@ -488,7 +537,7 @@ func immutableJSON(w http.ResponseWriter, r *http.Request, b []byte) {
 }
 func (a *API) manifest(w http.ResponseWriter, r *http.Request) {
 	var b []byte
-	if err := a.DB.QueryRow(r.Context(), "SELECT manifest FROM content_releases WHERE id=$1", r.PathValue("release")).Scan(&b); err != nil {
+	if err := a.query(r.Context()).QueryRow(r.Context(), "SELECT manifest FROM content_releases WHERE id=$1", r.PathValue("release")).Scan(&b); err != nil {
 		fail(w, 404, "release_not_found")
 		return
 	}
@@ -496,7 +545,7 @@ func (a *API) manifest(w http.ResponseWriter, r *http.Request) {
 }
 func (a *API) publishedDocument(w http.ResponseWriter, r *http.Request) {
 	var b []byte
-	if err := a.DB.QueryRow(r.Context(), "SELECT document FROM content_release_documents WHERE release_id=$1 AND document_id=$2", r.PathValue("release"), r.PathValue("id")).Scan(&b); err != nil {
+	if err := a.query(r.Context()).QueryRow(r.Context(), "SELECT document FROM content_release_documents WHERE release_id=$1 AND document_id=$2", r.PathValue("release"), r.PathValue("id")).Scan(&b); err != nil {
 		fail(w, 404, "published_document_not_found")
 		return
 	}
@@ -504,7 +553,7 @@ func (a *API) publishedDocument(w http.ResponseWriter, r *http.Request) {
 }
 func (a *API) publishedAsset(w http.ResponseWriter, r *http.Request) {
 	var exists bool
-	if a.DB.QueryRow(r.Context(), "SELECT EXISTS(SELECT 1 FROM content_release_assets WHERE release_id=$1 AND sha256=$2)", r.PathValue("release"), r.PathValue("sha")).Scan(&exists) != nil || !exists {
+	if a.query(r.Context()).QueryRow(r.Context(), "SELECT EXISTS(SELECT 1 FROM content_release_assets WHERE release_id=$1 AND sha256=$2)", r.PathValue("release"), r.PathValue("sha")).Scan(&exists) != nil || !exists {
 		fail(w, 404, "published_asset_not_found")
 		return
 	}
@@ -545,6 +594,16 @@ func openAPI(ctx context.Context, dsn, token, publicURL string, objects Objects)
 		}
 	}
 	return &API{db, objects, token, strings.TrimRight(publicURL, "/"), schema, origins}, nil
+}
+func buildRevision() string {
+	if b, ok := debug.ReadBuildInfo(); ok {
+		for _, s := range b.Settings {
+			if s.Key == "vcs.revision" {
+				return s.Value
+			}
+		}
+	}
+	return "development"
 }
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

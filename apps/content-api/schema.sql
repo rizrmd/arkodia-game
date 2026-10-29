@@ -24,3 +24,13 @@ DROP TRIGGER IF EXISTS immutable_document ON content_release_documents;
 CREATE TRIGGER immutable_document BEFORE UPDATE OR DELETE ON content_release_documents FOR EACH ROW EXECUTE FUNCTION content_reject_mutation();
 DROP TRIGGER IF EXISTS immutable_asset ON content_release_assets;
 CREATE TRIGGER immutable_asset BEFORE UPDATE OR DELETE ON content_release_assets FOR EACH ROW EXECUTE FUNCTION content_reject_mutation();
+CREATE TABLE IF NOT EXISTS content_idempotency (
+ scope text NOT NULL, key text NOT NULL, request_hash text NOT NULL,
+ status integer NOT NULL, headers jsonb NOT NULL, response bytea NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(scope,key)
+);
+CREATE TABLE IF NOT EXISTS content_channel_events (
+ sequence bigserial PRIMARY KEY, channel text NOT NULL, previous_release text,
+ release_id text NOT NULL REFERENCES content_releases(id), action text NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);

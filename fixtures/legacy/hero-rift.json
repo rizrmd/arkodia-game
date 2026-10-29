@@ -1,0 +1,53 @@
+{
+  "id": "hero-rift",
+  "format": "arkadia.hero-glb.v1",
+  "kind": "character",
+  "provenance": {
+    "repository": "rizrmd/arkadia",
+    "sourcePath": "public/assets/characters/3d/manifest.json",
+    "selector": "heroes.rift-runner",
+    "sourceSha256": "2696b8e7c080dbe7393d9ef92388223032af75f490db0a9d2c57c09086242e68",
+    "legacyId": "hero-rift"
+  },
+  "payload": {
+    "hero": "rift-runner",
+    "name": "Rift Runner",
+    "ai_model": "meshy-t2.5",
+    "model_type": "smart-topology",
+    "glb": "/assets/characters/3d/rift-runner.glb",
+    "thumbnail": "/assets/characters/3d/rift-runner-3d-thumb.png",
+    "fileSizeKB": 2693.6,
+    "animations": [
+      {
+        "slug": "idle",
+        "label": "Idle",
+        "loop": true
+      },
+      {
+        "slug": "run",
+        "label": "Run",
+        "loop": true
+      },
+      {
+        "slug": "idle_cast",
+        "label": "Idle Cast",
+        "loop": true
+      },
+      {
+        "slug": "run_cast",
+        "label": "Run While Casting",
+        "loop": true
+      },
+      {
+        "slug": "hit",
+        "label": "Hit Reaction",
+        "loop": false
+      },
+      {
+        "slug": "death",
+        "label": "Death",
+        "loop": false
+      }
+    ]
+  }
+}

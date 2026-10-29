@@ -16,7 +16,7 @@ Scene objects and additional data fields are intentionally extensible v1 payload
 
 ## Authentication and API
 
-Editor requests require `Authorization: Bearer <CONTENT_API_TOKEN>`. The server requires at least 32 characters; deployment generates a cryptographically random 48-byte token stored with mode 0600 in `$HOME/private/content.env.json`. Do not embed it in a public game build. This is a service/editor administrator token, not per-user login or role-based authorization. A future editor should obtain it through a trusted operator/session boundary. Unauthenticated draft requests return 401 with `Cache-Control: no-store`.
+Editor requests require `Authorization: Bearer <CONTENT_API_TOKEN>`. The server requires at least 32 characters; deployment generates cryptographically random 48-byte tokens stored with mode 0600 in `$HOME/private/content.env.json`. Do not embed it in a public game build. This original token is a service administrator credential; separate author/publisher role tokens are described below. There is no per-user login. A future editor should obtain it through a trusted operator/session boundary. Unauthenticated draft requests return 401 with `Cache-Control: no-store`.
 
 | Method and path | Behavior |
 |---|---|
@@ -42,7 +42,7 @@ Errors are JSON `{error: code}`. Stale saves, deletes, or publish selections ret
 3. On 409, load again, show the user the competing change, and merge or explicitly retry using the newly loaded revision.
 4. Publish the exact desired IDs and revisions to a channel, including referenced animation documents. This creates a new random release ID; it never edits an existing release.
 5. The game fetches a channel pointer once, loads its manifest, and pins that release ID for the whole session. Fetch document and asset URLs from that manifest. No editor token is needed. The TypeScript client verifies document SHA-256.
-6. To roll back, republish desired retained drafts as a new release/channel selection. Existing release URLs remain valid. There is no destructive release deletion API.
+6. To roll back, use the publisher-only channel compare-and-swap endpoint described below. Existing release URLs remain valid. There is no destructive release deletion API.
 
 ## Development and tests
 
@@ -68,7 +68,7 @@ Persistent paths:
 - `$HOME/app`: replaceable executable and boot scripts.
 - `$HOME/.local/content-postgres`: HOME-only PostgreSQL runtime installed from Alpine HTTPS packages using `ops/install-postgres.py`.
 
-Deploy only the Content API artifacts, verify checksums, and atomically rename the new binary. Keep existing data/private directories. Configure the sandbox boot using `fural-agent sandboxes update ... --boot-script-file ...`, then run `sandboxes boot`. Do not restart the game sandbox. `ops/deploy.py` automates builds and checksum-verified file transfer through a temporary member HTTP route, configures the existing boot, and pushes task changes separately through normal git. It does not create a sandbox or use a host deployment bypass.
+Deploy only the Content API artifacts, verify checksums, and atomically rename the new binary. Keep existing data/private directories. Configure the sandbox boot using `fural-agent sandboxes update ... --boot-script-file ...`, then run `sandboxes boot`. Do not restart the game sandbox. `ops/deploy.py` automates builds and checksum-verified file transfer through a temporary member HTTP route, configures the existing boot, and pushes task changes separately through normal git. It does not create a sandbox or use a host deployment bypass. Run it from committed source after pushing, then verify HTTPS readiness and lifecycle evidence.
 
 Domain routing binds `content.arkodia.online` port 3000 to this sandbox. Cloudflare's proxied CNAME points to the existing Fural ingress `arkodia-content-api-arkodia.fural.space`; credentials are used from the injected environment without logging them. Existing apex/game DNS and deployments are untouched.
 
@@ -77,3 +77,15 @@ Use `sandboxes logs <id> --name boot --lines 100` for startup errors and `GET /h
 Back up PostgreSQL using `pg_dump` plus the complete asset directory (or bucket), and securely back up the private runtime configuration. For a consistent restore, stop writes or capture a database snapshot before copying all referenced immutable asset keys. Restore to a separate database/object root and verify manifests before routing traffic. Sandbox persistence is not an off-site backup or high-availability database. No external backup provider is configured in this task.
 
 Rotate the editor token by securely replacing `CONTENT_API_TOKEN` in the mode-0600 runtime JSON and booting again; distribute it only through trusted access. The deployed local adapter can later be switched to S3 after copying all existing digest-keyed objects and validating every published reference. Never switch to an empty bucket.
+
+## Audited v2 contract preparation
+
+[Coverage, source mapping, units, compatibility and gaps](../../docs/content-api/coverage.md) is the authoritative scope report. There are 17 explicit v2 format profiles and 15 real source fixture structures. The schema is served at `/contracts/v2/document.schema.json`; `/v1/contracts` lists supported versions/formats and the deployed schema digest. Legacy payloads sit under `data.payload`; `data.bindings` maps original asset paths to SHA-256 without rewriting payload fields. `dependencies` pins document ID, kind and revision. Every selected dependency must be included in publication; missing, stale, mismatched and cyclic dependencies fail with 422. Drafts can retain incomplete cross-document references while being authored; publication is the completeness boundary. Binary references must already be bound to valid persisted assets before Save.
+
+New manifest entries include document kind/schemaVersion/format so future consumers can opt in explicitly. No importer, import/load execution, migration, runtime loader integration or consumer proof is included. The framework-independent client is an API convenience, not a deployed editor/game integration. JSON representation is preserved semantically; JSONB normalizes whitespace and object-key order.
+
+The dedicated supervisor generates separate `CONTENT_API_AUTHOR_TOKEN` and `CONTENT_API_PUBLISHER_TOKEN` in the existing private runtime JSON. Author tokens can upload/preview assets and read/write/delete drafts. Publisher tokens can publish and roll back channels. The existing `CONTENT_API_TOKEN` is a full administrator credential. Role tokens must be at least 32 characters. No token is bundled into public files or printed. These are shared service roles, **not individual identities, SSO, multi-tenant ownership, or per-document ACLs**. Wrong-role credentials return 401. Channel events record publication/rollback history but do not identify a human user.
+
+For mutation retries, send a unique `Idempotency-Key` (≤160 characters). The successful HTTP response and SQL mutation commit atomically in the same database transaction. Same credential/key/request returns the original status/body; reusing a key with a different method/path/body or `If-Match` yields 409. Records survive API/database restart. Failed requests are not recorded; retry a transaction conflict with the same key, or reload after a revision conflict. Headerless requests still use optimistic revisions, but a lost publication response cannot be deduplicated without a key. Keys are scoped to the credential hash; credential rotation creates a new scope. Idempotency records currently have no automatic expiry; retention/pruning must preserve the organization's retry window.
+
+Rollback uses authenticated `PUT /v1/channels/{channel}` with `{releaseId, expectedReleaseId}` plus an idempotency key. It only moves the pointer if the current release matches `expectedReleaseId`; stale pointers yield 409. The destination must be an existing immutable release. Every successful publication/rollback appends an event in `content_channel_events`. Rollback does not alter or delete release content.

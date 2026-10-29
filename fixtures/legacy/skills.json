@@ -1,0 +1,460 @@
+{
+  "id": "skills",
+  "format": "arkadia.skill-catalog.v1",
+  "kind": "skill",
+  "provenance": {
+    "repository": "rizrmd/arkadia",
+    "sourcePath": "src/stronghold/progression.ts",
+    "selector": "exported constants and sampled existing pure functions; no mechanics invented",
+    "sourceSha256": "c7c0c2953dd85c03c342ceecfc9f9a44cda075859b907a072f0fa3405eed4cc6",
+    "legacyId": "skills"
+  },
+  "payload": {
+    "cards": {
+      "rift-bolt": {
+        "name": "Rift Bolt",
+        "blessingTitle": "Rift Bolt",
+        "description": "Auto-cast piercing arcane bolts at foes inside AoE. Each Rank adds bolt volleys, +25% skill damage, and -8% cooldown.",
+        "unlockSummary": "Arcane Bolt Volley \u00b7 1.4s CD",
+        "upgradeSummary": "+25% Bolt DMG \u00b7 -8% CD",
+        "kind": "active",
+        "badge": "BOLT",
+        "icon": "\u26a1",
+        "hero": "rift-runner",
+        "cooldownMs": 1400
+      },
+      "flame-fan": {
+        "name": "Flame Fan",
+        "blessingTitle": "Flame Fan",
+        "description": "Auto-cast a forward flame area that hits every foe in the fan from Lv.1. No projectiles. Each Rank adds +25% damage, +18% radius, and -8% cooldown.",
+        "unlockSummary": "Cone Fire Fan \u00b7 1.4s CD",
+        "upgradeSummary": "+25% DMG \u00b7 +18% radius \u00b7 -8% CD",
+        "kind": "active",
+        "badge": "FAN",
+        "icon": "\ud83d\udd25",
+        "hero": "ember-warden",
+        "cooldownMs": 1400
+      },
+      "rift-dash": {
+        "name": "Rift Dash",
+        "blessingTitle": "Rift Dash",
+        "description": "Manually dash up to 1.5 tiles toward your aim, leaving rift afterimages and striking foes on arrival. Terrain can shorten the dash. Each rank adds +25% damage, +18% area, and -8% cooldown.",
+        "unlockSummary": "Manual Rift Dash \u00b7 1.4s CD",
+        "upgradeSummary": "+25% Dash DMG \u00b7 +18% area \u00b7 -8% CD",
+        "kind": "active",
+        "badge": "DASH",
+        "icon": "\ud83d\udca8",
+        "hero": "rift-runner",
+        "cooldownMs": 1400
+      },
+      "cinder-step": {
+        "name": "Cinder Step",
+        "blessingTitle": "Ember Nova",
+        "description": "Auto-ignite molten cinder rings and scorching strikes inside AoE. Each Rank adds +25% damage, wider AoE, and -8% cooldown.",
+        "unlockSummary": "AoE Fire Ring \u00b7 4.0s CD",
+        "upgradeSummary": "+25% Ring DMG \u00b7 -0.4s CD",
+        "kind": "active",
+        "badge": "STEP",
+        "icon": "\u2604\ufe0f",
+        "hero": "ember-warden",
+        "cooldownMs": 1400
+      },
+      "rift-trap": {
+        "name": "Rift Trap",
+        "blessingTitle": "Rift Trap",
+        "description": "Auto-detonate a 2:1 isometric dimensional rune trap under foes in AoE. Each Rank adds +25% damage, +18% radius, and -8% cooldown.",
+        "unlockSummary": "Arcane Rune Trap \u00b7 2.8s CD",
+        "upgradeSummary": "+25% Trap DMG \u00b7 +18% AoE",
+        "kind": "active",
+        "badge": "TRAP",
+        "icon": "\ud83d\udd2e",
+        "hero": "rift-runner",
+        "cooldownMs": 2800
+      },
+      "ember-snare": {
+        "name": "Ember Snare",
+        "blessingTitle": "Ember Snare",
+        "description": "Auto-erupt a 2:1 isometric volcanic snare beneath foes in AoE. Each Rank adds +25% damage, +18% radius, and -8% cooldown.",
+        "unlockSummary": "Volcanic Fire Seal \u00b7 2.8s CD",
+        "upgradeSummary": "+25% Seal DMG \u00b7 +18% AoE",
+        "kind": "active",
+        "badge": "SNARE",
+        "icon": "\ud83c\udf0b",
+        "hero": "ember-warden",
+        "cooldownMs": 2800
+      },
+      "cleave": {
+        "name": "Astral Cleave",
+        "blessingTitle": "Astral Cleave",
+        "description": "Auto-sweep a wide crescent cleave cone across foes in AoE. Each Rank widens cone arc, adds +25% damage, and -8% cooldown.",
+        "unlockSummary": "Crescent Cleave Arc \u00b7 2.1s CD",
+        "upgradeSummary": "+25% Cone DMG \u00b7 -0.3s CD",
+        "kind": "active",
+        "badge": "ARC",
+        "icon": "\ud83c\udf19",
+        "hero": "shared",
+        "cooldownMs": 2100
+      },
+      "shockwave": {
+        "name": "Seismic Slam",
+        "blessingTitle": "Seismic Slam",
+        "description": "Auto-detonate a ground-shattering shockwave ring inside AoE. Each Rank expands radius by +18%, adds +25% damage, and -8% cooldown.",
+        "unlockSummary": "Shockwave Ring \u00b7 2.8s CD",
+        "upgradeSummary": "+25% Slam DMG \u00b7 +18% AoE",
+        "kind": "active",
+        "badge": "SLAM",
+        "icon": "\ud83d\udca5",
+        "hero": "shared",
+        "cooldownMs": 2800
+      },
+      "might": {
+        "name": "Titan Strike",
+        "blessingTitle": "Titan Strike",
+        "description": "+0.5 attack damage and +4% critical chance per rank.",
+        "passiveSummary": "+0.5 ATK \u00b7 +4% CRIT",
+        "kind": "passive",
+        "badge": "MIGHT",
+        "icon": "\u2694\ufe0f"
+      },
+      "nova": {
+        "name": "Arc Nova",
+        "blessingTitle": "Arc Nova",
+        "description": "Unlock a wider AoE detection & slash arc. Each rank adds 20% reach.",
+        "passiveSummary": "+20% AoE Reach \u00b7 +12% SPD",
+        "kind": "passive",
+        "badge": "REACH",
+        "icon": "\ud83c\udf00"
+      },
+      "haste": {
+        "name": "Chrono Surge",
+        "blessingTitle": "Chrono Surge",
+        "description": "Reduce all auto-cast skill cooldowns by 12% per rank.",
+        "passiveSummary": "-12% Skill CD \u00b7 +10% SPD",
+        "kind": "passive",
+        "badge": "HASTE",
+        "icon": "\u23f1\ufe0f"
+      },
+      "leech": {
+        "name": "Soul Feast",
+        "blessingTitle": "Soul Feast",
+        "description": "Restore 2 health per rank on each kill.",
+        "passiveSummary": "+2 HP on Kill \u00b7 +10% Sustain",
+        "kind": "passive",
+        "badge": "LEECH",
+        "icon": "\ud83e\ude78"
+      },
+      "star": {
+        "name": "Ascendant Star",
+        "blessingTitle": "Ascendant Star",
+        "description": "+0.25 damage, +10 maximum health, and +4% critical chance.",
+        "passiveSummary": "+10 Max HP \u00b7 +4% CRIT",
+        "kind": "passive",
+        "badge": "STAR",
+        "icon": "\u2b50"
+      },
+      "vitality": {
+        "name": "Furnace Heart",
+        "blessingTitle": "Furnace Heart",
+        "description": "+25 maximum health and +12% movement speed.",
+        "passiveSummary": "+25 Max HP \u00b7 +12% SPD",
+        "kind": "passive",
+        "badge": "VITAL",
+        "icon": "\ud83d\udee1\ufe0f"
+      },
+      "heal": {
+        "name": "Second Wind",
+        "blessingTitle": "Second Wind",
+        "description": "Restore 35% of maximum health.",
+        "passiveSummary": "Restore 35% Max HP",
+        "kind": "passive",
+        "badge": "HEAL",
+        "icon": "\u2728"
+      }
+    },
+    "maxSlots": 3,
+    "maxLearned": 4,
+    "aoeRadiusTiles": 2.2,
+    "rankSamples": [
+      {
+        "id": "rift-bolt",
+        "rank": 1,
+        "damageMultiplier": 1,
+        "areaMultiplier": 1,
+        "cooldownMs": 1400
+      },
+      {
+        "id": "rift-bolt",
+        "rank": 2,
+        "damageMultiplier": 1.25,
+        "areaMultiplier": 1.18,
+        "cooldownMs": 1288
+      },
+      {
+        "id": "rift-bolt",
+        "rank": 3,
+        "damageMultiplier": 1.5,
+        "areaMultiplier": 1.3599999999999999,
+        "cooldownMs": 1185
+      },
+      {
+        "id": "rift-bolt",
+        "rank": 4,
+        "damageMultiplier": 1.75,
+        "areaMultiplier": 1.54,
+        "cooldownMs": 1090
+      },
+      {
+        "id": "rift-bolt",
+        "rank": 5,
+        "damageMultiplier": 2,
+        "areaMultiplier": 1.72,
+        "cooldownMs": 1003
+      },
+      {
+        "id": "rift-dash",
+        "rank": 1,
+        "damageMultiplier": 1,
+        "areaMultiplier": 1,
+        "cooldownMs": 1400
+      },
+      {
+        "id": "rift-dash",
+        "rank": 2,
+        "damageMultiplier": 1.25,
+        "areaMultiplier": 1.18,
+        "cooldownMs": 1288
+      },
+      {
+        "id": "rift-dash",
+        "rank": 3,
+        "damageMultiplier": 1.5,
+        "areaMultiplier": 1.3599999999999999,
+        "cooldownMs": 1185
+      },
+      {
+        "id": "rift-dash",
+        "rank": 4,
+        "damageMultiplier": 1.75,
+        "areaMultiplier": 1.54,
+        "cooldownMs": 1090
+      },
+      {
+        "id": "rift-dash",
+        "rank": 5,
+        "damageMultiplier": 2,
+        "areaMultiplier": 1.72,
+        "cooldownMs": 1003
+      },
+      {
+        "id": "rift-trap",
+        "rank": 1,
+        "damageMultiplier": 1,
+        "areaMultiplier": 1,
+        "cooldownMs": 2800
+      },
+      {
+        "id": "rift-trap",
+        "rank": 2,
+        "damageMultiplier": 1.25,
+        "areaMultiplier": 1.18,
+        "cooldownMs": 2576
+      },
+      {
+        "id": "rift-trap",
+        "rank": 3,
+        "damageMultiplier": 1.5,
+        "areaMultiplier": 1.3599999999999999,
+        "cooldownMs": 2370
+      },
+      {
+        "id": "rift-trap",
+        "rank": 4,
+        "damageMultiplier": 1.75,
+        "areaMultiplier": 1.54,
+        "cooldownMs": 2180
+      },
+      {
+        "id": "rift-trap",
+        "rank": 5,
+        "damageMultiplier": 2,
+        "areaMultiplier": 1.72,
+        "cooldownMs": 2006
+      },
+      {
+        "id": "flame-fan",
+        "rank": 1,
+        "damageMultiplier": 1,
+        "areaMultiplier": 1,
+        "cooldownMs": 1400
+      },
+      {
+        "id": "flame-fan",
+        "rank": 2,
+        "damageMultiplier": 1.25,
+        "areaMultiplier": 1.18,
+        "cooldownMs": 1288
+      },
+      {
+        "id": "flame-fan",
+        "rank": 3,
+        "damageMultiplier": 1.5,
+        "areaMultiplier": 1.3599999999999999,
+        "cooldownMs": 1185
+      },
+      {
+        "id": "flame-fan",
+        "rank": 4,
+        "damageMultiplier": 1.75,
+        "areaMultiplier": 1.54,
+        "cooldownMs": 1090
+      },
+      {
+        "id": "flame-fan",
+        "rank": 5,
+        "damageMultiplier": 2,
+        "areaMultiplier": 1.72,
+        "cooldownMs": 1003
+      },
+      {
+        "id": "cinder-step",
+        "rank": 1,
+        "damageMultiplier": 1,
+        "areaMultiplier": 1,
+        "cooldownMs": 1400
+      },
+      {
+        "id": "cinder-step",
+        "rank": 2,
+        "damageMultiplier": 1.25,
+        "areaMultiplier": 1.18,
+        "cooldownMs": 1288
+      },
+      {
+        "id": "cinder-step",
+        "rank": 3,
+        "damageMultiplier": 1.5,
+        "areaMultiplier": 1.3599999999999999,
+        "cooldownMs": 1185
+      },
+      {
+        "id": "cinder-step",
+        "rank": 4,
+        "damageMultiplier": 1.75,
+        "areaMultiplier": 1.54,
+        "cooldownMs": 1090
+      },
+      {
+        "id": "cinder-step",
+        "rank": 5,
+        "damageMultiplier": 2,
+        "areaMultiplier": 1.72,
+        "cooldownMs": 1003
+      },
+      {
+        "id": "ember-snare",
+        "rank": 1,
+        "damageMultiplier": 1,
+        "areaMultiplier": 1,
+        "cooldownMs": 2800
+      },
+      {
+        "id": "ember-snare",
+        "rank": 2,
+        "damageMultiplier": 1.25,
+        "areaMultiplier": 1.18,
+        "cooldownMs": 2576
+      },
+      {
+        "id": "ember-snare",
+        "rank": 3,
+        "damageMultiplier": 1.5,
+        "areaMultiplier": 1.3599999999999999,
+        "cooldownMs": 2370
+      },
+      {
+        "id": "ember-snare",
+        "rank": 4,
+        "damageMultiplier": 1.75,
+        "areaMultiplier": 1.54,
+        "cooldownMs": 2180
+      },
+      {
+        "id": "ember-snare",
+        "rank": 5,
+        "damageMultiplier": 2,
+        "areaMultiplier": 1.72,
+        "cooldownMs": 2006
+      },
+      {
+        "id": "cleave",
+        "rank": 1,
+        "damageMultiplier": 1,
+        "areaMultiplier": 1,
+        "cooldownMs": 2100
+      },
+      {
+        "id": "cleave",
+        "rank": 2,
+        "damageMultiplier": 1.25,
+        "areaMultiplier": 1.18,
+        "cooldownMs": 1932
+      },
+      {
+        "id": "cleave",
+        "rank": 3,
+        "damageMultiplier": 1.5,
+        "areaMultiplier": 1.3599999999999999,
+        "cooldownMs": 1777
+      },
+      {
+        "id": "cleave",
+        "rank": 4,
+        "damageMultiplier": 1.75,
+        "areaMultiplier": 1.54,
+        "cooldownMs": 1635
+      },
+      {
+        "id": "cleave",
+        "rank": 5,
+        "damageMultiplier": 2,
+        "areaMultiplier": 1.72,
+        "cooldownMs": 1504
+      },
+      {
+        "id": "shockwave",
+        "rank": 1,
+        "damageMultiplier": 1,
+        "areaMultiplier": 1,
+        "cooldownMs": 2800
+      },
+      {
+        "id": "shockwave",
+        "rank": 2,
+        "damageMultiplier": 1.25,
+        "areaMultiplier": 1.18,
+        "cooldownMs": 2576
+      },
+      {
+        "id": "shockwave",
+        "rank": 3,
+        "damageMultiplier": 1.5,
+        "areaMultiplier": 1.3599999999999999,
+        "cooldownMs": 2370
+      },
+      {
+        "id": "shockwave",
+        "rank": 4,
+        "damageMultiplier": 1.75,
+        "areaMultiplier": 1.54,
+        "cooldownMs": 2180
+      },
+      {
+        "id": "shockwave",
+        "rank": 5,
+        "damageMultiplier": 2,
+        "areaMultiplier": 1.72,
+        "cooldownMs": 2006
+      }
+    ]
+  }
+}

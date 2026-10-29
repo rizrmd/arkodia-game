@@ -1,0 +1,550 @@
+{
+  "releaseId": "bc39b55b97e5d7fa2860bd8cbb81151e",
+  "channel": "stronghold-original",
+  "sourceCommit": "7d80d69a1bf626fdd87b97e9903f7cd330a318d2",
+  "documents": [
+    {
+      "kind": "base",
+      "schemaVersion": 2,
+      "format": "arkadia.stronghold-prefab.v1",
+      "id": "stronghold-original-prefab",
+      "revision": 1,
+      "sha256": "d55b77fdb8cb550c2d9f6a9f8374ac9070788662285c6a7d958bf5593870ffcf",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/documents/stronghold-original-prefab"
+    },
+    {
+      "kind": "asset-manifest",
+      "schemaVersion": 2,
+      "format": "arkadia.asset-manifest.v1",
+      "id": "stronghold-original-presentation",
+      "revision": 3,
+      "sha256": "f1861f9400dc44e8463b421a4bc106b3cf40c226289cdd681414cb98cd3c181d",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/documents/stronghold-original-presentation"
+    }
+  ],
+  "assets": [
+    {
+      "sha256": "026b41c007f1686fab55072b795a34f8428b07a957c1ef5dcf746737cabd9fc4",
+      "size": 58920,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/026b41c007f1686fab55072b795a34f8428b07a957c1ef5dcf746737cabd9fc4"
+    },
+    {
+      "sha256": "032fe61175e2558061355c1d7c3615fb689372d9c2f3c9c8c3f1e27401e44949",
+      "size": 1699928,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/032fe61175e2558061355c1d7c3615fb689372d9c2f3c9c8c3f1e27401e44949"
+    },
+    {
+      "sha256": "065d57ee580f593096d11a66dd33efe1b85d694da970e010781f0ea282922e19",
+      "size": 160212,
+      "mediaType": "image/webp",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/065d57ee580f593096d11a66dd33efe1b85d694da970e010781f0ea282922e19"
+    },
+    {
+      "sha256": "0685ed56f697f931c35a5555e0012abbd0e4ebc7d2fd1b243f09874f5f979c5d",
+      "size": 33915,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/0685ed56f697f931c35a5555e0012abbd0e4ebc7d2fd1b243f09874f5f979c5d"
+    },
+    {
+      "sha256": "080cd18f585caac58e06d34bdb04b26a2136a0fc55961635648c954064b1c813",
+      "size": 4564,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/080cd18f585caac58e06d34bdb04b26a2136a0fc55961635648c954064b1c813"
+    },
+    {
+      "sha256": "0c1dc6a86bbf68f90a86dedb6ea7e3c3692246d0eabf6a8fbe9f6cf86b41b626",
+      "size": 252052,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/0c1dc6a86bbf68f90a86dedb6ea7e3c3692246d0eabf6a8fbe9f6cf86b41b626"
+    },
+    {
+      "sha256": "0cdd9dc24ef68d534616b5cec970eb899f4793810518a7757348e65c32a2341e",
+      "size": 3323,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/0cdd9dc24ef68d534616b5cec970eb899f4793810518a7757348e65c32a2341e"
+    },
+    {
+      "sha256": "17dda2e7d6fd67bdd7e26e0deeb06fdc3b99b0701632b2a5320c42dbf8ede405",
+      "size": 95494,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/17dda2e7d6fd67bdd7e26e0deeb06fdc3b99b0701632b2a5320c42dbf8ede405"
+    },
+    {
+      "sha256": "19d72971f18f879a9816da398d33f01b1152e3d627146566e1cc407838f3a8e4",
+      "size": 201576,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/19d72971f18f879a9816da398d33f01b1152e3d627146566e1cc407838f3a8e4"
+    },
+    {
+      "sha256": "1b365b8e56fcbfe894dfde59a927d39cb7883127e8f4ebc1168bba92ea270190",
+      "size": 31697,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/1b365b8e56fcbfe894dfde59a927d39cb7883127e8f4ebc1168bba92ea270190"
+    },
+    {
+      "sha256": "20486174f1431c3997841835e4fcd3e9368d681271ac21406eb13cb979ff1601",
+      "size": 99074,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/20486174f1431c3997841835e4fcd3e9368d681271ac21406eb13cb979ff1601"
+    },
+    {
+      "sha256": "221a90d78cabb9a6f6df951278db64f7c77d8ed6059387fdd9cac756af9badb8",
+      "size": 3085,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/221a90d78cabb9a6f6df951278db64f7c77d8ed6059387fdd9cac756af9badb8"
+    },
+    {
+      "sha256": "234a3651207a8f1f6eba9cff8a920c3cb8426b55bb66ca4bc680a88542894ff1",
+      "size": 5533,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/234a3651207a8f1f6eba9cff8a920c3cb8426b55bb66ca4bc680a88542894ff1"
+    },
+    {
+      "sha256": "2968c6c80c398701575333854cb85aa81f3d19a9dcc132c800644a3cdd323620",
+      "size": 1467222,
+      "mediaType": "image/webp",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/2968c6c80c398701575333854cb85aa81f3d19a9dcc132c800644a3cdd323620"
+    },
+    {
+      "sha256": "2c2907e90b1e9bfe4fc874af02571937a6043159fa7e89948815d065187576ab",
+      "size": 637962,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/2c2907e90b1e9bfe4fc874af02571937a6043159fa7e89948815d065187576ab"
+    },
+    {
+      "sha256": "329a6ebad0d5f00d8b045b27e6c02aa714f5cfd8ee19adf726f74edf9405808a",
+      "size": 7363,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/329a6ebad0d5f00d8b045b27e6c02aa714f5cfd8ee19adf726f74edf9405808a"
+    },
+    {
+      "sha256": "3c7f538fb42a17da2c896d564edaccd507203dac5a8f0e4cb4e480d867b6f5ba",
+      "size": 2379702,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/3c7f538fb42a17da2c896d564edaccd507203dac5a8f0e4cb4e480d867b6f5ba"
+    },
+    {
+      "sha256": "3e5b135f8997c17c9411a55f6093625ec1d8de53b71c2dc37a9c73b9891cf828",
+      "size": 10644,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/3e5b135f8997c17c9411a55f6093625ec1d8de53b71c2dc37a9c73b9891cf828"
+    },
+    {
+      "sha256": "44dba7dc228b26ee00b42f8335168b53794b5bf312ceef9d2bc3b515059b8d84",
+      "size": 330529,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/44dba7dc228b26ee00b42f8335168b53794b5bf312ceef9d2bc3b515059b8d84"
+    },
+    {
+      "sha256": "468915abe839bb997f21ca2a78ed9a1abbbe3e0e28134dc104173a85a0d1dc71",
+      "size": 80602,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/468915abe839bb997f21ca2a78ed9a1abbbe3e0e28134dc104173a85a0d1dc71"
+    },
+    {
+      "sha256": "46c01d44264425d243941950d382e3404b8cd077c46a5b7b9889e3385f0614b6",
+      "size": 221160,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/46c01d44264425d243941950d382e3404b8cd077c46a5b7b9889e3385f0614b6"
+    },
+    {
+      "sha256": "46fa26f6d722efc723cffa65694e1de832c07709f7ec7539e1eee5329c423c52",
+      "size": 388656,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/46fa26f6d722efc723cffa65694e1de832c07709f7ec7539e1eee5329c423c52"
+    },
+    {
+      "sha256": "496c6cf474cd9530609b615fd41bcd4929e68cc732bdb281315d28c8f3a0c2aa",
+      "size": 437291,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/496c6cf474cd9530609b615fd41bcd4929e68cc732bdb281315d28c8f3a0c2aa"
+    },
+    {
+      "sha256": "4c21f90e32af1f90ebea924a46602b909b7adb6c26c0cac90387eec9d57bc151",
+      "size": 67201,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/4c21f90e32af1f90ebea924a46602b909b7adb6c26c0cac90387eec9d57bc151"
+    },
+    {
+      "sha256": "4c5a2f7c3f9137dc91fd2b9132b2d24f3ae3458f0158d4540b43f10e70761511",
+      "size": 1118247,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/4c5a2f7c3f9137dc91fd2b9132b2d24f3ae3458f0158d4540b43f10e70761511"
+    },
+    {
+      "sha256": "4f86742df4b6228a570cc3a0cd5108a4828962febf33e6d193820c895f461674",
+      "size": 36533,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/4f86742df4b6228a570cc3a0cd5108a4828962febf33e6d193820c895f461674"
+    },
+    {
+      "sha256": "5526a945668ea0ff6d3b0f290b2302c321b3817937e03bfe3cdd31e4d22a88fa",
+      "size": 1399135,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/5526a945668ea0ff6d3b0f290b2302c321b3817937e03bfe3cdd31e4d22a88fa"
+    },
+    {
+      "sha256": "55bfa99307f8ddf5d47fde39f3d5eab8fefb7509392d530e8062d8e63e628d8e",
+      "size": 7319,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/55bfa99307f8ddf5d47fde39f3d5eab8fefb7509392d530e8062d8e63e628d8e"
+    },
+    {
+      "sha256": "57b6f03a11fcde0567de9dbe4979924dd6613f76829d1b391726c6057d04c6ba",
+      "size": 442364,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/57b6f03a11fcde0567de9dbe4979924dd6613f76829d1b391726c6057d04c6ba"
+    },
+    {
+      "sha256": "59d1cfd40b61b60d754e1c36cc3ddbe3beb126ef9ad23b0d520f111a235a097c",
+      "size": 29380,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/59d1cfd40b61b60d754e1c36cc3ddbe3beb126ef9ad23b0d520f111a235a097c"
+    },
+    {
+      "sha256": "5c4c3a0224c3fbc0b079aa26989becb32a209a178c364df1a3583c4d16fd711e",
+      "size": 110332,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/5c4c3a0224c3fbc0b079aa26989becb32a209a178c364df1a3583c4d16fd711e"
+    },
+    {
+      "sha256": "5c59556f362e1befbf1cbaa567f5ed5b15742d729993b30d748979c75e2d5d55",
+      "size": 16157,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/5c59556f362e1befbf1cbaa567f5ed5b15742d729993b30d748979c75e2d5d55"
+    },
+    {
+      "sha256": "5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+      "size": 1352637,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561"
+    },
+    {
+      "sha256": "60f0326a3c71b05169f7437c2f8512474cc1609365e9f1fd4b098fa65dce6cbd",
+      "size": 265958,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/60f0326a3c71b05169f7437c2f8512474cc1609365e9f1fd4b098fa65dce6cbd"
+    },
+    {
+      "sha256": "62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+      "size": 1711587,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf"
+    },
+    {
+      "sha256": "64586ca0bb143eab896370c4c400c00ea23051d680bf72f3c1865197ab494346",
+      "size": 2697285,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/64586ca0bb143eab896370c4c400c00ea23051d680bf72f3c1865197ab494346"
+    },
+    {
+      "sha256": "6d0d52bd8c3477e97b0a760b447df56e3f54e098ca05392ad95246adc0388225",
+      "size": 84687,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/6d0d52bd8c3477e97b0a760b447df56e3f54e098ca05392ad95246adc0388225"
+    },
+    {
+      "sha256": "6fe734682613eaffdc14da3bb3b39ddb9754819a8125fcd0460ea196ac90c583",
+      "size": 13928,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/6fe734682613eaffdc14da3bb3b39ddb9754819a8125fcd0460ea196ac90c583"
+    },
+    {
+      "sha256": "89b773a882856310ea579c8faa41ac0a78231fe8582578887e07598fa68f9b43",
+      "size": 84418,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/89b773a882856310ea579c8faa41ac0a78231fe8582578887e07598fa68f9b43"
+    },
+    {
+      "sha256": "89b792fe7c8b0fc1a0386915d8d435b8fdbbf25d02e32752014cf619b29e3438",
+      "size": 94304,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/89b792fe7c8b0fc1a0386915d8d435b8fdbbf25d02e32752014cf619b29e3438"
+    },
+    {
+      "sha256": "8d7d0982a64771a7eb9b75d8ef33b466b56fe9820a7f33e33c1593a1552e05b8",
+      "size": 375307,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/8d7d0982a64771a7eb9b75d8ef33b466b56fe9820a7f33e33c1593a1552e05b8"
+    },
+    {
+      "sha256": "8fca9f8b7019438ecbb8c19cce7b3f22a5c329b0c21f876cfb2905b89dd1c2eb",
+      "size": 19187,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/8fca9f8b7019438ecbb8c19cce7b3f22a5c329b0c21f876cfb2905b89dd1c2eb"
+    },
+    {
+      "sha256": "90a37433feb336caceb2e5355a661c4db4a82e9cb43564cfcc6972e936d91f9b",
+      "size": 5290,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/90a37433feb336caceb2e5355a661c4db4a82e9cb43564cfcc6972e936d91f9b"
+    },
+    {
+      "sha256": "91e275a5c5e53a47dcd6e129cb6a365874e74068de324b0b0571d8c0c7d24236",
+      "size": 233920,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/91e275a5c5e53a47dcd6e129cb6a365874e74068de324b0b0571d8c0c7d24236"
+    },
+    {
+      "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+      "size": 2419221,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4"
+    },
+    {
+      "sha256": "9713981154f2e8110a50640e8cbaa10a8c195f00f58e1319470616adf02f8da2",
+      "size": 30174,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/9713981154f2e8110a50640e8cbaa10a8c195f00f58e1319470616adf02f8da2"
+    },
+    {
+      "sha256": "984edba7bf7b94799bb495dfc96bc91df92d2ca8d53f7fa625b3c90140b9b3b5",
+      "size": 13648,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/984edba7bf7b94799bb495dfc96bc91df92d2ca8d53f7fa625b3c90140b9b3b5"
+    },
+    {
+      "sha256": "9a647e728624d49368fd27193a6246f50c27945fa273dbaee68f787fb04a5206",
+      "size": 36560,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/9a647e728624d49368fd27193a6246f50c27945fa273dbaee68f787fb04a5206"
+    },
+    {
+      "sha256": "9df1e1b353b1ed33cf6f23490848e6b234ea0a66d072c08458da696b67713070",
+      "size": 30225,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/9df1e1b353b1ed33cf6f23490848e6b234ea0a66d072c08458da696b67713070"
+    },
+    {
+      "sha256": "9f3c517385666c4c2950e746b2bb8470974a75395639b4b5e19e9a550fd16f5f",
+      "size": 334028,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/9f3c517385666c4c2950e746b2bb8470974a75395639b4b5e19e9a550fd16f5f"
+    },
+    {
+      "sha256": "a291f01fede0da0ac92d873eb79edb35d2846053ad322de6c1d0279aca0bd712",
+      "size": 39568,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/a291f01fede0da0ac92d873eb79edb35d2846053ad322de6c1d0279aca0bd712"
+    },
+    {
+      "sha256": "a515ff82413ce2c035a31faab1c0cb29dbcef118bfbdb54da25062e51dd56ffd",
+      "size": 29973,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/a515ff82413ce2c035a31faab1c0cb29dbcef118bfbdb54da25062e51dd56ffd"
+    },
+    {
+      "sha256": "a7d60db431926fcc37de902ecc460fb688386eb2d67c17c4db468352c2af01ed",
+      "size": 51625,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/a7d60db431926fcc37de902ecc460fb688386eb2d67c17c4db468352c2af01ed"
+    },
+    {
+      "sha256": "a8fc629b08e3ab599f0d7f603c0abed330dc2f442a678a4d01865163d6510a17",
+      "size": 100607,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/a8fc629b08e3ab599f0d7f603c0abed330dc2f442a678a4d01865163d6510a17"
+    },
+    {
+      "sha256": "ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+      "size": 1507338,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a"
+    },
+    {
+      "sha256": "acf6702e035b8ba52ba6fdfee1f78df2f744a46aae61e9c832ef7371fc7b6778",
+      "size": 249474,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/acf6702e035b8ba52ba6fdfee1f78df2f744a46aae61e9c832ef7371fc7b6778"
+    },
+    {
+      "sha256": "adbe0cb2987115b5efc4ec5d95c7f8271f0d1af232b2e10d0ae92140a2e58125",
+      "size": 31197,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/adbe0cb2987115b5efc4ec5d95c7f8271f0d1af232b2e10d0ae92140a2e58125"
+    },
+    {
+      "sha256": "b2a2df30feae6a2947d300f2cba11ba1767e3ddb83d983936101ae6d22ddd493",
+      "size": 2799100,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/b2a2df30feae6a2947d300f2cba11ba1767e3ddb83d983936101ae6d22ddd493"
+    },
+    {
+      "sha256": "b5777ecca4e041666554ddd2c5445c5df13b73361ab0edb30fb928b8fa576ec5",
+      "size": 69556,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/b5777ecca4e041666554ddd2c5445c5df13b73361ab0edb30fb928b8fa576ec5"
+    },
+    {
+      "sha256": "b6017dcd36986e33f65d1f012ed1785bf3afdca50d10dab45df3aba44cd26c41",
+      "size": 9248,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/b6017dcd36986e33f65d1f012ed1785bf3afdca50d10dab45df3aba44cd26c41"
+    },
+    {
+      "sha256": "b69c9ee51b01b4449f16b69f02ea3e1a7cb8f98961fc0eda83166bbf01e20641",
+      "size": 69484,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/b69c9ee51b01b4449f16b69f02ea3e1a7cb8f98961fc0eda83166bbf01e20641"
+    },
+    {
+      "sha256": "bcbbde778c352a4d9141c4607dde7b60fd09a27076ef505ea1ae3727d74f0bad",
+      "size": 22068,
+      "mediaType": "image/webp",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/bcbbde778c352a4d9141c4607dde7b60fd09a27076ef505ea1ae3727d74f0bad"
+    },
+    {
+      "sha256": "bd7dc71e7593657b618be8a5963d7fd6fdbde2df7bbeb1d7bd99ca9bfdbd2619",
+      "size": 88427,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/bd7dc71e7593657b618be8a5963d7fd6fdbde2df7bbeb1d7bd99ca9bfdbd2619"
+    },
+    {
+      "sha256": "bdb15fe76190b66db27045d42e417ddfeb490105e4b9bad1f8bc7b62eec3621e",
+      "size": 112367,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/bdb15fe76190b66db27045d42e417ddfeb490105e4b9bad1f8bc7b62eec3621e"
+    },
+    {
+      "sha256": "c12d52ed0f4eace307424265b85c59fdd2732c34f01f6f4ae881d95fcb5e3783",
+      "size": 79550,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/c12d52ed0f4eace307424265b85c59fdd2732c34f01f6f4ae881d95fcb5e3783"
+    },
+    {
+      "sha256": "c156e7c7a3efc4a8ca0454f3e160e9c2f56c46e95455c3d2d6975254ba8b45e5",
+      "size": 89035,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/c156e7c7a3efc4a8ca0454f3e160e9c2f56c46e95455c3d2d6975254ba8b45e5"
+    },
+    {
+      "sha256": "c54a37d6f668d687dce834c9f48715fe1a2e9ad7bbb291e19949c260c1f6e94f",
+      "size": 1238508,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/c54a37d6f668d687dce834c9f48715fe1a2e9ad7bbb291e19949c260c1f6e94f"
+    },
+    {
+      "sha256": "ca1b60f1c7368e4e3ffc361f1df02f5f4c1dd4c68494cc7dd949a5f00753654d",
+      "size": 1229289,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/ca1b60f1c7368e4e3ffc361f1df02f5f4c1dd4c68494cc7dd949a5f00753654d"
+    },
+    {
+      "sha256": "ccf677c137c5516903d47fe124cb86869098627ef5b3e0035ab9e20c19311bec",
+      "size": 347949,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/ccf677c137c5516903d47fe124cb86869098627ef5b3e0035ab9e20c19311bec"
+    },
+    {
+      "sha256": "d00482aa461192f79ea8d41d2ba6276a48384371402da4c5281668dfa08397c0",
+      "size": 29618,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/d00482aa461192f79ea8d41d2ba6276a48384371402da4c5281668dfa08397c0"
+    },
+    {
+      "sha256": "d416c15b9a124d6282ed77242a4925f70105b201fdeebcb16e159a838835ef58",
+      "size": 53913,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/d416c15b9a124d6282ed77242a4925f70105b201fdeebcb16e159a838835ef58"
+    },
+    {
+      "sha256": "d418b5ea5c4949c4cbf14b5222cbd310d8c89af4be0b1c26ede1d60d68ae4330",
+      "size": 37764,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/d418b5ea5c4949c4cbf14b5222cbd310d8c89af4be0b1c26ede1d60d68ae4330"
+    },
+    {
+      "sha256": "daf863d8ab9ae1271cf64d513838e2b420a7b3cf709f29f8dfc7d8c1888b0b36",
+      "size": 14458,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/daf863d8ab9ae1271cf64d513838e2b420a7b3cf709f29f8dfc7d8c1888b0b36"
+    },
+    {
+      "sha256": "dff402abfef3753a332f307fd524b5583d45b2027751d88b18021fbb1de632cf",
+      "size": 29002,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/dff402abfef3753a332f307fd524b5583d45b2027751d88b18021fbb1de632cf"
+    },
+    {
+      "sha256": "e292306db7ca3d55bacc38eae5e4024b8b8827be6bc6d2f4fc7f3d0fc90924c1",
+      "size": 4500,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/e292306db7ca3d55bacc38eae5e4024b8b8827be6bc6d2f4fc7f3d0fc90924c1"
+    },
+    {
+      "sha256": "e46f59d101483c47c704a3f0f4314a117679a93e716f558679804b57a47859ab",
+      "size": 14375,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/e46f59d101483c47c704a3f0f4314a117679a93e716f558679804b57a47859ab"
+    },
+    {
+      "sha256": "ec2dd614deeb773be70ab5c3a14c57326cf9a9908c766e62779642c427729754",
+      "size": 113318,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/ec2dd614deeb773be70ab5c3a14c57326cf9a9908c766e62779642c427729754"
+    },
+    {
+      "sha256": "ec85285f609e6fb66aec66ef6720b4228234ca731cb53cca1b45da42839f18d9",
+      "size": 160958,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/ec85285f609e6fb66aec66ef6720b4228234ca731cb53cca1b45da42839f18d9"
+    },
+    {
+      "sha256": "f48791ad85560671008c5b03ec44741120a8d11986a8cbf3b2cd3cf6e8cdfb6c",
+      "size": 181292,
+      "mediaType": "image/webp",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/f48791ad85560671008c5b03ec44741120a8d11986a8cbf3b2cd3cf6e8cdfb6c"
+    },
+    {
+      "sha256": "f7ed6416ae2a65d4a0f7a8311f7e66017a0e5459fefafbe3be7bded22a8fade7",
+      "size": 113870,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/f7ed6416ae2a65d4a0f7a8311f7e66017a0e5459fefafbe3be7bded22a8fade7"
+    },
+    {
+      "sha256": "f858949eedd77c6c9bda48538523503abf31f13c2b8c282162e8f997a94420f0",
+      "size": 1361156,
+      "mediaType": "image/webp",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/f858949eedd77c6c9bda48538523503abf31f13c2b8c282162e8f997a94420f0"
+    },
+    {
+      "sha256": "f96ea4d60a5380d9a5ff04c32ca9ca11666b352c2336ce3786c63b8b59082e90",
+      "size": 7820,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/f96ea4d60a5380d9a5ff04c32ca9ca11666b352c2336ce3786c63b8b59082e90"
+    },
+    {
+      "sha256": "fc2996b8f5e386b9746e794ae83c5d82a8e97fbec9257a2285a0fbe1190f0b3e",
+      "size": 354562,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/fc2996b8f5e386b9746e794ae83c5d82a8e97fbec9257a2285a0fbe1190f0b3e"
+    },
+    {
+      "sha256": "fcb0a93efa5751b54368a1f7c853d41781790ce3eb4b6cc00615aec4a45d32d8",
+      "size": 3834951,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/fcb0a93efa5751b54368a1f7c853d41781790ce3eb4b6cc00615aec4a45d32d8"
+    },
+    {
+      "sha256": "fedc384b230ba679bc03125d0dadf6657b17b58c9f087e57babd4efa8af8018b",
+      "size": 226109,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/fedc384b230ba679bc03125d0dadf6657b17b58c9f087e57babd4efa8af8018b"
+    },
+    {
+      "sha256": "ff4821a4b50de2bf88f8e4cc3926da7fa9d34dec760e24fc15c01e74531f42a8",
+      "size": 3054873,
+      "mediaType": "image/png",
+      "url": "https://content.arkodia.online/v1/releases/bc39b55b97e5d7fa2860bd8cbb81151e/assets/ff4821a4b50de2bf88f8e4cc3926da7fa9d34dec760e24fc15c01e74531f42a8"
+    }
+  ],
+  "checks": [
+    "all original source asset hashes",
+    "ordinary asset POST",
+    "author Save/reload",
+    "publisher release",
+    "public immutable snapshot hashes"
+  ]
+}

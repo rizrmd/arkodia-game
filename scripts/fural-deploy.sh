@@ -16,5 +16,9 @@ if [ -d docs/runtime/evidence ]; then
   mkdir -p .deploy-runtime/dist/evidence
   cp docs/runtime/evidence/* .deploy-runtime/dist/evidence/
 fi
-node -e 'const fs=require("fs"),cp=require("child_process");fs.writeFileSync(".deploy-runtime/dist/build.json",JSON.stringify({commit:cp.execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim(),application:"arkodia-pixi-runtime",contentAPI:"https://content.arkodia.online",channel:"runtime-demo"}))'
+if [ -d docs/runtime/stronghold/evidence ]; then
+  mkdir -p .deploy-runtime/dist/evidence/stronghold
+  cp docs/runtime/stronghold/evidence/* .deploy-runtime/dist/evidence/stronghold/
+fi
+node -e 'const fs=require("fs"),cp=require("child_process");fs.writeFileSync(".deploy-runtime/dist/build.json",JSON.stringify({commit:cp.execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim(),application:"arkodia-pixi-runtime",contentAPI:"https://content.arkodia.online",channel:"stronghold-original"}))'
 fural-agent sandboxes serve --name arkodia-runtime --slug arkodia-runtime --project PJ8758f22f61165f3d3215e454 --dir "$PWD/.deploy-runtime" --cmd 'cd "$HOME"; exec node server.mjs' --port 3000

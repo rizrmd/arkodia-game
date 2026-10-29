@@ -1,3 +1,7 @@
+## Stronghold first increment
+
+The default channel is now `stronghold-original`. It restores original loading artwork, remembered Rift Runner / Amber Warden selection and fresh Stronghold exploration. See [the detailed parity checklist](../../docs/runtime/stronghold/parity.md) and [adapter/verification notes](../../docs/runtime/stronghold/increment.md). The earlier foundation consumer remains at `?channel=runtime-demo` for regression evidence. The v1 profile described below is specific to that earlier channel; it does not describe or silently accept the new explicit v2 presentation adapter.
+
 # Standalone Pixi runtime
 
 A separate application in `arkodia-game/apps/runtime`. All visible controls, loading, error and scene UI are Pixi objects. HTML only hosts the canvas. No React, legacy gameplay bootstrap, administrator credential or author/publisher token is included in the application or gateway.

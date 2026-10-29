@@ -1,0 +1,26 @@
+{
+  "origin": "https://arkodia.online",
+  "errors": [],
+  "checks": [
+    "original fresh hero picker opened",
+    "original Amber Warden picked and world entered"
+  ],
+  "canvas": {
+    "quality": "high",
+    "targetFps": "60",
+    "renderResolution": "1",
+    "buildings": "expedition,gate",
+    "gate": "closed",
+    "ready": "true",
+    "mode": "full-screen",
+    "renderer": "pixi-msdf-world",
+    "zoom": "locked",
+    "scale": "1.3500",
+    "targetScale": "1.3500",
+    "reach": "1.00",
+    "biome": "court",
+    "cornerArea": "court",
+    "fps": "2"
+  },
+  "hero": "ember-warden"
+}

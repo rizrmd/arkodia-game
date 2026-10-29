@@ -1,0 +1,3346 @@
+{
+  "origin": "http://127.0.0.1:3099",
+  "desktop": {
+    "state": "ready",
+    "message": "Preparing the Stronghold",
+    "commit": "ee9e9c097f5bc4ac32b8932d171a7f25b322c6c2",
+    "channel": "stronghold-original",
+    "release": "9995486e640e951343b9a1b3ddcf92a5",
+    "schemaDigest": "09a37562ce4c4ff4f3c62c967546592593f2e73448f182c9db712a0cbeade314",
+    "assetCount": 85,
+    "hero": "ember-warden",
+    "player": {
+      "x": 628.8333364734153,
+      "y": 420
+    },
+    "camera": {
+      "x": -128.92500423911076,
+      "y": -63,
+      "scale": 1.35
+    },
+    "clip": "idle-SE",
+    "gateFrame": 0,
+    "route": null,
+    "sourceCommit": "7d80d69a1bf626fdd87b97e9903f7cd330a318d2"
+  },
+  "mobile": {
+    "state": "ready",
+    "message": "Preparing the Stronghold",
+    "commit": "ee9e9c097f5bc4ac32b8932d171a7f25b322c6c2",
+    "channel": "stronghold-original",
+    "release": "9995486e640e951343b9a1b3ddcf92a5",
+    "schemaDigest": "09a37562ce4c4ff4f3c62c967546592593f2e73448f182c9db712a0cbeade314",
+    "assetCount": 85,
+    "hero": "rift-runner",
+    "player": {
+      "x": 590,
+      "y": 420
+    },
+    "camera": {
+      "x": -595.4126984126983,
+      "y": -87.07936507936506,
+      "scale": 1.3396825396825396
+    },
+    "clip": "idle-SE",
+    "gateFrame": 0,
+    "route": null,
+    "sourceCommit": "7d80d69a1bf626fdd87b97e9903f7cd330a318d2"
+  },
+  "errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:3099/?hero=reset",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-BciRk93Z.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/preload-helper-BXl3LOEh.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Geometry-BVGE9sPx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/AbstractRenderer-BDC7aS4g.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BufferResource-ANuAE7Bd.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GlUniformGroupSystem-BaowIFjC.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GpuUboSystem-B3i34lsV.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ViewableBuffer-DIlx44V_.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ParticleBuffer-2JKSlx_Y.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-CH7gZrvx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/stronghold-main-D1X_wGtn.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-B2zxxclr.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-DNuTbAWm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/State-CbHbO1Jw.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/canvasUtils-DJd2wqB8.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/foundations-BDiM_X20.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableSprite-D6h1r7YO.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/colorToUniform-cdLUR7yZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/CanvasPool-CxgDb1Vl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Graphics-Ba1BIsJi.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTextureBatchBindGroup-B5YZEy0N.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getPo2TextureFromSource-CpbqXIBZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableMesh-BV4KxWDm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Filter-CTy8GwjU.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/localUniformBit-BOGrcT1E.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/WebGLRenderer-BlnWilkl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTexelRangeRects-BAg0PCsq.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTargetSystem-CGzGapeW.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTexture-Dg2V8apy.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/browserAll-D0DOY3KD.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/webworkerAll-CTu-vIJZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/contracts",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/channels/stronghold-original",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-prefab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-presentation",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/065d57ee580f593096d11a66dd33efe1b85d694da970e010781f0ea282922e19",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0cdd9dc24ef68d534616b5cec970eb899f4793810518a7757348e65c32a2341e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/234a3651207a8f1f6eba9cff8a920c3cb8426b55bb66ca4bc680a88542894ff1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4f86742df4b6228a570cc3a0cd5108a4828962febf33e6d193820c895f461674",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f48791ad85560671008c5b03ec44741120a8d11986a8cbf3b2cd3cf6e8cdfb6c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/026b41c007f1686fab55072b795a34f8428b07a957c1ef5dcf746737cabd9fc4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/032fe61175e2558061355c1d7c3615fb689372d9c2f3c9c8c3f1e27401e44949",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0685ed56f697f931c35a5555e0012abbd0e4ebc7d2fd1b243f09874f5f979c5d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/080cd18f585caac58e06d34bdb04b26a2136a0fc55961635648c954064b1c813",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0c1dc6a86bbf68f90a86dedb6ea7e3c3692246d0eabf6a8fbe9f6cf86b41b626",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/17dda2e7d6fd67bdd7e26e0deeb06fdc3b99b0701632b2a5320c42dbf8ede405",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/19d72971f18f879a9816da398d33f01b1152e3d627146566e1cc407838f3a8e4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/1b365b8e56fcbfe894dfde59a927d39cb7883127e8f4ebc1168bba92ea270190",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/20486174f1431c3997841835e4fcd3e9368d681271ac21406eb13cb979ff1601",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/221a90d78cabb9a6f6df951278db64f7c77d8ed6059387fdd9cac756af9badb8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2968c6c80c398701575333854cb85aa81f3d19a9dcc132c800644a3cdd323620",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2c2907e90b1e9bfe4fc874af02571937a6043159fa7e89948815d065187576ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/329a6ebad0d5f00d8b045b27e6c02aa714f5cfd8ee19adf726f74edf9405808a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3c7f538fb42a17da2c896d564edaccd507203dac5a8f0e4cb4e480d867b6f5ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3e5b135f8997c17c9411a55f6093625ec1d8de53b71c2dc37a9c73b9891cf828",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/44dba7dc228b26ee00b42f8335168b53794b5bf312ceef9d2bc3b515059b8d84",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/468915abe839bb997f21ca2a78ed9a1abbbe3e0e28134dc104173a85a0d1dc71",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46c01d44264425d243941950d382e3404b8cd077c46a5b7b9889e3385f0614b6",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46fa26f6d722efc723cffa65694e1de832c07709f7ec7539e1eee5329c423c52",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/496c6cf474cd9530609b615fd41bcd4929e68cc732bdb281315d28c8f3a0c2aa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c21f90e32af1f90ebea924a46602b909b7adb6c26c0cac90387eec9d57bc151",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c5a2f7c3f9137dc91fd2b9132b2d24f3ae3458f0158d4540b43f10e70761511",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5526a945668ea0ff6d3b0f290b2302c321b3817937e03bfe3cdd31e4d22a88fa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/55bfa99307f8ddf5d47fde39f3d5eab8fefb7509392d530e8062d8e63e628d8e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/57b6f03a11fcde0567de9dbe4979924dd6613f76829d1b391726c6057d04c6ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/59d1cfd40b61b60d754e1c36cc3ddbe3beb126ef9ad23b0d520f111a235a097c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c4c3a0224c3fbc0b079aa26989becb32a209a178c364df1a3583c4d16fd711e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c59556f362e1befbf1cbaa567f5ed5b15742d729993b30d748979c75e2d5d55",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/60f0326a3c71b05169f7437c2f8512474cc1609365e9f1fd4b098fa65dce6cbd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/64586ca0bb143eab896370c4c400c00ea23051d680bf72f3c1865197ab494346",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6d0d52bd8c3477e97b0a760b447df56e3f54e098ca05392ad95246adc0388225",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6fe734682613eaffdc14da3bb3b39ddb9754819a8125fcd0460ea196ac90c583",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b773a882856310ea579c8faa41ac0a78231fe8582578887e07598fa68f9b43",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b792fe7c8b0fc1a0386915d8d435b8fdbbf25d02e32752014cf619b29e3438",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8d7d0982a64771a7eb9b75d8ef33b466b56fe9820a7f33e33c1593a1552e05b8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8fca9f8b7019438ecbb8c19cce7b3f22a5c329b0c21f876cfb2905b89dd1c2eb",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/90a37433feb336caceb2e5355a661c4db4a82e9cb43564cfcc6972e936d91f9b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/91e275a5c5e53a47dcd6e129cb6a365874e74068de324b0b0571d8c0c7d24236",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9713981154f2e8110a50640e8cbaa10a8c195f00f58e1319470616adf02f8da2",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/984edba7bf7b94799bb495dfc96bc91df92d2ca8d53f7fa625b3c90140b9b3b5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9a647e728624d49368fd27193a6246f50c27945fa273dbaee68f787fb04a5206",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9df1e1b353b1ed33cf6f23490848e6b234ea0a66d072c08458da696b67713070",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9f3c517385666c4c2950e746b2bb8470974a75395639b4b5e19e9a550fd16f5f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a291f01fede0da0ac92d873eb79edb35d2846053ad322de6c1d0279aca0bd712",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a515ff82413ce2c035a31faab1c0cb29dbcef118bfbdb54da25062e51dd56ffd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a7d60db431926fcc37de902ecc460fb688386eb2d67c17c4db468352c2af01ed",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a8fc629b08e3ab599f0d7f603c0abed330dc2f442a678a4d01865163d6510a17",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/acf6702e035b8ba52ba6fdfee1f78df2f744a46aae61e9c832ef7371fc7b6778",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/adbe0cb2987115b5efc4ec5d95c7f8271f0d1af232b2e10d0ae92140a2e58125",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b2a2df30feae6a2947d300f2cba11ba1767e3ddb83d983936101ae6d22ddd493",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b5777ecca4e041666554ddd2c5445c5df13b73361ab0edb30fb928b8fa576ec5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b6017dcd36986e33f65d1f012ed1785bf3afdca50d10dab45df3aba44cd26c41",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b69c9ee51b01b4449f16b69f02ea3e1a7cb8f98961fc0eda83166bbf01e20641",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bd7dc71e7593657b618be8a5963d7fd6fdbde2df7bbeb1d7bd99ca9bfdbd2619",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bdb15fe76190b66db27045d42e417ddfeb490105e4b9bad1f8bc7b62eec3621e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c12d52ed0f4eace307424265b85c59fdd2732c34f01f6f4ae881d95fcb5e3783",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c156e7c7a3efc4a8ca0454f3e160e9c2f56c46e95455c3d2d6975254ba8b45e5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c54a37d6f668d687dce834c9f48715fe1a2e9ad7bbb291e19949c260c1f6e94f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ca1b60f1c7368e4e3ffc361f1df02f5f4c1dd4c68494cc7dd949a5f00753654d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ccf677c137c5516903d47fe124cb86869098627ef5b3e0035ab9e20c19311bec",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d00482aa461192f79ea8d41d2ba6276a48384371402da4c5281668dfa08397c0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d416c15b9a124d6282ed77242a4925f70105b201fdeebcb16e159a838835ef58",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d418b5ea5c4949c4cbf14b5222cbd310d8c89af4be0b1c26ede1d60d68ae4330",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/daf863d8ab9ae1271cf64d513838e2b420a7b3cf709f29f8dfc7d8c1888b0b36",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/dff402abfef3753a332f307fd524b5583d45b2027751d88b18021fbb1de632cf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e292306db7ca3d55bacc38eae5e4024b8b8827be6bc6d2f4fc7f3d0fc90924c1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e46f59d101483c47c704a3f0f4314a117679a93e716f558679804b57a47859ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec2dd614deeb773be70ab5c3a14c57326cf9a9908c766e62779642c427729754",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec85285f609e6fb66aec66ef6720b4228234ca731cb53cca1b45da42839f18d9",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f7ed6416ae2a65d4a0f7a8311f7e66017a0e5459fefafbe3be7bded22a8fade7",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f858949eedd77c6c9bda48538523503abf31f13c2b8c282162e8f997a94420f0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f96ea4d60a5380d9a5ff04c32ca9ca11666b352c2336ce3786c63b8b59082e90",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fc2996b8f5e386b9746e794ae83c5d82a8e97fbec9257a2285a0fbe1190f0b3e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fcb0a93efa5751b54368a1f7c853d41781790ce3eb4b6cc00615aec4a45d32d8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fedc384b230ba679bc03125d0dadf6657b17b58c9f087e57babd4efa8af8018b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ff4821a4b50de2bf88f8e4cc3926da7fa9d34dec760e24fc15c01e74531f42a8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/pixi-DUg-Cnsj.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/chunk-5JFECSLO-D9upbjWb.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/export-D2R5Tv1h.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-BciRk93Z.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/preload-helper-BXl3LOEh.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Geometry-BVGE9sPx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/AbstractRenderer-BDC7aS4g.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BufferResource-ANuAE7Bd.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GlUniformGroupSystem-BaowIFjC.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GpuUboSystem-B3i34lsV.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ViewableBuffer-DIlx44V_.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ParticleBuffer-2JKSlx_Y.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-CH7gZrvx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/stronghold-main-D1X_wGtn.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-B2zxxclr.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-DNuTbAWm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/State-CbHbO1Jw.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/canvasUtils-DJd2wqB8.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/foundations-BDiM_X20.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableSprite-D6h1r7YO.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/colorToUniform-cdLUR7yZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/CanvasPool-CxgDb1Vl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Graphics-Ba1BIsJi.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTextureBatchBindGroup-B5YZEy0N.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getPo2TextureFromSource-CpbqXIBZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableMesh-BV4KxWDm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Filter-CTy8GwjU.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/localUniformBit-BOGrcT1E.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/WebGLRenderer-BlnWilkl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTexelRangeRects-BAg0PCsq.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTargetSystem-CGzGapeW.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTexture-Dg2V8apy.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/browserAll-D0DOY3KD.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/webworkerAll-CTu-vIJZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/contracts",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/channels/stronghold-original",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-prefab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-presentation",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/065d57ee580f593096d11a66dd33efe1b85d694da970e010781f0ea282922e19",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0cdd9dc24ef68d534616b5cec970eb899f4793810518a7757348e65c32a2341e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/234a3651207a8f1f6eba9cff8a920c3cb8426b55bb66ca4bc680a88542894ff1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4f86742df4b6228a570cc3a0cd5108a4828962febf33e6d193820c895f461674",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f48791ad85560671008c5b03ec44741120a8d11986a8cbf3b2cd3cf6e8cdfb6c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/026b41c007f1686fab55072b795a34f8428b07a957c1ef5dcf746737cabd9fc4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/032fe61175e2558061355c1d7c3615fb689372d9c2f3c9c8c3f1e27401e44949",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0685ed56f697f931c35a5555e0012abbd0e4ebc7d2fd1b243f09874f5f979c5d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/080cd18f585caac58e06d34bdb04b26a2136a0fc55961635648c954064b1c813",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0c1dc6a86bbf68f90a86dedb6ea7e3c3692246d0eabf6a8fbe9f6cf86b41b626",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/17dda2e7d6fd67bdd7e26e0deeb06fdc3b99b0701632b2a5320c42dbf8ede405",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/19d72971f18f879a9816da398d33f01b1152e3d627146566e1cc407838f3a8e4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/1b365b8e56fcbfe894dfde59a927d39cb7883127e8f4ebc1168bba92ea270190",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/20486174f1431c3997841835e4fcd3e9368d681271ac21406eb13cb979ff1601",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/221a90d78cabb9a6f6df951278db64f7c77d8ed6059387fdd9cac756af9badb8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2968c6c80c398701575333854cb85aa81f3d19a9dcc132c800644a3cdd323620",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2c2907e90b1e9bfe4fc874af02571937a6043159fa7e89948815d065187576ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/329a6ebad0d5f00d8b045b27e6c02aa714f5cfd8ee19adf726f74edf9405808a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3c7f538fb42a17da2c896d564edaccd507203dac5a8f0e4cb4e480d867b6f5ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3e5b135f8997c17c9411a55f6093625ec1d8de53b71c2dc37a9c73b9891cf828",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/44dba7dc228b26ee00b42f8335168b53794b5bf312ceef9d2bc3b515059b8d84",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/468915abe839bb997f21ca2a78ed9a1abbbe3e0e28134dc104173a85a0d1dc71",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46c01d44264425d243941950d382e3404b8cd077c46a5b7b9889e3385f0614b6",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46fa26f6d722efc723cffa65694e1de832c07709f7ec7539e1eee5329c423c52",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/496c6cf474cd9530609b615fd41bcd4929e68cc732bdb281315d28c8f3a0c2aa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c21f90e32af1f90ebea924a46602b909b7adb6c26c0cac90387eec9d57bc151",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c5a2f7c3f9137dc91fd2b9132b2d24f3ae3458f0158d4540b43f10e70761511",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5526a945668ea0ff6d3b0f290b2302c321b3817937e03bfe3cdd31e4d22a88fa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/55bfa99307f8ddf5d47fde39f3d5eab8fefb7509392d530e8062d8e63e628d8e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/57b6f03a11fcde0567de9dbe4979924dd6613f76829d1b391726c6057d04c6ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/59d1cfd40b61b60d754e1c36cc3ddbe3beb126ef9ad23b0d520f111a235a097c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c4c3a0224c3fbc0b079aa26989becb32a209a178c364df1a3583c4d16fd711e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c59556f362e1befbf1cbaa567f5ed5b15742d729993b30d748979c75e2d5d55",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/60f0326a3c71b05169f7437c2f8512474cc1609365e9f1fd4b098fa65dce6cbd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/64586ca0bb143eab896370c4c400c00ea23051d680bf72f3c1865197ab494346",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6d0d52bd8c3477e97b0a760b447df56e3f54e098ca05392ad95246adc0388225",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6fe734682613eaffdc14da3bb3b39ddb9754819a8125fcd0460ea196ac90c583",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b773a882856310ea579c8faa41ac0a78231fe8582578887e07598fa68f9b43",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b792fe7c8b0fc1a0386915d8d435b8fdbbf25d02e32752014cf619b29e3438",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8d7d0982a64771a7eb9b75d8ef33b466b56fe9820a7f33e33c1593a1552e05b8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8fca9f8b7019438ecbb8c19cce7b3f22a5c329b0c21f876cfb2905b89dd1c2eb",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/90a37433feb336caceb2e5355a661c4db4a82e9cb43564cfcc6972e936d91f9b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/91e275a5c5e53a47dcd6e129cb6a365874e74068de324b0b0571d8c0c7d24236",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9713981154f2e8110a50640e8cbaa10a8c195f00f58e1319470616adf02f8da2",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/984edba7bf7b94799bb495dfc96bc91df92d2ca8d53f7fa625b3c90140b9b3b5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9a647e728624d49368fd27193a6246f50c27945fa273dbaee68f787fb04a5206",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9df1e1b353b1ed33cf6f23490848e6b234ea0a66d072c08458da696b67713070",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9f3c517385666c4c2950e746b2bb8470974a75395639b4b5e19e9a550fd16f5f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a291f01fede0da0ac92d873eb79edb35d2846053ad322de6c1d0279aca0bd712",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a515ff82413ce2c035a31faab1c0cb29dbcef118bfbdb54da25062e51dd56ffd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a7d60db431926fcc37de902ecc460fb688386eb2d67c17c4db468352c2af01ed",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a8fc629b08e3ab599f0d7f603c0abed330dc2f442a678a4d01865163d6510a17",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/acf6702e035b8ba52ba6fdfee1f78df2f744a46aae61e9c832ef7371fc7b6778",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/adbe0cb2987115b5efc4ec5d95c7f8271f0d1af232b2e10d0ae92140a2e58125",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b2a2df30feae6a2947d300f2cba11ba1767e3ddb83d983936101ae6d22ddd493",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b5777ecca4e041666554ddd2c5445c5df13b73361ab0edb30fb928b8fa576ec5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b6017dcd36986e33f65d1f012ed1785bf3afdca50d10dab45df3aba44cd26c41",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b69c9ee51b01b4449f16b69f02ea3e1a7cb8f98961fc0eda83166bbf01e20641",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bd7dc71e7593657b618be8a5963d7fd6fdbde2df7bbeb1d7bd99ca9bfdbd2619",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bdb15fe76190b66db27045d42e417ddfeb490105e4b9bad1f8bc7b62eec3621e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c12d52ed0f4eace307424265b85c59fdd2732c34f01f6f4ae881d95fcb5e3783",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c156e7c7a3efc4a8ca0454f3e160e9c2f56c46e95455c3d2d6975254ba8b45e5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c54a37d6f668d687dce834c9f48715fe1a2e9ad7bbb291e19949c260c1f6e94f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ca1b60f1c7368e4e3ffc361f1df02f5f4c1dd4c68494cc7dd949a5f00753654d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ccf677c137c5516903d47fe124cb86869098627ef5b3e0035ab9e20c19311bec",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d00482aa461192f79ea8d41d2ba6276a48384371402da4c5281668dfa08397c0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d416c15b9a124d6282ed77242a4925f70105b201fdeebcb16e159a838835ef58",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d418b5ea5c4949c4cbf14b5222cbd310d8c89af4be0b1c26ede1d60d68ae4330",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/daf863d8ab9ae1271cf64d513838e2b420a7b3cf709f29f8dfc7d8c1888b0b36",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/dff402abfef3753a332f307fd524b5583d45b2027751d88b18021fbb1de632cf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e292306db7ca3d55bacc38eae5e4024b8b8827be6bc6d2f4fc7f3d0fc90924c1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e46f59d101483c47c704a3f0f4314a117679a93e716f558679804b57a47859ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec2dd614deeb773be70ab5c3a14c57326cf9a9908c766e62779642c427729754",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec85285f609e6fb66aec66ef6720b4228234ca731cb53cca1b45da42839f18d9",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f7ed6416ae2a65d4a0f7a8311f7e66017a0e5459fefafbe3be7bded22a8fade7",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f858949eedd77c6c9bda48538523503abf31f13c2b8c282162e8f997a94420f0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f96ea4d60a5380d9a5ff04c32ca9ca11666b352c2336ce3786c63b8b59082e90",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fc2996b8f5e386b9746e794ae83c5d82a8e97fbec9257a2285a0fbe1190f0b3e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fcb0a93efa5751b54368a1f7c853d41781790ce3eb4b6cc00615aec4a45d32d8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fedc384b230ba679bc03125d0dadf6657b17b58c9f087e57babd4efa8af8018b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ff4821a4b50de2bf88f8e4cc3926da7fa9d34dec760e24fc15c01e74531f42a8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/?hero=reset",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-BciRk93Z.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/preload-helper-BXl3LOEh.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Geometry-BVGE9sPx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/AbstractRenderer-BDC7aS4g.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BufferResource-ANuAE7Bd.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GlUniformGroupSystem-BaowIFjC.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GpuUboSystem-B3i34lsV.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ViewableBuffer-DIlx44V_.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ParticleBuffer-2JKSlx_Y.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-CH7gZrvx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/stronghold-main-D1X_wGtn.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-B2zxxclr.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-DNuTbAWm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/State-CbHbO1Jw.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/canvasUtils-DJd2wqB8.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/foundations-BDiM_X20.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableSprite-D6h1r7YO.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/colorToUniform-cdLUR7yZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/CanvasPool-CxgDb1Vl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Graphics-Ba1BIsJi.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTextureBatchBindGroup-B5YZEy0N.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getPo2TextureFromSource-CpbqXIBZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableMesh-BV4KxWDm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Filter-CTy8GwjU.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/localUniformBit-BOGrcT1E.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/WebGLRenderer-BlnWilkl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTexelRangeRects-BAg0PCsq.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTargetSystem-CGzGapeW.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTexture-Dg2V8apy.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/browserAll-D0DOY3KD.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/webworkerAll-CTu-vIJZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/contracts",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/channels/stronghold-original",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-prefab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-presentation",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/065d57ee580f593096d11a66dd33efe1b85d694da970e010781f0ea282922e19",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0cdd9dc24ef68d534616b5cec970eb899f4793810518a7757348e65c32a2341e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/234a3651207a8f1f6eba9cff8a920c3cb8426b55bb66ca4bc680a88542894ff1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4f86742df4b6228a570cc3a0cd5108a4828962febf33e6d193820c895f461674",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f48791ad85560671008c5b03ec44741120a8d11986a8cbf3b2cd3cf6e8cdfb6c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/026b41c007f1686fab55072b795a34f8428b07a957c1ef5dcf746737cabd9fc4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/032fe61175e2558061355c1d7c3615fb689372d9c2f3c9c8c3f1e27401e44949",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0685ed56f697f931c35a5555e0012abbd0e4ebc7d2fd1b243f09874f5f979c5d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/080cd18f585caac58e06d34bdb04b26a2136a0fc55961635648c954064b1c813",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0c1dc6a86bbf68f90a86dedb6ea7e3c3692246d0eabf6a8fbe9f6cf86b41b626",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/17dda2e7d6fd67bdd7e26e0deeb06fdc3b99b0701632b2a5320c42dbf8ede405",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/19d72971f18f879a9816da398d33f01b1152e3d627146566e1cc407838f3a8e4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/1b365b8e56fcbfe894dfde59a927d39cb7883127e8f4ebc1168bba92ea270190",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/20486174f1431c3997841835e4fcd3e9368d681271ac21406eb13cb979ff1601",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/221a90d78cabb9a6f6df951278db64f7c77d8ed6059387fdd9cac756af9badb8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2968c6c80c398701575333854cb85aa81f3d19a9dcc132c800644a3cdd323620",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2c2907e90b1e9bfe4fc874af02571937a6043159fa7e89948815d065187576ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/329a6ebad0d5f00d8b045b27e6c02aa714f5cfd8ee19adf726f74edf9405808a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3c7f538fb42a17da2c896d564edaccd507203dac5a8f0e4cb4e480d867b6f5ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3e5b135f8997c17c9411a55f6093625ec1d8de53b71c2dc37a9c73b9891cf828",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/44dba7dc228b26ee00b42f8335168b53794b5bf312ceef9d2bc3b515059b8d84",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/468915abe839bb997f21ca2a78ed9a1abbbe3e0e28134dc104173a85a0d1dc71",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46c01d44264425d243941950d382e3404b8cd077c46a5b7b9889e3385f0614b6",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46fa26f6d722efc723cffa65694e1de832c07709f7ec7539e1eee5329c423c52",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/496c6cf474cd9530609b615fd41bcd4929e68cc732bdb281315d28c8f3a0c2aa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c21f90e32af1f90ebea924a46602b909b7adb6c26c0cac90387eec9d57bc151",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c5a2f7c3f9137dc91fd2b9132b2d24f3ae3458f0158d4540b43f10e70761511",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5526a945668ea0ff6d3b0f290b2302c321b3817937e03bfe3cdd31e4d22a88fa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/55bfa99307f8ddf5d47fde39f3d5eab8fefb7509392d530e8062d8e63e628d8e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/57b6f03a11fcde0567de9dbe4979924dd6613f76829d1b391726c6057d04c6ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/59d1cfd40b61b60d754e1c36cc3ddbe3beb126ef9ad23b0d520f111a235a097c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c4c3a0224c3fbc0b079aa26989becb32a209a178c364df1a3583c4d16fd711e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c59556f362e1befbf1cbaa567f5ed5b15742d729993b30d748979c75e2d5d55",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/60f0326a3c71b05169f7437c2f8512474cc1609365e9f1fd4b098fa65dce6cbd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/64586ca0bb143eab896370c4c400c00ea23051d680bf72f3c1865197ab494346",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6d0d52bd8c3477e97b0a760b447df56e3f54e098ca05392ad95246adc0388225",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6fe734682613eaffdc14da3bb3b39ddb9754819a8125fcd0460ea196ac90c583",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b773a882856310ea579c8faa41ac0a78231fe8582578887e07598fa68f9b43",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b792fe7c8b0fc1a0386915d8d435b8fdbbf25d02e32752014cf619b29e3438",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8d7d0982a64771a7eb9b75d8ef33b466b56fe9820a7f33e33c1593a1552e05b8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8fca9f8b7019438ecbb8c19cce7b3f22a5c329b0c21f876cfb2905b89dd1c2eb",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/90a37433feb336caceb2e5355a661c4db4a82e9cb43564cfcc6972e936d91f9b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/91e275a5c5e53a47dcd6e129cb6a365874e74068de324b0b0571d8c0c7d24236",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9713981154f2e8110a50640e8cbaa10a8c195f00f58e1319470616adf02f8da2",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/984edba7bf7b94799bb495dfc96bc91df92d2ca8d53f7fa625b3c90140b9b3b5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9a647e728624d49368fd27193a6246f50c27945fa273dbaee68f787fb04a5206",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9df1e1b353b1ed33cf6f23490848e6b234ea0a66d072c08458da696b67713070",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9f3c517385666c4c2950e746b2bb8470974a75395639b4b5e19e9a550fd16f5f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a291f01fede0da0ac92d873eb79edb35d2846053ad322de6c1d0279aca0bd712",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a515ff82413ce2c035a31faab1c0cb29dbcef118bfbdb54da25062e51dd56ffd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a7d60db431926fcc37de902ecc460fb688386eb2d67c17c4db468352c2af01ed",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a8fc629b08e3ab599f0d7f603c0abed330dc2f442a678a4d01865163d6510a17",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/acf6702e035b8ba52ba6fdfee1f78df2f744a46aae61e9c832ef7371fc7b6778",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/adbe0cb2987115b5efc4ec5d95c7f8271f0d1af232b2e10d0ae92140a2e58125",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b2a2df30feae6a2947d300f2cba11ba1767e3ddb83d983936101ae6d22ddd493",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b5777ecca4e041666554ddd2c5445c5df13b73361ab0edb30fb928b8fa576ec5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b6017dcd36986e33f65d1f012ed1785bf3afdca50d10dab45df3aba44cd26c41",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b69c9ee51b01b4449f16b69f02ea3e1a7cb8f98961fc0eda83166bbf01e20641",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bd7dc71e7593657b618be8a5963d7fd6fdbde2df7bbeb1d7bd99ca9bfdbd2619",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bdb15fe76190b66db27045d42e417ddfeb490105e4b9bad1f8bc7b62eec3621e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c12d52ed0f4eace307424265b85c59fdd2732c34f01f6f4ae881d95fcb5e3783",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c156e7c7a3efc4a8ca0454f3e160e9c2f56c46e95455c3d2d6975254ba8b45e5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c54a37d6f668d687dce834c9f48715fe1a2e9ad7bbb291e19949c260c1f6e94f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ca1b60f1c7368e4e3ffc361f1df02f5f4c1dd4c68494cc7dd949a5f00753654d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ccf677c137c5516903d47fe124cb86869098627ef5b3e0035ab9e20c19311bec",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d00482aa461192f79ea8d41d2ba6276a48384371402da4c5281668dfa08397c0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d416c15b9a124d6282ed77242a4925f70105b201fdeebcb16e159a838835ef58",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d418b5ea5c4949c4cbf14b5222cbd310d8c89af4be0b1c26ede1d60d68ae4330",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/daf863d8ab9ae1271cf64d513838e2b420a7b3cf709f29f8dfc7d8c1888b0b36",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/dff402abfef3753a332f307fd524b5583d45b2027751d88b18021fbb1de632cf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e292306db7ca3d55bacc38eae5e4024b8b8827be6bc6d2f4fc7f3d0fc90924c1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e46f59d101483c47c704a3f0f4314a117679a93e716f558679804b57a47859ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec2dd614deeb773be70ab5c3a14c57326cf9a9908c766e62779642c427729754",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec85285f609e6fb66aec66ef6720b4228234ca731cb53cca1b45da42839f18d9",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f7ed6416ae2a65d4a0f7a8311f7e66017a0e5459fefafbe3be7bded22a8fade7",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f858949eedd77c6c9bda48538523503abf31f13c2b8c282162e8f997a94420f0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f96ea4d60a5380d9a5ff04c32ca9ca11666b352c2336ce3786c63b8b59082e90",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fc2996b8f5e386b9746e794ae83c5d82a8e97fbec9257a2285a0fbe1190f0b3e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fcb0a93efa5751b54368a1f7c853d41781790ce3eb4b6cc00615aec4a45d32d8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fedc384b230ba679bc03125d0dadf6657b17b58c9f087e57babd4efa8af8018b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ff4821a4b50de2bf88f8e4cc3926da7fa9d34dec760e24fc15c01e74531f42a8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/pixi-DUg-Cnsj.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/chunk-5JFECSLO-D9upbjWb.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/export-D2R5Tv1h.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/?pick",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-BciRk93Z.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/preload-helper-BXl3LOEh.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Geometry-BVGE9sPx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/AbstractRenderer-BDC7aS4g.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BufferResource-ANuAE7Bd.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GlUniformGroupSystem-BaowIFjC.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GpuUboSystem-B3i34lsV.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ViewableBuffer-DIlx44V_.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ParticleBuffer-2JKSlx_Y.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-CH7gZrvx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/stronghold-main-D1X_wGtn.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-B2zxxclr.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-DNuTbAWm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/State-CbHbO1Jw.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/canvasUtils-DJd2wqB8.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/foundations-BDiM_X20.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableSprite-D6h1r7YO.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/colorToUniform-cdLUR7yZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/CanvasPool-CxgDb1Vl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Graphics-Ba1BIsJi.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTextureBatchBindGroup-B5YZEy0N.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getPo2TextureFromSource-CpbqXIBZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableMesh-BV4KxWDm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Filter-CTy8GwjU.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/localUniformBit-BOGrcT1E.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/WebGLRenderer-BlnWilkl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTexelRangeRects-BAg0PCsq.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTargetSystem-CGzGapeW.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTexture-Dg2V8apy.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/browserAll-D0DOY3KD.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/webworkerAll-CTu-vIJZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/contracts",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/channels/stronghold-original",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-prefab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-presentation",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/065d57ee580f593096d11a66dd33efe1b85d694da970e010781f0ea282922e19",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0cdd9dc24ef68d534616b5cec970eb899f4793810518a7757348e65c32a2341e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/234a3651207a8f1f6eba9cff8a920c3cb8426b55bb66ca4bc680a88542894ff1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4f86742df4b6228a570cc3a0cd5108a4828962febf33e6d193820c895f461674",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f48791ad85560671008c5b03ec44741120a8d11986a8cbf3b2cd3cf6e8cdfb6c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/026b41c007f1686fab55072b795a34f8428b07a957c1ef5dcf746737cabd9fc4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/032fe61175e2558061355c1d7c3615fb689372d9c2f3c9c8c3f1e27401e44949",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0685ed56f697f931c35a5555e0012abbd0e4ebc7d2fd1b243f09874f5f979c5d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/080cd18f585caac58e06d34bdb04b26a2136a0fc55961635648c954064b1c813",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0c1dc6a86bbf68f90a86dedb6ea7e3c3692246d0eabf6a8fbe9f6cf86b41b626",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/17dda2e7d6fd67bdd7e26e0deeb06fdc3b99b0701632b2a5320c42dbf8ede405",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/19d72971f18f879a9816da398d33f01b1152e3d627146566e1cc407838f3a8e4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/1b365b8e56fcbfe894dfde59a927d39cb7883127e8f4ebc1168bba92ea270190",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/20486174f1431c3997841835e4fcd3e9368d681271ac21406eb13cb979ff1601",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/221a90d78cabb9a6f6df951278db64f7c77d8ed6059387fdd9cac756af9badb8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2968c6c80c398701575333854cb85aa81f3d19a9dcc132c800644a3cdd323620",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2c2907e90b1e9bfe4fc874af02571937a6043159fa7e89948815d065187576ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/329a6ebad0d5f00d8b045b27e6c02aa714f5cfd8ee19adf726f74edf9405808a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3c7f538fb42a17da2c896d564edaccd507203dac5a8f0e4cb4e480d867b6f5ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3e5b135f8997c17c9411a55f6093625ec1d8de53b71c2dc37a9c73b9891cf828",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/44dba7dc228b26ee00b42f8335168b53794b5bf312ceef9d2bc3b515059b8d84",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/468915abe839bb997f21ca2a78ed9a1abbbe3e0e28134dc104173a85a0d1dc71",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46c01d44264425d243941950d382e3404b8cd077c46a5b7b9889e3385f0614b6",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46fa26f6d722efc723cffa65694e1de832c07709f7ec7539e1eee5329c423c52",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/496c6cf474cd9530609b615fd41bcd4929e68cc732bdb281315d28c8f3a0c2aa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c21f90e32af1f90ebea924a46602b909b7adb6c26c0cac90387eec9d57bc151",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c5a2f7c3f9137dc91fd2b9132b2d24f3ae3458f0158d4540b43f10e70761511",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5526a945668ea0ff6d3b0f290b2302c321b3817937e03bfe3cdd31e4d22a88fa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/55bfa99307f8ddf5d47fde39f3d5eab8fefb7509392d530e8062d8e63e628d8e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/57b6f03a11fcde0567de9dbe4979924dd6613f76829d1b391726c6057d04c6ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/59d1cfd40b61b60d754e1c36cc3ddbe3beb126ef9ad23b0d520f111a235a097c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c4c3a0224c3fbc0b079aa26989becb32a209a178c364df1a3583c4d16fd711e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c59556f362e1befbf1cbaa567f5ed5b15742d729993b30d748979c75e2d5d55",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/60f0326a3c71b05169f7437c2f8512474cc1609365e9f1fd4b098fa65dce6cbd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/64586ca0bb143eab896370c4c400c00ea23051d680bf72f3c1865197ab494346",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6d0d52bd8c3477e97b0a760b447df56e3f54e098ca05392ad95246adc0388225",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6fe734682613eaffdc14da3bb3b39ddb9754819a8125fcd0460ea196ac90c583",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b773a882856310ea579c8faa41ac0a78231fe8582578887e07598fa68f9b43",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b792fe7c8b0fc1a0386915d8d435b8fdbbf25d02e32752014cf619b29e3438",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8d7d0982a64771a7eb9b75d8ef33b466b56fe9820a7f33e33c1593a1552e05b8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8fca9f8b7019438ecbb8c19cce7b3f22a5c329b0c21f876cfb2905b89dd1c2eb",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/90a37433feb336caceb2e5355a661c4db4a82e9cb43564cfcc6972e936d91f9b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/91e275a5c5e53a47dcd6e129cb6a365874e74068de324b0b0571d8c0c7d24236",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9713981154f2e8110a50640e8cbaa10a8c195f00f58e1319470616adf02f8da2",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/984edba7bf7b94799bb495dfc96bc91df92d2ca8d53f7fa625b3c90140b9b3b5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9a647e728624d49368fd27193a6246f50c27945fa273dbaee68f787fb04a5206",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9df1e1b353b1ed33cf6f23490848e6b234ea0a66d072c08458da696b67713070",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9f3c517385666c4c2950e746b2bb8470974a75395639b4b5e19e9a550fd16f5f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a291f01fede0da0ac92d873eb79edb35d2846053ad322de6c1d0279aca0bd712",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a515ff82413ce2c035a31faab1c0cb29dbcef118bfbdb54da25062e51dd56ffd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a7d60db431926fcc37de902ecc460fb688386eb2d67c17c4db468352c2af01ed",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a8fc629b08e3ab599f0d7f603c0abed330dc2f442a678a4d01865163d6510a17",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/acf6702e035b8ba52ba6fdfee1f78df2f744a46aae61e9c832ef7371fc7b6778",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/adbe0cb2987115b5efc4ec5d95c7f8271f0d1af232b2e10d0ae92140a2e58125",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b2a2df30feae6a2947d300f2cba11ba1767e3ddb83d983936101ae6d22ddd493",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b5777ecca4e041666554ddd2c5445c5df13b73361ab0edb30fb928b8fa576ec5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b6017dcd36986e33f65d1f012ed1785bf3afdca50d10dab45df3aba44cd26c41",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b69c9ee51b01b4449f16b69f02ea3e1a7cb8f98961fc0eda83166bbf01e20641",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bd7dc71e7593657b618be8a5963d7fd6fdbde2df7bbeb1d7bd99ca9bfdbd2619",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bdb15fe76190b66db27045d42e417ddfeb490105e4b9bad1f8bc7b62eec3621e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c12d52ed0f4eace307424265b85c59fdd2732c34f01f6f4ae881d95fcb5e3783",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c156e7c7a3efc4a8ca0454f3e160e9c2f56c46e95455c3d2d6975254ba8b45e5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c54a37d6f668d687dce834c9f48715fe1a2e9ad7bbb291e19949c260c1f6e94f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ca1b60f1c7368e4e3ffc361f1df02f5f4c1dd4c68494cc7dd949a5f00753654d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ccf677c137c5516903d47fe124cb86869098627ef5b3e0035ab9e20c19311bec",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d00482aa461192f79ea8d41d2ba6276a48384371402da4c5281668dfa08397c0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d416c15b9a124d6282ed77242a4925f70105b201fdeebcb16e159a838835ef58",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d418b5ea5c4949c4cbf14b5222cbd310d8c89af4be0b1c26ede1d60d68ae4330",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/daf863d8ab9ae1271cf64d513838e2b420a7b3cf709f29f8dfc7d8c1888b0b36",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/dff402abfef3753a332f307fd524b5583d45b2027751d88b18021fbb1de632cf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e292306db7ca3d55bacc38eae5e4024b8b8827be6bc6d2f4fc7f3d0fc90924c1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e46f59d101483c47c704a3f0f4314a117679a93e716f558679804b57a47859ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec2dd614deeb773be70ab5c3a14c57326cf9a9908c766e62779642c427729754",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec85285f609e6fb66aec66ef6720b4228234ca731cb53cca1b45da42839f18d9",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f7ed6416ae2a65d4a0f7a8311f7e66017a0e5459fefafbe3be7bded22a8fade7",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f858949eedd77c6c9bda48538523503abf31f13c2b8c282162e8f997a94420f0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f96ea4d60a5380d9a5ff04c32ca9ca11666b352c2336ce3786c63b8b59082e90",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fc2996b8f5e386b9746e794ae83c5d82a8e97fbec9257a2285a0fbe1190f0b3e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fcb0a93efa5751b54368a1f7c853d41781790ce3eb4b6cc00615aec4a45d32d8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fedc384b230ba679bc03125d0dadf6657b17b58c9f087e57babd4efa8af8018b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ff4821a4b50de2bf88f8e4cc3926da7fa9d34dec760e24fc15c01e74531f42a8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/pixi-DUg-Cnsj.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/chunk-5JFECSLO-D9upbjWb.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/export-D2R5Tv1h.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-BciRk93Z.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/preload-helper-BXl3LOEh.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Geometry-BVGE9sPx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/AbstractRenderer-BDC7aS4g.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BufferResource-ANuAE7Bd.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GlUniformGroupSystem-BaowIFjC.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GpuUboSystem-B3i34lsV.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ViewableBuffer-DIlx44V_.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ParticleBuffer-2JKSlx_Y.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-CH7gZrvx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/stronghold-main-D1X_wGtn.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-B2zxxclr.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-DNuTbAWm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/State-CbHbO1Jw.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/canvasUtils-DJd2wqB8.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/foundations-BDiM_X20.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableSprite-D6h1r7YO.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/colorToUniform-cdLUR7yZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/CanvasPool-CxgDb1Vl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Graphics-Ba1BIsJi.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTextureBatchBindGroup-B5YZEy0N.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getPo2TextureFromSource-CpbqXIBZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableMesh-BV4KxWDm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Filter-CTy8GwjU.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/localUniformBit-BOGrcT1E.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/WebGLRenderer-BlnWilkl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTexelRangeRects-BAg0PCsq.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTargetSystem-CGzGapeW.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTexture-Dg2V8apy.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/browserAll-D0DOY3KD.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/webworkerAll-CTu-vIJZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/contracts",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/contracts",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/channels/stronghold-original",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-prefab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-presentation",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/065d57ee580f593096d11a66dd33efe1b85d694da970e010781f0ea282922e19",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0cdd9dc24ef68d534616b5cec970eb899f4793810518a7757348e65c32a2341e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/234a3651207a8f1f6eba9cff8a920c3cb8426b55bb66ca4bc680a88542894ff1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4f86742df4b6228a570cc3a0cd5108a4828962febf33e6d193820c895f461674",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f48791ad85560671008c5b03ec44741120a8d11986a8cbf3b2cd3cf6e8cdfb6c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/026b41c007f1686fab55072b795a34f8428b07a957c1ef5dcf746737cabd9fc4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/032fe61175e2558061355c1d7c3615fb689372d9c2f3c9c8c3f1e27401e44949",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0685ed56f697f931c35a5555e0012abbd0e4ebc7d2fd1b243f09874f5f979c5d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/080cd18f585caac58e06d34bdb04b26a2136a0fc55961635648c954064b1c813",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/0c1dc6a86bbf68f90a86dedb6ea7e3c3692246d0eabf6a8fbe9f6cf86b41b626",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/17dda2e7d6fd67bdd7e26e0deeb06fdc3b99b0701632b2a5320c42dbf8ede405",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/19d72971f18f879a9816da398d33f01b1152e3d627146566e1cc407838f3a8e4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/1b365b8e56fcbfe894dfde59a927d39cb7883127e8f4ebc1168bba92ea270190",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/20486174f1431c3997841835e4fcd3e9368d681271ac21406eb13cb979ff1601",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/221a90d78cabb9a6f6df951278db64f7c77d8ed6059387fdd9cac756af9badb8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2968c6c80c398701575333854cb85aa81f3d19a9dcc132c800644a3cdd323620",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/2c2907e90b1e9bfe4fc874af02571937a6043159fa7e89948815d065187576ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/329a6ebad0d5f00d8b045b27e6c02aa714f5cfd8ee19adf726f74edf9405808a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3c7f538fb42a17da2c896d564edaccd507203dac5a8f0e4cb4e480d867b6f5ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/3e5b135f8997c17c9411a55f6093625ec1d8de53b71c2dc37a9c73b9891cf828",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/44dba7dc228b26ee00b42f8335168b53794b5bf312ceef9d2bc3b515059b8d84",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/468915abe839bb997f21ca2a78ed9a1abbbe3e0e28134dc104173a85a0d1dc71",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46c01d44264425d243941950d382e3404b8cd077c46a5b7b9889e3385f0614b6",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/46fa26f6d722efc723cffa65694e1de832c07709f7ec7539e1eee5329c423c52",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/496c6cf474cd9530609b615fd41bcd4929e68cc732bdb281315d28c8f3a0c2aa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c21f90e32af1f90ebea924a46602b909b7adb6c26c0cac90387eec9d57bc151",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/4c5a2f7c3f9137dc91fd2b9132b2d24f3ae3458f0158d4540b43f10e70761511",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5526a945668ea0ff6d3b0f290b2302c321b3817937e03bfe3cdd31e4d22a88fa",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/55bfa99307f8ddf5d47fde39f3d5eab8fefb7509392d530e8062d8e63e628d8e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/57b6f03a11fcde0567de9dbe4979924dd6613f76829d1b391726c6057d04c6ba",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/59d1cfd40b61b60d754e1c36cc3ddbe3beb126ef9ad23b0d520f111a235a097c",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c4c3a0224c3fbc0b079aa26989becb32a209a178c364df1a3583c4d16fd711e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5c59556f362e1befbf1cbaa567f5ed5b15742d729993b30d748979c75e2d5d55",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/60f0326a3c71b05169f7437c2f8512474cc1609365e9f1fd4b098fa65dce6cbd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/64586ca0bb143eab896370c4c400c00ea23051d680bf72f3c1865197ab494346",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6d0d52bd8c3477e97b0a760b447df56e3f54e098ca05392ad95246adc0388225",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/6fe734682613eaffdc14da3bb3b39ddb9754819a8125fcd0460ea196ac90c583",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b773a882856310ea579c8faa41ac0a78231fe8582578887e07598fa68f9b43",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/89b792fe7c8b0fc1a0386915d8d435b8fdbbf25d02e32752014cf619b29e3438",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8d7d0982a64771a7eb9b75d8ef33b466b56fe9820a7f33e33c1593a1552e05b8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/8fca9f8b7019438ecbb8c19cce7b3f22a5c329b0c21f876cfb2905b89dd1c2eb",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/90a37433feb336caceb2e5355a661c4db4a82e9cb43564cfcc6972e936d91f9b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/91e275a5c5e53a47dcd6e129cb6a365874e74068de324b0b0571d8c0c7d24236",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9713981154f2e8110a50640e8cbaa10a8c195f00f58e1319470616adf02f8da2",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/984edba7bf7b94799bb495dfc96bc91df92d2ca8d53f7fa625b3c90140b9b3b5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9a647e728624d49368fd27193a6246f50c27945fa273dbaee68f787fb04a5206",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9df1e1b353b1ed33cf6f23490848e6b234ea0a66d072c08458da696b67713070",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/9f3c517385666c4c2950e746b2bb8470974a75395639b4b5e19e9a550fd16f5f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a291f01fede0da0ac92d873eb79edb35d2846053ad322de6c1d0279aca0bd712",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a515ff82413ce2c035a31faab1c0cb29dbcef118bfbdb54da25062e51dd56ffd",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a7d60db431926fcc37de902ecc460fb688386eb2d67c17c4db468352c2af01ed",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/a8fc629b08e3ab599f0d7f603c0abed330dc2f442a678a4d01865163d6510a17",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/acf6702e035b8ba52ba6fdfee1f78df2f744a46aae61e9c832ef7371fc7b6778",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/adbe0cb2987115b5efc4ec5d95c7f8271f0d1af232b2e10d0ae92140a2e58125",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b2a2df30feae6a2947d300f2cba11ba1767e3ddb83d983936101ae6d22ddd493",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b5777ecca4e041666554ddd2c5445c5df13b73361ab0edb30fb928b8fa576ec5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b6017dcd36986e33f65d1f012ed1785bf3afdca50d10dab45df3aba44cd26c41",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/b69c9ee51b01b4449f16b69f02ea3e1a7cb8f98961fc0eda83166bbf01e20641",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bd7dc71e7593657b618be8a5963d7fd6fdbde2df7bbeb1d7bd99ca9bfdbd2619",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/bdb15fe76190b66db27045d42e417ddfeb490105e4b9bad1f8bc7b62eec3621e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c12d52ed0f4eace307424265b85c59fdd2732c34f01f6f4ae881d95fcb5e3783",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c156e7c7a3efc4a8ca0454f3e160e9c2f56c46e95455c3d2d6975254ba8b45e5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/c54a37d6f668d687dce834c9f48715fe1a2e9ad7bbb291e19949c260c1f6e94f",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ca1b60f1c7368e4e3ffc361f1df02f5f4c1dd4c68494cc7dd949a5f00753654d",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ccf677c137c5516903d47fe124cb86869098627ef5b3e0035ab9e20c19311bec",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d00482aa461192f79ea8d41d2ba6276a48384371402da4c5281668dfa08397c0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d416c15b9a124d6282ed77242a4925f70105b201fdeebcb16e159a838835ef58",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/d418b5ea5c4949c4cbf14b5222cbd310d8c89af4be0b1c26ede1d60d68ae4330",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/daf863d8ab9ae1271cf64d513838e2b420a7b3cf709f29f8dfc7d8c1888b0b36",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/dff402abfef3753a332f307fd524b5583d45b2027751d88b18021fbb1de632cf",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e292306db7ca3d55bacc38eae5e4024b8b8827be6bc6d2f4fc7f3d0fc90924c1",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/e46f59d101483c47c704a3f0f4314a117679a93e716f558679804b57a47859ab",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec2dd614deeb773be70ab5c3a14c57326cf9a9908c766e62779642c427729754",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ec85285f609e6fb66aec66ef6720b4228234ca731cb53cca1b45da42839f18d9",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f7ed6416ae2a65d4a0f7a8311f7e66017a0e5459fefafbe3be7bded22a8fade7",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f858949eedd77c6c9bda48538523503abf31f13c2b8c282162e8f997a94420f0",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/f96ea4d60a5380d9a5ff04c32ca9ca11666b352c2336ce3786c63b8b59082e90",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fc2996b8f5e386b9746e794ae83c5d82a8e97fbec9257a2285a0fbe1190f0b3e",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fcb0a93efa5751b54368a1f7c853d41781790ce3eb4b6cc00615aec4a45d32d8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/fedc384b230ba679bc03125d0dadf6657b17b58c9f087e57babd4efa8af8018b",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/assets/ff4821a4b50de2bf88f8e4cc3926da7fa9d34dec760e24fc15c01e74531f42a8",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-BciRk93Z.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/preload-helper-BXl3LOEh.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Geometry-BVGE9sPx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/AbstractRenderer-BDC7aS4g.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BufferResource-ANuAE7Bd.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GlUniformGroupSystem-BaowIFjC.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/GpuUboSystem-B3i34lsV.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ViewableBuffer-DIlx44V_.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/ParticleBuffer-2JKSlx_Y.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-CH7gZrvx.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/stronghold-main-D1X_wGtn.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/index-B2zxxclr.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/init-DNuTbAWm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/State-CbHbO1Jw.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/canvasUtils-DJd2wqB8.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/foundations-BDiM_X20.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableSprite-D6h1r7YO.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/colorToUniform-cdLUR7yZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/CanvasPool-CxgDb1Vl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Graphics-Ba1BIsJi.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTextureBatchBindGroup-B5YZEy0N.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getPo2TextureFromSource-CpbqXIBZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/BatchableMesh-BV4KxWDm.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/Filter-CTy8GwjU.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/localUniformBit-BOGrcT1E.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/WebGLRenderer-BlnWilkl.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/getTexelRangeRects-BAg0PCsq.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTargetSystem-CGzGapeW.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/RenderTexture-Dg2V8apy.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/browserAll-D0DOY3KD.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/assets/webworkerAll-CTu-vIJZ.js",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/contracts",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/channels/stronghold-original",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5",
+      "method": "GET",
+      "authorization": false
+    },
+    {
+      "url": "http://127.0.0.1:3099/content/v1/releases/9995486e640e951343b9a1b3ddcf92a5/documents/stronghold-original-prefab",
+      "method": "GET",
+      "authorization": false
+    }
+  ],
+  "checks": [
+    "original desktop picker pointer/keyboard",
+    "Amber Warden selection remembered after reload",
+    "keyboard movement/direction animation",
+    "mobile picker pointer",
+    "Rift Runner mobile exploration",
+    "real CDP touch stick movement",
+    "upper-half touch pan",
+    "mobile landscape picker",
+    "503 and Pixi Retry",
+    "corrupt immutable document rejected",
+    "one canvas / no HTML controls",
+    "public credential-free GET only"
+  ]
+}

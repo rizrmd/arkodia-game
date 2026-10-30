@@ -326,13 +326,27 @@ export function createReliefLayer(
         .fill({ color: 0x0b1018, alpha: 0.24 });
       wrap.addChild(shadow);
 
-      const sprite = new Sprite(cliffTex);
-      sprite.anchor.set(0.5, 0.5);
-      sprite.position.set(b.left + b.w * 0.5, b.top + b.h * 0.5);
-      const sx = (b.w / Math.max(1, cliffTex.width)) * (b.flip ? -1 : 1);
-      const sy = b.h / Math.max(1, cliffTex.height);
-      sprite.scale.set(sx, sy);
-      wrap.addChild(sprite);
+      if (cliffTex !== Texture.WHITE) {
+        const sprite = new Sprite(cliffTex);
+        sprite.anchor.set(0.5, 0.5);
+        sprite.position.set(b.left + b.w * 0.5, b.top + b.h * 0.5);
+        const sx = (b.w / Math.max(1, cliffTex.width)) * (b.flip ? -1 : 1);
+        const sy = b.h / Math.max(1, cliffTex.height);
+        sprite.scale.set(sx, sy);
+        wrap.addChild(sprite);
+      } else {
+        const cliffFace = new Graphics();
+        const facePts: number[] = [];
+        for (const [nx, ny] of HILL_SURFACE) {
+          const ux = b.flip ? 1 - nx : nx;
+          facePts.push(b.left + ux * b.w, b.top + Math.min(0.96, ny + 0.14) * b.h);
+        }
+        cliffFace
+          .poly(facePts)
+          .fill({ color: 0x3b4856, alpha: 0.78 })
+          .stroke({ color: 0x26313d, width: 3, alpha: 0.65, join: "round" });
+        wrap.addChild(cliffFace);
+      }
 
       const crest = new Graphics();
       const pts: number[] = [];

@@ -549,14 +549,16 @@ export function createCourtSurface(
   const left = tileToCourt(minTile, maxTile);
 
   const pad = 64;
+  const pavingTex = pavingTexture ?? Texture.WHITE;
   const paving = new TilingSprite({
-    texture: pavingTexture,
+    texture: pavingTex,
     width: right.x - left.x + pad * 2,
     height: bottom.y - top.y + pad * 2,
   });
   paving.position.set(left.x - pad, top.y - pad);
   paving.tileScale.set(1 / pavingDensity, 1 / pavingDensity);
-  paving.tint = 0xd6d2cc;
+  paving.tint = pavingTex === Texture.WHITE ? 0x3b3631 : 0xd6d2cc;
+  paving.alpha = pavingTex === Texture.WHITE ? 0.78 : 1;
   paving.zIndex = 1;
 
   const pavingMask = new Graphics();

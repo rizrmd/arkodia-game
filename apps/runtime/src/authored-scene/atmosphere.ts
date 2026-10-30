@@ -301,6 +301,59 @@ export type TorchLayerResult = {
   step: (timeSec: number, daylight: DaylightState) => void;
 };
 
+let cachedGlowTex: Texture | null = null;
+let cachedFlameTex: Texture | null = null;
+
+function defaultGlowTexture(): Texture {
+  if (cachedGlowTex) return cachedGlowTex;
+  if (typeof document !== "undefined") {
+    const canvas = document.createElement("canvas");
+    canvas.width = 96;
+    canvas.height = 96;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      const grad = ctx.createRadialGradient(48, 48, 2, 48, 48, 46);
+      grad.addColorStop(0, "rgba(255,255,255,0.95)");
+      grad.addColorStop(0.38, "rgba(255,220,165,0.48)");
+      grad.addColorStop(0.75, "rgba(255,160,80,0.12)");
+      grad.addColorStop(1, "rgba(255,140,60,0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 96, 96);
+      cachedGlowTex = Texture.from(canvas);
+      return cachedGlowTex;
+    }
+  }
+  return Texture.WHITE;
+}
+
+function defaultFlameTexture(): Texture {
+  if (cachedFlameTex) return cachedFlameTex;
+  if (typeof document !== "undefined") {
+    const canvas = document.createElement("canvas");
+    canvas.width = 48;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      const grad = ctx.createRadialGradient(24, 38, 2, 24, 34, 24);
+      grad.addColorStop(0, "rgba(255,255,240,1)");
+      grad.addColorStop(0.45, "rgba(255,196,90,0.85)");
+      grad.addColorStop(0.85, "rgba(255,110,30,0.25)");
+      grad.addColorStop(1, "rgba(255,80,10,0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(24, 4);
+      ctx.quadraticCurveTo(44, 28, 36, 52);
+      ctx.quadraticCurveTo(24, 62, 12, 52);
+      ctx.quadraticCurveTo(4, 28, 24, 4);
+      ctx.closePath();
+      ctx.fill();
+      cachedFlameTex = Texture.from(canvas);
+      return cachedFlameTex;
+    }
+  }
+  return Texture.WHITE;
+}
+
 export function createTorchLayer(
   lights: readonly TorchLightSpec[] = DEFAULT_TORCH_LIGHTS,
   textures: Record<string, Texture | undefined> = {},
@@ -310,11 +363,11 @@ export function createTorchLayer(
   const flameTex =
     textures["/vfx/textures/flame.png"] ??
     textures["/vfx/textures/flare.png"] ??
-    Texture.WHITE;
+    defaultFlameTexture();
   const glowTex =
     textures["/vfx/textures/glow.png"] ??
     textures["/vfx/textures/flare.png"] ??
-    Texture.WHITE;
+    defaultGlowTexture();
 
   const nodes: TorchNodeEntry[] = [];
   const lightingContainer = new Container();

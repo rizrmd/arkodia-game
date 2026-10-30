@@ -10,3 +10,11 @@ dist/
 .deploy-runtime/
 
 .deploy-runtime-bootstrap/
+
+# Shared asset tooling: cache, staging and Python bytecode stay outside Git.
+.asset-cache/
+__pycache__/
+*.pyc
+
+# Served from pinned Content API release in assets.lock.json.
+/apps/runtime/public/models/*.glb

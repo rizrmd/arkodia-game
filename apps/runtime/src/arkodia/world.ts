@@ -11,16 +11,24 @@ import {
 import type { Resources, Prop } from "./resources";
 import type { HeroId } from "./heroes";
 import { strongholdCollision, walkStep } from "./collision";
-import { applyNativeProp } from "../authored-scene/renderer";
+import {
+  applyActorSilhouetteCutout,
+  applyNativeProp,
+  createEnvironmentRuntime,
+  type EnvironmentRuntime,
+} from "../authored-scene/renderer";
 import { createAutoWalk } from "../navigation";
+
 export class StrongholdWorld {
   world = new Container();
   objects = new Container();
   player = new Sprite();
+  playerSilhouette = new Sprite();
   shadow = new Graphics();
   gateFrame = 0;
   clip = "idle-SE";
-
+  environment: EnvironmentRuntime;
+  playerLift = 0;
 
   private facing = 1;
   private back = false;
@@ -44,10 +52,25 @@ export class StrongholdWorld {
     private heroRenderer: Awaited<ReturnType<typeof createHeroRenderer>>,
   ) {
     const p = resources.data.prefab;
+    const textureRecord = Object.fromEntries(resources.textures.entries());
+    const torchLights = p.lights.map((light) => ({
+      x: p.court.origin.x + (light.u - light.v) * 64,
+      y: p.court.origin.y + (light.u + light.v) * 32,
+    }));
+
+    this.environment = createEnvironmentRuntime({
+      textures: textureRecord,
+      torches: torchLights,
+    });
+
     this.collision = strongholdCollision(
       p,
       resources.data.nav.columns,
       resources.data.ui["/world/map.json"] as any,
+      {
+        reliefFeatures: this.environment.reliefFeatures,
+        environmentColumns: this.environment.authored.columns,
+      },
     );
     const texture = (path: string) => resources.texture(path);
     // Same 2:1 material projection and density as original world-view.ts/snow-material.ts.
@@ -68,9 +91,16 @@ export class StrongholdWorld {
       );
       return tile;
     };
-    this.world.addChild(
-      material("/modular-stronghold/v2/snow-soft-texture.png", 0.7),
+    this.world.sortableChildren = true;
+    const snowTile = material(
+      "/modular-stronghold/v2/snow-soft-texture.png",
+      0.7,
     );
+    snowTile.zIndex = -20;
+    this.world.addChild(snowTile);
+    this.world.addChild(this.environment.frontier.ground);
+    this.world.addChild(this.environment.courtSurface.contactShadow);
+
     const paving = material(
         "/modular-stronghold/v2/paving-warm-texture.png",
         0.22,
@@ -78,6 +108,7 @@ export class StrongholdWorld {
       C = p.court,
       o = C.origin,
       n = C.size;
+    paving.zIndex = 1;
     const mask = new Graphics()
       .poly([
         o.x,
@@ -90,10 +121,32 @@ export class StrongholdWorld {
         o.y + n * 32,
       ])
       .fill(0xffffff);
+    mask.zIndex = 1;
     paving.mask = mask;
     this.world.addChild(paving, mask);
+    this.world.addChild(this.environment.courtSurface.snowApron);
+    this.world.addChild(this.environment.foundations.under);
+    this.world.addChild(this.environment.shadows.container);
+    this.world.addChild(this.environment.frontier.shade);
+    this.world.addChild(this.environment.authored.authoredGround);
+
     this.objects.sortableChildren = true;
+    this.objects.zIndex = 10;
     this.world.addChild(this.objects);
+    this.world.addChild(this.environment.foundations.face);
+    this.world.addChild(this.environment.authored.authoredStage);
+    this.world.addChild(this.environment.authored.gatheringStage);
+    this.world.addChild(this.environment.torches.lightingContainer);
+
+    for (const reliefNode of this.environment.relief.nodes) {
+      this.objects.addChild(reliefNode.container);
+    }
+    for (const [, frontierSprite] of this.environment.frontier.sprites) {
+      if (frontierSprite.parent === this.environment.frontier.upright) {
+        this.objects.addChild(frontierSprite);
+      }
+    }
+
     for (const prop of resources.data.props) this.prop(prop);
     // Fresh level-one core is the original campfire, not a restored castle/building layout.
     this.prop({
@@ -108,7 +161,8 @@ export class StrongholdWorld {
       depth: 320,
       layer: "world",
     });
-    for (const light of p.lights) {
+    for (let i = 0; i < p.lights.length; i++) {
+      const light = p.lights[i]!;
       const x = p.court.origin.x + (light.u - light.v) * 64,
         y = p.court.origin.y + (light.u + light.v) * 32;
       if (!light.wall) {
@@ -125,6 +179,13 @@ export class StrongholdWorld {
       torch.height = 39;
       torch.zIndex = y;
       this.objects.addChild(torch);
+
+      const torchNode = this.environment.torches.nodes[i];
+      if (torchNode) {
+        torchNode.container.position.set(x, y - light.lift + 22);
+        torchNode.container.zIndex = y + 0.5;
+        this.objects.addChild(torchNode.container);
+      }
     }
     const sheet = texture("/buildings/starter-boundary/gate-sheet.png");
     for (let i = 0; i < 16; i++)
@@ -147,11 +208,20 @@ export class StrongholdWorld {
     this.gate.zIndex = 778;
     this.objects.addChild(this.gate);
     this.heroTexture = Texture.from(heroRenderer.canvas);
-    heroRenderer.render('idle',0,0,0);
+    heroRenderer.render("idle", 0, 0, 0);
     this.player.texture = this.heroTexture;
-    this.player.anchor.set(.5, heroRenderer.pivotY);
-    this.player.scale.set(.165);
+    this.player.anchor.set(0.5, heroRenderer.pivotY);
+    this.player.scale.set(0.165);
     this.player.position.set(p.heroSpawn.x, p.heroSpawn.y);
+
+    this.playerSilhouette.texture = this.heroTexture;
+    this.playerSilhouette.anchor.set(0.5, heroRenderer.pivotY);
+    this.playerSilhouette.scale.set(0.165);
+    this.playerSilhouette.tint = 0x9ec5ff;
+    this.playerSilhouette.alpha = 0;
+    this.playerSilhouette.visible = false;
+    this.playerSilhouette.zIndex = 999999;
+
     try {
       const saved = JSON.parse(
         localStorage.getItem("arkodia.runtime.position.v1." + hero) || "null",
@@ -165,7 +235,7 @@ export class StrongholdWorld {
         this.player.position.set(saved.x, saved.y);
     } catch {}
     this.shadow.ellipse(0, 0, 12, 5).fill({ color: 0x182126, alpha: 0.22 });
-    this.objects.addChild(this.shadow, this.player);
+    this.objects.addChild(this.shadow, this.player, this.playerSilhouette);
     this.cx = this.player.x;
     this.cy = this.player.y - 40;
     this.walker = createAutoWalk({
@@ -177,7 +247,7 @@ export class StrongholdWorld {
   }
   private prop(p: Prop) {
     const s = new Sprite(this.resources.texture(p.file));
-    applyNativeProp(s,p);
+    applyNativeProp(s, p);
     s.zIndex = p.layer === "ground" ? -10000 : p.depth;
     this.objects.addChild(s);
   }
@@ -198,12 +268,16 @@ export class StrongholdWorld {
       );
     }
     this.gate.texture = this.gateFrames[this.gateFrame];
-    const ox = p.x,
-      oy = p.y;
-    const next = walkStep(p.x, p.y, d, dt, (x, y) =>
-      this.collision.blocked(x, y, this.gateFrame / 15 >= G.passableAt),
+    const next = walkStep(
+      p.x,
+      p.y,
+      d,
+      dt,
+      (x, y) => this.collision.blocked(x, y, this.gateFrame / 15 >= G.passableAt),
+      this.collision.cliff,
     );
     p.position.set(next.x, next.y);
+    this.playerLift = this.environment.liftAt(p.x, p.y);
     const moving = next.progress > dt * 2;
     if (moving) {
       const l = Math.hypot(d.x, d.y);
@@ -228,14 +302,17 @@ export class StrongholdWorld {
     const clip = (moving ? "move" : "idle") + "-" + view;
     if (clip !== this.clip) {
       this.clip = clip;
-
     }
 
     if (moving) this.yaw = Math.atan2(d.x, d.y * 2);
-    this.heroRenderer.render(moving ? 'run' : 'idle', this.yaw, dt);
+    this.heroRenderer.render(moving ? "run" : "idle", this.yaw, dt);
     this.heroTexture.source.update();
+    const liftAnchorOffset =
+      this.playerLift / Math.max(1, this.heroTexture.height * 0.165);
+    this.player.anchor.set(0.5, this.heroRenderer.pivotY + liftAnchorOffset);
     this.player.zIndex = p.y;
-    this.shadow.position.set(p.x, p.y);
+    this.playerSilhouette.position.set(p.x, p.y - this.playerLift);
+    this.shadow.position.set(p.x, p.y - this.playerLift);
     this.shadow.zIndex = p.y - 0.01;
     const scale =
       Math.max(
@@ -265,13 +342,43 @@ export class StrongholdWorld {
       w / 2 - (this.cx + this.pan.x) * scale,
       h / 2 - (this.cy + this.pan.y) * scale,
     );
+
+    const viewWidth = w / scale;
+    const viewHeight = h / scale;
+    const viewX = this.cx + this.pan.x - viewWidth / 2;
+    const viewY = this.cy + this.pan.y - viewHeight / 2;
+    this.environment.step(dt, {
+      actor: { x: p.x, y: p.y, lift: this.playerLift },
+      camera: {
+        viewX,
+        viewY,
+        viewWidth,
+        viewHeight,
+        camX: this.cx + this.pan.x,
+        camY: this.cy + this.pan.y,
+        screenWidth: w,
+        screenHeight: h,
+      },
+    });
+    applyActorSilhouetteCutout(
+      this.playerSilhouette,
+      this.environment.actorOcclusion,
+    );
+
     this.savedAt += dt;
     if (this.savedAt > 1) {
       this.save();
       this.savedAt = 0;
     }
   }
-  diagnostics() { return {renderer:"skinned-glb",bones:this.heroRenderer.bones.length,clip:this.heroRenderer.canvas.dataset.clip,yaw:this.yaw}; }
+  diagnostics() {
+    return {
+      renderer: "skinned-glb",
+      bones: this.heroRenderer.bones.length,
+      clip: this.heroRenderer.canvas.dataset.clip,
+      yaw: this.yaw,
+    };
+  }
   save() {
     try {
       localStorage.setItem(

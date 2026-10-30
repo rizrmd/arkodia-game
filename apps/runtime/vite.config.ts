@@ -1,3 +1,4 @@
+import { cpSync, existsSync } from "node:fs";
 import { defineConfig } from "vite";
 import { execFileSync } from "node:child_process";
 const commit = execFileSync("git", ["rev-parse", "HEAD"], {
@@ -5,6 +6,17 @@ const commit = execFileSync("git", ["rev-parse", "HEAD"], {
 }).trim();
 export default defineConfig({
   define: { __COMMIT__: JSON.stringify(commit) },
+  plugins: [
+    {
+      name: "arkodia-runtime-content-lock",
+      closeBundle() {
+        if (existsSync("../../assets.lock.json"))
+          cpSync("../../assets.lock.json", "dist/assets.lock.json");
+        if (existsSync("../../asset-lock"))
+          cpSync("../../asset-lock", "dist/asset-lock", { recursive: true });
+      },
+    },
+  ],
   server: {
     proxy: {
       "/content": {

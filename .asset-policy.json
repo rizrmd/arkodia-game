@@ -1,0 +1,11 @@
+{
+  "baselineCommit": "dcdb3a76ecd00461b9a1fc6834b31913aa7dec80",
+  "fixtures": [],
+  "legacyShards": [
+    {
+      "path": ".asset-policy/legacy-000.json",
+      "sha256": "84bf3ad53d74e91c8c7c880107ae38e86702db08d438a663d56c359761ed583c"
+    }
+  ],
+  "schemaVersion": 1
+}

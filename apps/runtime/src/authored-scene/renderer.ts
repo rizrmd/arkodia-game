@@ -16,6 +16,13 @@ import {
   type Part,
   type Scene,
 } from "./scene";
+import {
+  createEnvironmentRuntime,
+  sceneToEnvironmentMap,
+  type EnvironmentRuntime,
+  type EnvironmentRuntimeMetrics,
+} from "./environment-runtime";
+export * from "./environment-runtime";
 export { propMatrix };
 export function applyNativeProp(
   sprite: Sprite,
@@ -190,7 +197,9 @@ export function resizeScene(
   root.scale.set(b.scale);
   return b;
 }
-export function sceneGround(root: Container, scene: Scene) {
+const rootEnvironments = new WeakMap<Container, EnvironmentRuntime>();
+
+export function sceneGround(root: Container, scene: Scene): EnvironmentRuntime {
   const g = new Graphics()
     .rect(0, 0, scene.world.width, scene.world.height)
     .fill(0x202c2b);
@@ -205,4 +214,39 @@ export function sceneGround(root: Container, scene: Scene) {
   g.zIndex = -20000;
   root.addChild(g);
   root.sortableChildren = true;
+
+  const env = createEnvironmentRuntime({
+    environmentMap: sceneToEnvironmentMap(scene),
+  });
+  if (scene.playback?.time !== undefined) {
+    env.step(scene.playback.time);
+  }
+  rootEnvironments.set(root, env);
+  return env;
+}
+
+export function getSceneEnvironment(
+  root: Container,
+  scene?: Scene,
+): EnvironmentRuntime {
+  let env = rootEnvironments.get(root);
+  if (!env) {
+    env = createEnvironmentRuntime(
+      scene ? { environmentMap: sceneToEnvironmentMap(scene) } : {},
+    );
+    rootEnvironments.set(root, env);
+  }
+  return env;
+}
+
+export function sceneEnvironmentMetrics(
+  root: Container,
+  scene?: Scene,
+  timeSec?: number,
+): EnvironmentRuntimeMetrics {
+  const env = getSceneEnvironment(root, scene);
+  if (typeof timeSec === "number") {
+    env.step(0, { nowMs: 132_000 + timeSec * 1000 });
+  }
+  return env.metrics();
 }

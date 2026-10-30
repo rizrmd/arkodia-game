@@ -8,6 +8,7 @@ const source = JSON.parse(
 const config = JSON.parse(
   readFileSync(`${process.env.HOME}/private/content.env.json`),
 );
+const origin = process.env.CONTENT_API_ORIGIN || "https://content.arkodia.online";
 const hash = (b) => createHash("sha256").update(b).digest("hex");
 async function request(method, path, body, token, expected = 200, attempt = 0) {
   const bytes = Buffer.isBuffer(body)
@@ -21,7 +22,7 @@ async function request(method, path, body, token, expected = 200, attempt = 0) {
   if (token) headers.Authorization = `Bearer ${token}`;
   if (body && !Buffer.isBuffer(body))
     headers["Content-Type"] = "application/json";
-  const r = await fetch("https://content.arkodia.online" + path, {
+  const r = await fetch(origin + path, {
     method,
     headers,
     body: bytes,
@@ -189,7 +190,7 @@ const release = await request(
 );
 for (const d of release.documents) {
   const r = await fetch(
-    `https://content.arkodia.online/v1/releases/${release.id}/documents/${d.id}`,
+    `${origin}/v1/releases/${release.id}/documents/${d.id}`,
   );
   if (hash(Buffer.from(await r.arrayBuffer())) !== d.sha256)
     throw Error("Public snapshot integrity mismatch");

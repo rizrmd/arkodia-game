@@ -1,4 +1,6 @@
 // Static runtime and allowlisted public-read gateway. No authorization is forwarded.
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
 import http from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -14,6 +16,51 @@ const mime = {
   ".png": "image/png",
   ".glb": "model/gltf-binary",
 };
+const contentAssets = new Map();
+for (const candidate of [
+  resolve(root, "asset-lock/part-000.json"),
+  resolve(root, "../../asset-lock/part-000.json"),
+  fileURLToPath(new URL("../../../asset-lock/part-000.json", import.meta.url)),
+]) {
+  if (!existsSync(candidate)) continue;
+  for (const e of JSON.parse(readFileSync(candidate, "utf8")).assets || []) {
+    if (
+      e.path?.startsWith("apps/runtime/public/") &&
+      e.source?.type === "content"
+    )
+      contentAssets.set(
+        "/" + e.path.slice("apps/runtime/public/".length),
+        e,
+      );
+  }
+  break;
+}
+const assetCache = new Map();
+async function fetchContentAsset(entry) {
+  const cached = assetCache.get(entry.sha256);
+  if (cached) return cached;
+  for (const base of [
+    "https://arkodia-content-api-arkodia.fural.space",
+    entry.source.origin,
+  ]) {
+    try {
+      const r = await fetch(
+        `${base}/v1/releases/${entry.source.releaseId}/assets/${entry.sha256}`,
+        { signal: AbortSignal.timeout(20000), redirect: "error" },
+      );
+      if (!r.ok) continue;
+      const buf = Buffer.from(await r.arrayBuffer());
+      if (
+        buf.length === entry.size &&
+        createHash("sha256").update(buf).digest("hex") === entry.sha256
+      ) {
+        assetCache.set(entry.sha256, buf);
+        return buf;
+      }
+    } catch {}
+  }
+  throw Object.assign(new Error("missing"), { code: "ENOENT" });
+}
 export function publicPath(path) {
   return /^\/v1\/(contracts|channels\/[A-Za-z0-9_-]{1,100}|releases\/[A-Za-z0-9_-]{1,100}(\/(documents\/[A-Za-z0-9_-]{1,100}|assets\/[a-f0-9]{64}))?)$/.test(
     path,
@@ -70,17 +117,18 @@ export const server = http.createServer(async (req, res) => {
         .pipe(res);
       return;
     }
-    const file = resolve(
-      root,
-      "." + decodeURIComponent(path === "/" ? "/index.html" : path),
-    );
+    const decoded = decodeURIComponent(path === "/" ? "/index.html" : path);
+    const file = resolve(root, "." + decoded);
     if (!file.startsWith(root + sep)) {
       res.writeHead(404);
       res.end();
       return;
     }
-    if (!(await stat(file)).isFile()) throw new Error("missing");
-    const bytes = await readFile(file);
+    const bytes = await readFile(file).catch(async (err) => {
+      const entry = contentAssets.get(decoded);
+      if (!entry) throw err;
+      return fetchContentAsset(entry);
+    });
     res.writeHead(200, {
       "Content-Type": mime[extname(file)] || "application/octet-stream",
       "Cache-Control": path.startsWith("/assets/") && !path.endsWith("hero-renderer.js")

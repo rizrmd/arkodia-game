@@ -2,24 +2,61 @@ import type {
   StrongholdPrefab,
   CollisionColumn,
 } from "../../../../packages/content-contracts/legacy-types";
+import {
+  DEFAULT_RELIEF_FEATURES,
+  cliff as reliefCliff,
+  environmentBlocked as checkEnvironmentBlocked,
+  heightAt as reliefHeightAt,
+  liftAt as reliefLiftAt,
+  normalizeReliefFeatures,
+  recoverReliefPosition,
+  reliefBlocked as checkReliefBlocked,
+  type FootprintColumn,
+  type ReliefFeature,
+} from "../authored-scene/environment-runtime";
+
 export function strongholdCollision(
   p: StrongholdPrefab,
   columns: CollisionColumn[],
   map?: {
     sizeTiles: number;
     prefabs: { prefab: string; at: { u: number; v: number } }[];
+    terrain?: { features?: ReliefFeature[] };
+  },
+  extra?: {
+    frontierColumns?: readonly FootprintColumn[];
+    environmentColumns?: readonly FootprintColumn[];
+    reliefFeatures?: readonly ReliefFeature[];
   },
 ) {
   const G = p.gate,
     F = G.towerFront,
     C = p.court,
     R = 9;
+  const reliefFeatures = normalizeReliefFeatures(
+    extra?.reliefFeatures ??
+      map?.terrain?.features ??
+      DEFAULT_RELIEF_FEATURES,
+  );
+  const envCols = extra?.environmentColumns ?? [];
+
   const front = (d: number) =>
     d < F.knee
       ? F.base + (d - G.archHalfWidth) * F.rise
       : F.peak - (d - F.knee) * F.fall;
+
+  const allColumns: CollisionColumn[] = [...columns];
+  if (extra?.frontierColumns) {
+    for (const [cx, back, frontY] of extra.frontierColumns) {
+      allColumns.push({ x: cx, w: 4, back, front: frontY });
+    }
+  }
+  for (const [cx, back, frontY] of envCols) {
+    allColumns.push({ x: cx, w: 4, back, front: frontY });
+  }
+
   const buckets = new Map<number, CollisionColumn[]>();
-  for (const c of columns)
+  for (const c of allColumns)
     for (
       let k = Math.floor((c.x - c.w / 2 - R) / 32);
       k <= Math.floor((c.x + c.w / 2 + R) / 32);
@@ -74,8 +111,21 @@ export function strongholdCollision(
       v < size - origin.v - 0.5
     );
   };
+  const heightAt = (x: number, y: number) =>
+    reliefHeightAt(x, y, reliefFeatures);
+  const liftAt = (x: number, y: number) => reliefLiftAt(x, y, reliefFeatures);
+  const cliff = (x0: number, y0: number, x1: number, y1: number) =>
+    reliefCliff(x0, y0, x1, y1, reliefFeatures);
+  const reliefBlocked = (x: number, y: number) =>
+    checkReliefBlocked(x, y, reliefFeatures);
+  const environmentBlocked = (x: number, y: number) =>
+    checkEnvironmentBlocked(x, y, envCols);
+  const recoverPosition = (x: number, y: number) =>
+    recoverReliefPosition(x, y, reliefFeatures);
+
   const blocked = (x: number, y: number, open: boolean) => {
     if (!onMap(x, y) || !ground(x, y)) return true;
+    if (reliefBlocked(x, y)) return true;
     if ((buckets.get(Math.floor(x / 32)) || []).some((c) => hits(c, x, y)))
       return true;
     const d = Math.abs(x - G.x);
@@ -93,7 +143,18 @@ export function strongholdCollision(
       y < G.doors.front + R * 0.5
     );
   };
-  return { blocked, ground, passage, onMap };
+  return {
+    blocked,
+    ground,
+    passage,
+    onMap,
+    heightAt,
+    liftAt,
+    cliff,
+    reliefBlocked,
+    environmentBlocked,
+    recoverPosition,
+  };
 }
 /** Original movement ellipse and axis sliding; small substeps prevent tunnelling on long frames. */
 export function walkStep(
@@ -102,6 +163,7 @@ export function walkStep(
   d: { x: number; y: number },
   dt: number,
   blocked: (x: number, y: number) => boolean,
+  cliff?: (x0: number, y0: number, x1: number, y1: number) => boolean,
 ) {
   const m = Math.hypot(d.x, d.y);
   if (!m) return { x, y, progress: 0 };
@@ -118,7 +180,11 @@ export function walkStep(
       [dx, 0],
       [0, dy],
     ])
-      if ((a || b) && !blocked(x + a, y + b)) {
+      if (
+        (a || b) &&
+        !blocked(x + a, y + b) &&
+        (!cliff || !cliff(x, y, x + a, y + b))
+      ) {
         x += a;
         y += b;
         break;

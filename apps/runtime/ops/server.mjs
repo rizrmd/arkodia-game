@@ -16,24 +16,35 @@ const mime = {
   ".png": "image/png",
   ".glb": "model/gltf-binary",
 };
+let loadedManifestKey = "";
 const contentAssets = new Map();
-for (const candidate of [
-  resolve(root, "asset-lock/part-000.json"),
-  resolve(root, "../../asset-lock/part-000.json"),
-  fileURLToPath(new URL("../../../asset-lock/part-000.json", import.meta.url)),
-]) {
-  if (!existsSync(candidate)) continue;
-  for (const e of JSON.parse(readFileSync(candidate, "utf8")).assets || []) {
-    if (
-      e.path?.startsWith("apps/runtime/public/") &&
-      e.source?.type === "content"
-    )
-      contentAssets.set(
-        "/" + e.path.slice("apps/runtime/public/".length),
-        e,
-      );
+async function getContentAsset(pathname) {
+  for (const candidate of [
+    resolve(root, "asset-lock/part-000.json"),
+    resolve(root, "../../asset-lock/part-000.json"),
+    fileURLToPath(new URL("../../../asset-lock/part-000.json", import.meta.url)),
+  ]) {
+    const st = await stat(candidate).catch(() => null);
+    if (!st) continue;
+    const key = `${candidate}:${st.mtimeMs}:${st.size}`;
+    if (key !== loadedManifestKey) {
+      const parsed = JSON.parse(await readFile(candidate, "utf8"));
+      contentAssets.clear();
+      for (const e of parsed.assets || []) {
+        if (
+          e.path?.startsWith("apps/runtime/public/") &&
+          e.source?.type === "content"
+        )
+          contentAssets.set(
+            "/" + e.path.slice("apps/runtime/public/".length),
+            e,
+          );
+      }
+      loadedManifestKey = key;
+    }
+    break;
   }
-  break;
+  return contentAssets.get(pathname);
 }
 const assetCache = new Map();
 async function fetchContentAsset(entry) {
@@ -125,7 +136,7 @@ export const server = http.createServer(async (req, res) => {
       return;
     }
     const bytes = await readFile(file).catch(async (err) => {
-      const entry = contentAssets.get(decoded);
+      const entry = await getContentAsset(decoded);
       if (!entry) throw err;
       return fetchContentAsset(entry);
     });

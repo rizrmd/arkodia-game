@@ -1,3 +1,4 @@
+import { createHeroRenderer } from "../hero-renderer";
 import {
   Container,
   Graphics,
@@ -19,13 +20,14 @@ export class StrongholdWorld {
   shadow = new Graphics();
   gateFrame = 0;
   clip = "idle-SE";
-  private elapsed = 0;
-  private gait = 0;
+
+
   private facing = 1;
   private back = false;
   private vertical = false;
   private horizontal = false;
-  private frames: Texture[] = [];
+  private heroTexture: Texture;
+  private yaw = 0;
   private gateFrames: Texture[] = [];
   private gate = new Sprite();
   private gateClock = 0;
@@ -39,6 +41,7 @@ export class StrongholdWorld {
   constructor(
     public resources: Resources,
     public hero: HeroId,
+    private heroRenderer: Awaited<ReturnType<typeof createHeroRenderer>>,
   ) {
     const p = resources.data.prefab;
     this.collision = strongholdCollision(
@@ -143,21 +146,11 @@ export class StrongholdWorld {
     this.gate.height = 135;
     this.gate.zIndex = 778;
     this.objects.addChild(this.gate);
-    const a = resources.data.characters[hero],
-      sheetHero = texture("/assets/characters/" + a.image);
-    this.frames = a.frames.map(
-      (f) =>
-        new Texture({
-          source: sheetHero.source,
-          frame: new Rectangle(f.x, f.y, f.w, f.h),
-        }),
-    );
-    this.player.texture = this.frames[0];
-    this.player.anchor.set(
-      a.cell.pivot.x / a.cell.w,
-      a.cell.pivot.y / a.cell.h,
-    );
-    this.player.scale.set(0.66);
+    this.heroTexture = Texture.from(heroRenderer.canvas);
+    heroRenderer.render('idle',0,0,0);
+    this.player.texture = this.heroTexture;
+    this.player.anchor.set(.5, heroRenderer.pivotY);
+    this.player.scale.set(.165);
     this.player.position.set(p.heroSpawn.x, p.heroSpawn.y);
     try {
       const saved = JSON.parse(
@@ -235,21 +228,12 @@ export class StrongholdWorld {
     const clip = (moving ? "move" : "idle") + "-" + view;
     if (clip !== this.clip) {
       this.clip = clip;
-      this.elapsed = 0;
+
     }
-    this.elapsed += dt;
-    const a = this.resources.data.characters[this.hero],
-      c = a.clips[this.clip];
-    if (moving) {
-      const dx = p.x - ox,
-        dy = p.y - oy,
-        fullSpeed = Math.hypot(dx, dy) / Math.hypot(dx / 120, dy / 90);
-      this.gait += next.progress / fullSpeed;
-    }
-    const t = moving ? this.gait : this.elapsed;
-    const i = c.frames[Math.floor(t * c.fps) % c.frames.length];
-    this.player.texture = this.frames[i];
-    this.player.scale.x = 0.66 * (this.vertical ? 1 : this.facing);
+
+    if (moving) this.yaw = Math.atan2(d.x, d.y * 2);
+    this.heroRenderer.render(moving ? 'run' : 'idle', this.yaw, dt);
+    this.heroTexture.source.update();
     this.player.zIndex = p.y;
     this.shadow.position.set(p.x, p.y);
     this.shadow.zIndex = p.y - 0.01;
@@ -287,6 +271,7 @@ export class StrongholdWorld {
       this.savedAt = 0;
     }
   }
+  diagnostics() { return {renderer:"skinned-glb",bones:this.heroRenderer.bones.length,clip:this.heroRenderer.canvas.dataset.clip,yaw:this.yaw}; }
   save() {
     try {
       localStorage.setItem(
@@ -305,6 +290,8 @@ export class StrongholdWorld {
   destroy() {
     this.save();
     this.world.destroy({ children: true });
-    for (const t of [...this.frames, ...this.gateFrames]) t.destroy();
+    this.heroRenderer.destroy();
+    this.heroTexture.destroy(true);
+    for (const t of this.gateFrames) t.destroy();
   }
 }

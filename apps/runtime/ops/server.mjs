@@ -12,6 +12,7 @@ const mime = {
   ".json": "application/json",
   ".css": "text/css",
   ".png": "image/png",
+  ".glb": "model/gltf-binary",
 };
 export function publicPath(path) {
   return /^\/v1\/(contracts|channels\/[A-Za-z0-9_-]{1,100}|releases\/[A-Za-z0-9_-]{1,100}(\/(documents\/[A-Za-z0-9_-]{1,100}|assets\/[a-f0-9]{64}))?)$/.test(
@@ -21,6 +22,7 @@ export function publicPath(path) {
 export const server = http.createServer(async (req, res) => {
   try {
     res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Access-Control-Allow-Origin", "https://editor.arkodia.online");
     res.setHeader("Referrer-Policy", "no-referrer");
     res.setHeader(
       "Content-Security-Policy",
@@ -81,7 +83,7 @@ export const server = http.createServer(async (req, res) => {
     const bytes = await readFile(file);
     res.writeHead(200, {
       "Content-Type": mime[extname(file)] || "application/octet-stream",
-      "Cache-Control": path.startsWith("/assets/")
+      "Cache-Control": path.startsWith("/assets/") && !path.endsWith("hero-renderer.js")
         ? "public, max-age=31536000, immutable"
         : "no-cache",
     });

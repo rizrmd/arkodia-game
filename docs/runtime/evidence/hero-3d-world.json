@@ -1,0 +1,92 @@
+{
+  "results": {
+    "before": {
+      "state": "ready",
+      "message": "Preparing the Stronghold",
+      "commit": "3ad42377c042dbf1887880312cf1738058e77c0f",
+      "channel": "stronghold-original",
+      "release": "097607e222dd6bcccd01171cb78920d6",
+      "schemaDigest": "09a37562ce4c4ff4f3c62c967546592593f2e73448f182c9db712a0cbeade314",
+      "assetCount": 86,
+      "hero": "rift-runner",
+      "player": {
+        "x": 590,
+        "y": 420
+      },
+      "camera": {
+        "x": -156.5,
+        "y": -63,
+        "scale": 1.35
+      },
+      "clip": "idle-SE",
+      "hero3d": {
+        "renderer": "skinned-glb",
+        "bones": 24,
+        "clip": "idle",
+        "yaw": 0
+      },
+      "gateFrame": 0,
+      "route": null,
+      "sourceCommit": "7d80d69a1bf626fdd87b97e9903f7cd330a318d2"
+    },
+    "after": {
+      "state": "ready",
+      "message": "Preparing the Stronghold",
+      "commit": "3ad42377c042dbf1887880312cf1738058e77c0f",
+      "channel": "stronghold-original",
+      "release": "097607e222dd6bcccd01171cb78920d6",
+      "schemaDigest": "09a37562ce4c4ff4f3c62c967546592593f2e73448f182c9db712a0cbeade314",
+      "assetCount": 86,
+      "hero": "rift-runner",
+      "player": {
+        "x": 599.9222846264997,
+        "y": 420
+      },
+      "camera": {
+        "x": -156.5,
+        "y": -63,
+        "scale": 1.35
+      },
+      "clip": "move-E",
+      "hero3d": {
+        "renderer": "skinned-glb",
+        "bones": 24,
+        "clip": "run",
+        "yaw": 1.5707963267948966
+      },
+      "gateFrame": 0,
+      "route": null,
+      "sourceCommit": "7d80d69a1bf626fdd87b97e9903f7cd330a318d2"
+    }
+  },
+  "errors": [],
+  "state": {
+    "state": "ready",
+    "message": "Preparing the Stronghold",
+    "commit": "3ad42377c042dbf1887880312cf1738058e77c0f",
+    "channel": "stronghold-original",
+    "release": "097607e222dd6bcccd01171cb78920d6",
+    "schemaDigest": "09a37562ce4c4ff4f3c62c967546592593f2e73448f182c9db712a0cbeade314",
+    "assetCount": 86,
+    "hero": "rift-runner",
+    "player": {
+      "x": 590,
+      "y": 420
+    },
+    "camera": {
+      "x": -156.5,
+      "y": -63,
+      "scale": 1.35
+    },
+    "clip": "idle-SE",
+    "hero3d": {
+      "renderer": "skinned-glb",
+      "bones": 24,
+      "clip": "idle",
+      "yaw": 0
+    },
+    "gateFrame": 0,
+    "route": null,
+    "sourceCommit": "7d80d69a1bf626fdd87b97e9903f7cd330a318d2"
+  }
+}

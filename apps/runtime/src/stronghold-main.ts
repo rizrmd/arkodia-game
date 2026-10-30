@@ -1,3 +1,4 @@
+import { createHeroRenderer } from "./hero-renderer";
 import {
   Application,
   Container,
@@ -222,6 +223,7 @@ function draw() {
   }
 }
 async function enter(hero: HeroId) {
+  const heroRenderer = await createHeroRenderer(hero, new URL("/models/", location.origin).href);
   selected = hero;
   picker?.stopFx();
   picker?.removeFromParent();
@@ -230,7 +232,7 @@ async function enter(hero: HeroId) {
   input.target = null;
   input.keys.clear();
   world?.destroy();
-  world = new StrongholdWorld(resources!, hero);
+  world = new StrongholdWorld(resources!, hero, heroRenderer);
   stage.addChild(world.world);
   state = "ready";
   draw();
@@ -281,7 +283,7 @@ async function load() {
       picker = await ChooseHero.load(selected);
       picker.onConfirm = (hero) => {
         saveHero(hero);
-        void enter(hero);
+        void enter(hero).catch((e) => { state = "error"; message = String(e); console.error(e); draw(); });
       };
       await picker.layout(app.screen.width, app.screen.height);
       state = "selecting";
@@ -437,6 +439,7 @@ Object.defineProperty(window, "__ARKODIA_RUNTIME__", {
       ? { x: world.world.x, y: world.world.y, scale: world.world.scale.x }
       : null,
     clip: world?.clip,
+    hero3d: world?.diagnostics(),
     gateFrame: world?.gateFrame,
     route: world?.walker.route(),
     picker: picker?.targets(),

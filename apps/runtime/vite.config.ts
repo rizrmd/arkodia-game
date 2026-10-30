@@ -14,5 +14,5 @@ export default defineConfig({
       },
     },
   },
-  build: { sourcemap: false },
+  build: { sourcemap: false, rollupOptions: { preserveEntrySignatures: "strict", input: { main: "index.html", "hero-renderer": "src/hero-renderer.ts" }, output: { entryFileNames: chunk => chunk.name === "hero-renderer" ? "assets/hero-renderer.js" : "assets/[name]-[hash].js" } } },
 });

@@ -251,47 +251,96 @@ export function loadEnvironmentRuntimeTextures(
   if (envTexturesPromise) return envTexturesPromise;
   const resolveAsset = (name: string) =>
     baseUrl ? new URL(`/assets/${name}`, baseUrl).href : `/assets/${name}`;
+  const loadTex = async (path: string, fallback?: Texture): Promise<Texture> => {
+    try {
+      return await Assets.load<Texture>(resolveAsset(path));
+    } catch {
+      return fallback ?? Texture.WHITE;
+    }
+  };
   envTexturesPromise = (async () => {
+    const fallbackSnow = createProceduralSnowTexture();
     const [
-      paving,
-      cliff,
-      spruce,
-      wall,
-      gate,
-      campfire,
+      snowSoft,
+      pavingWarm,
+      pavingWorn,
+      snowdriftEdge,
+      weedsEdge,
+      firYoung,
+      spruceMature,
+      bouldersSnow,
+      cliffSnow,
+      straightNeA,
+      straightNeB,
+      straightSeA,
+      straightSeB,
+      gateClosed,
+      gateSheet,
+      campfireV1,
+      frontierAtlas,
+      cliffStripV2,
+      soilMoss,
+      moss,
+      torch0,
+      torch1,
+      torch2,
+      torch3,
       flame,
-      brazier,
       bastion,
     ] = await Promise.all([
-      Assets.load<Texture>(resolveAsset("paving-warm-texture.png")),
-      Assets.load<Texture>(resolveAsset("cliff-snow.png")),
-      Assets.load<Texture>(resolveAsset("spruce-mature.png")),
-      Assets.load<Texture>(resolveAsset("wall-broken.png")),
-      Assets.load<Texture>(resolveAsset("gateway-grand.png")),
-      Assets.load<Texture>(resolveAsset("buildings/core/campfire.png")),
-      Assets.load<Texture>(resolveAsset("flame.png")),
-      Assets.load<Texture>(resolveAsset("brazier.png")),
-      Assets.load<Texture>(resolveAsset("bastion.png")),
+      loadTex("modular-stronghold/v2/snow-soft-texture.png", fallbackSnow),
+      loadTex("modular-stronghold/v2/paving-warm-texture.png"),
+      loadTex("modular-stronghold/v2/paving-worn.png"),
+      loadTex("modular-stronghold/v2/snowdrift-edge.png", fallbackSnow),
+      loadTex("modular-stronghold/v2/weeds-edge.png"),
+      loadTex("modular-stronghold/v2/fir-young.png"),
+      loadTex("modular-stronghold/v2/spruce-mature.png"),
+      loadTex("modular-stronghold/v2/boulders-snow.png"),
+      loadTex("modular-stronghold/v2/cliff-snow.png"),
+      loadTex("buildings/starter-boundary/straight-ne-a.png"),
+      loadTex("buildings/starter-boundary/straight-ne-b.png"),
+      loadTex("buildings/starter-boundary/straight-se-a.png"),
+      loadTex("buildings/starter-boundary/straight-se-b.png"),
+      loadTex("buildings/starter-boundary/gate-closed.png"),
+      loadTex("buildings/starter-boundary/gate-sheet.png"),
+      loadTex("buildings/starting-campfire/campfire-v1.png"),
+      loadTex("frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp"),
+      loadTex("terrain-height/natural/cliff-strip-v2.webp"),
+      loadTex("foundation-transitions/soil-moss.png"),
+      loadTex("foundation-transitions/moss.png"),
+      loadTex("realistic-torch/frame-0.webp"),
+      loadTex("realistic-torch/frame-1.webp"),
+      loadTex("realistic-torch/frame-2.webp"),
+      loadTex("realistic-torch/frame-3.webp"),
+      loadTex("vfx/textures/flame.png"),
+      loadTex("bastion.png"),
     ]);
-    const snow = createProceduralSnowTexture();
     return {
-      "/modular-stronghold/v2/snow-soft-texture.png": snow,
-      "/modular-stronghold/v2/snowdrift-edge.png": snow,
-      "/modular-stronghold/v2/paving-warm-texture.png": paving,
-      "/modular-stronghold/v2/paving-worn.png": paving,
-      "/modular-stronghold/v2/cliff-snow.png": cliff,
-      "/modular-stronghold/v2/boulders-snow.png": cliff,
-      "/modular-stronghold/v2/spruce-mature.png": spruce,
-      "/modular-stronghold/v2/fir-young.png": spruce,
-      "/modular-stronghold/v2/weeds-edge.png": spruce,
-      "/buildings/starter-boundary/straight-ne-a.png": wall,
-      "/buildings/starter-boundary/straight-ne-b.png": wall,
-      "/buildings/starter-boundary/straight-se-a.png": wall,
-      "/buildings/starter-boundary/straight-se-b.png": wall,
-      "/buildings/starter-boundary/gate-closed.png": gate,
-      "/buildings/starting-campfire/campfire-v1.png": campfire,
+      "/modular-stronghold/v2/snow-soft-texture.png": snowSoft,
+      "/modular-stronghold/v2/paving-warm-texture.png": pavingWarm,
+      "/modular-stronghold/v2/paving-worn.png": pavingWorn,
+      "/modular-stronghold/v2/snowdrift-edge.png": snowdriftEdge,
+      "/modular-stronghold/v2/weeds-edge.png": weedsEdge,
+      "/modular-stronghold/v2/fir-young.png": firYoung,
+      "/modular-stronghold/v2/spruce-mature.png": spruceMature,
+      "/modular-stronghold/v2/boulders-snow.png": bouldersSnow,
+      "/modular-stronghold/v2/cliff-snow.png": cliffSnow,
+      "/buildings/starter-boundary/straight-ne-a.png": straightNeA,
+      "/buildings/starter-boundary/straight-ne-b.png": straightNeB,
+      "/buildings/starter-boundary/straight-se-a.png": straightSeA,
+      "/buildings/starter-boundary/straight-se-b.png": straightSeB,
+      "/buildings/starter-boundary/gate-closed.png": gateClosed,
+      "/buildings/starter-boundary/gate-sheet.png": gateSheet,
+      "/buildings/starting-campfire/campfire-v1.png": campfireV1,
+      "/frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp": frontierAtlas,
+      "/terrain-height/natural/cliff-strip-v2.webp": cliffStripV2,
+      "/foundation-transitions/soil-moss.png": soilMoss,
+      "/foundation-transitions/moss.png": moss,
+      "/realistic-torch/frame-0.webp": torch0,
+      "/realistic-torch/frame-1.webp": torch1,
+      "/realistic-torch/frame-2.webp": torch2,
+      "/realistic-torch/frame-3.webp": torch3,
       "/vfx/textures/flame.png": flame,
-      "/realistic-torch/frame-3.webp": brazier,
       "/buildings/bastion/bastion-v1.png": bastion,
     };
   })().catch((e) => {
@@ -303,12 +352,16 @@ export function loadEnvironmentRuntimeTextures(
 
 type MountedEnvState = {
   env: EnvironmentRuntime;
+  hasTextures: boolean;
   stage1: Container;
   stage2: Container;
   stage3: Container;
   stage4: Container;
   stage5: Container;
   gateGraphic: Graphics;
+  gateSprite?: Sprite;
+  gateFrames?: Texture[];
+  campfireFlame?: Sprite;
   shadowGraphic: Graphics;
   occlusionGraphic: Graphics;
   ambientGraphic: Graphics;
@@ -326,7 +379,7 @@ function resolveDaylightMs(phase: string | undefined, timeSec: number): number {
   if (key === "dusk") return DAY_MS * 0.7;
   if (key === "twilight") return DAY_MS * 0.8;
   if (key === "night") return DAY_MS * 0.9;
-  return 132_000 + timeSec * 1000;
+  return DAY_MS * 0.32 + timeSec * 1000;
 }
 
 function drawGateDoorGraphic(g: Graphics, open: boolean, progress: number) {
@@ -358,7 +411,6 @@ function drawProjectedShadowsGraphic(g: Graphics, env: EnvironmentRuntime) {
   const oy = Math.abs(sun.dy) * 34 + 14;
   for (const prop of env.strongholdProps) {
     const hw = Math.max(24, prop.w * 0.28);
-    const hh = Math.max(12, prop.h * 0.12);
     g.poly([
       prop.x - hw,
       prop.y,
@@ -424,24 +476,27 @@ export function sceneGround(
   scene: Scene,
   options: SceneGroundOptions = {},
 ): EnvironmentRuntime {
-  const g = new Graphics()
-    .rect(0, 0, scene.world.width, scene.world.height)
-    .fill(0x202c2b);
-  for (let x = -700; x < 1700; x += 64)
-    g.moveTo(x, 0)
-      .lineTo(x + 1400, 700)
-      .stroke({ color: 0x40534d, alpha: 0.25, width: 1 });
-  for (let x = -700; x < 1700; x += 64)
-    g.moveTo(x, 0)
-      .lineTo(x - 1400, 700)
-      .stroke({ color: 0x40534d, alpha: 0.25, width: 1 });
-  g.zIndex = -20000;
-  root.addChild(g);
-  root.sortableChildren = true;
-
   const hasTextures = Boolean(
     options.textures && Object.keys(options.textures).length > 0,
   );
+
+  if (!hasTextures) {
+    const g = new Graphics()
+      .rect(0, 0, scene.world.width, scene.world.height)
+      .fill(0x202c2b);
+    for (let x = -700; x < 1700; x += 64)
+      g.moveTo(x, 0)
+        .lineTo(x + 1400, 700)
+        .stroke({ color: 0x40534d, alpha: 0.25, width: 1 });
+    for (let x = -700; x < 1700; x += 64)
+      g.moveTo(x, 0)
+        .lineTo(x - 1400, 700)
+        .stroke({ color: 0x40534d, alpha: 0.25, width: 1 });
+    g.zIndex = -20000;
+    root.addChild(g);
+  }
+  root.sortableChildren = true;
+
   const env = createEnvironmentRuntime({
     environmentMap: sceneToEnvironmentMap(scene),
     textures: options.textures,
@@ -452,21 +507,134 @@ export function sceneGround(
   envStage.zIndex = -19000;
   envStage.sortableChildren = true;
   envStage.eventMode = "none";
-  const scale = 0.42;
+  const scale = hasTextures ? 0.62 : 0.42;
   envStage.scale.set(scale);
   envStage.position.set(
     scene.world.width * 0.5 - COURT_CENTER.x * scale,
     scene.world.height * 0.5 - COURT_CENTER.y * scale,
   );
 
-  // Stage 1: Coordinate grid, snow backdrop, court surface, gateway apron, foundations & south gate
+  let gateSprite: Sprite | undefined;
+  let gateFrames: Texture[] | undefined;
+  let campfireFlame: Sprite | undefined;
+
+  // Stage 1: Coordinate grid, infinite 2:1 snow, court surface, gateway apron, foundations & Stronghold props
   const stage1 = new Container();
   stage1.zIndex = 1;
   stage1.sortableChildren = true;
-  if (hasTextures) {
+  const gateGraphic = new Graphics();
+  gateGraphic.zIndex = 12;
+
+  if (hasTextures && options.textures) {
     env.snow.sprite.zIndex = -10;
-    env.snow.sprite.alpha = 0.72;
-    stage1.addChild(env.snow.sprite);
+    env.snow.sync(-2800, -2000, 6800, 5000);
+    stage1.addChild(
+      env.snow.sprite,
+      env.courtSurface.container,
+      env.foundations.under,
+      env.torches.groundContainer,
+    );
+
+    const strongholdGround = new Container();
+    strongholdGround.zIndex = 2.5;
+    const strongholdUpright = new Container();
+    strongholdUpright.sortableChildren = true;
+    strongholdUpright.zIndex = 10;
+
+    const gateSheetTex =
+      options.textures["/buildings/starter-boundary/gate-sheet.png"];
+    if (
+      gateSheetTex &&
+      gateSheetTex.width >= GATE_DOOR_CONFIG.cols * GATE_DOOR_CONFIG.frameW &&
+      gateSheetTex.height >= GATE_DOOR_CONFIG.rows * GATE_DOOR_CONFIG.frameH
+    ) {
+      gateFrames = [];
+      for (let i = 0; i < GATE_DOOR_CONFIG.frames; i++) {
+        const col = i % GATE_DOOR_CONFIG.cols;
+        const row = Math.floor(i / GATE_DOOR_CONFIG.cols);
+        gateFrames.push(
+          new Texture({
+            source: gateSheetTex.source,
+            frame: new Rectangle(
+              col * GATE_DOOR_CONFIG.frameW,
+              row * GATE_DOOR_CONFIG.frameH,
+              GATE_DOOR_CONFIG.frameW,
+              GATE_DOOR_CONFIG.frameH,
+            ),
+          }),
+        );
+      }
+    }
+
+    for (const prop of env.strongholdProps) {
+      if (prop.id === "pal-s-gate" && gateFrames && gateFrames.length > 0) {
+        const gs = new Sprite(gateFrames[0]!);
+        gs.anchor.set(prop.ax, prop.ay);
+        gs.position.set(prop.x, prop.y);
+        const sx = prop.w / GATE_DOOR_CONFIG.frameW;
+        const sy = prop.h / GATE_DOOR_CONFIG.frameH;
+        gs.scale.set(prop.flip ? -sx : sx, sy);
+        gs.zIndex = prop.y;
+        strongholdUpright.addChild(gs);
+        gateSprite = gs;
+        continue;
+      }
+
+      const tex = options.textures[prop.tex];
+      if (!tex || tex === Texture.WHITE) continue;
+      const s = new Sprite(tex);
+      if (
+        prop.foot !== undefined &&
+        prop.vertical !== undefined &&
+        prop.shear !== undefined
+      ) {
+        applyNativeProp(s, {
+          width: prop.w,
+          foot: prop.foot,
+          vertical: prop.vertical,
+          shear: prop.shear,
+          x: prop.x,
+          y: prop.y,
+        });
+      } else {
+        s.anchor.set(prop.ax, prop.ay);
+        s.position.set(prop.x, prop.y);
+        const sx = prop.w / Math.max(1, tex.width);
+        const sy = prop.h / Math.max(1, tex.height);
+        s.scale.set(prop.flip ? -sx : sx, sy);
+      }
+      if (prop.alpha !== undefined) s.alpha = prop.alpha;
+
+      if (prop.layer === "ground") {
+        strongholdGround.addChild(s);
+      } else {
+        s.zIndex = prop.depth ?? prop.y;
+        strongholdUpright.addChild(s);
+      }
+
+      if (prop.id === "campfire") {
+        const flameTex = options.textures["/vfx/textures/flame.png"];
+        if (flameTex && flameTex !== Texture.WHITE) {
+          const cf = new Sprite(flameTex);
+          cf.anchor.set(0.5, 0.78);
+          cf.position.set(prop.x, prop.y - 24);
+          cf.width = 68;
+          cf.height = 84;
+          cf.tint = 0xffa84b;
+          cf.alpha = 0.88;
+          cf.blendMode = "add";
+          cf.zIndex = prop.y + 1;
+          strongholdUpright.addChild(cf);
+          campfireFlame = cf;
+        }
+      }
+    }
+
+    stage1.addChild(
+      strongholdGround,
+      strongholdUpright,
+      env.foundations.face,
+    );
   } else {
     const snowField = new Graphics()
       .roundRect(-620, -320, 2400, 1480, 64)
@@ -474,43 +642,46 @@ export function sceneGround(
       .ellipse(COURT_CENTER.x, COURT_CENTER.y + 40, 1080, 560)
       .stroke({ color: 0x8fb3d4, width: 2, alpha: 0.22 });
     snowField.zIndex = -5;
-    stage1.addChild(snowField);
-  }
-  stage1.addChild(
-    env.courtSurface.container,
-    env.foundations.under,
-    env.foundations.face,
-  );
-  const enclosureOutline = new Graphics();
-  enclosureOutline.zIndex = 4;
-  for (const prop of env.strongholdProps) {
-    if (prop.id === "campfire") {
+    stage1.addChild(
+      snowField,
+      env.courtSurface.container,
+      env.foundations.under,
+      env.foundations.face,
+    );
+    const enclosureOutline = new Graphics();
+    enclosureOutline.zIndex = 4;
+    for (const prop of env.strongholdProps) {
+      if (prop.id === "campfire") {
+        enclosureOutline
+          .circle(prop.x, prop.y, 34)
+          .fill({ color: 0x3b2a1e, alpha: 0.72 })
+          .circle(prop.x, prop.y, 18)
+          .fill({ color: 0xff8c3b, alpha: 0.82 });
+        continue;
+      }
+      const isSE = prop.tex.includes("straight-se");
+      const dir = isSE ? !prop.flip : prop.flip;
+      const slope = dir ? -0.5 : 0.5;
+      const hw = prop.tex.includes("gate") ? 130 : 68;
       enclosureOutline
-        .circle(prop.x, prop.y, 34)
-        .fill({ color: 0x3b2a1e, alpha: 0.72 })
-        .circle(prop.x, prop.y, 18)
-        .fill({ color: 0xff8c3b, alpha: 0.82 });
-      continue;
+        .moveTo(prop.x - hw, prop.y - slope * hw)
+        .lineTo(prop.x + hw, prop.y + slope * hw)
+        .stroke({ color: 0x6d5846, width: 8, alpha: 0.65, cap: "round" });
     }
-    const isSE = prop.tex.includes("straight-se");
-    const dir = isSE ? !prop.flip : prop.flip;
-    const slope = dir ? -0.5 : 0.5;
-    const hw = prop.tex.includes("gate") ? 130 : 68;
-    enclosureOutline
-      .moveTo(prop.x - hw, prop.y - slope * hw)
-      .lineTo(prop.x + hw, prop.y + slope * hw)
-      .stroke({ color: 0x6d5846, width: 8, alpha: 0.65, cap: "round" });
+    stage1.addChild(enclosureOutline, gateGraphic);
   }
-  const gateGraphic = new Graphics();
-  gateGraphic.zIndex = 12;
-  stage1.addChild(enclosureOutline, gateGraphic);
 
   // Stage 2: Frozen Frontier 46-sprite kit, ground-plane decals, strip shade & upright props
   const stage2 = new Container();
   stage2.zIndex = 2;
   stage2.sortableChildren = true;
   if (hasTextures) {
-    stage2.addChild(env.frontier.ground, env.frontier.shade, env.frontier.upright);
+    env.frontier.cull(-2800, -2000, 6800, 5000, 1024);
+    stage2.addChild(
+      env.frontier.ground,
+      env.frontier.shade,
+      env.frontier.upright,
+    );
   } else {
     const frontierVector = new Graphics();
     frontierVector.zIndex = 6;
@@ -553,84 +724,89 @@ export function sceneGround(
     stage2.addChild(env.frontier.shade, frontierVector);
   }
 
-  // Stage 3: Terrain relief hills (east-ridge 3m, west-terrace 1.5m), plateaus & ramps
+  // Stage 3: Terrain relief hills (east-ridge 3m, west-terrace 1.5m)
   const stage3 = new Container();
   stage3.zIndex = 3;
   stage3.sortableChildren = true;
   for (const node of env.relief.nodes) {
     stage3.addChild(node.container);
   }
-  const sceneryRelief = new Graphics();
-  sceneryRelief.zIndex = 8;
-  for (const f of env.reliefFeatures) {
-    if (f.visual !== "scenery") continue;
-    const top = mapToCourt(f.u0, f.v0);
-    const right = mapToCourt(f.u1, f.v0);
-    const bottom = mapToCourt(f.u1, f.v1);
-    const left = mapToCourt(f.u0, f.v1);
-    const lift = topOf(f, env.reliefFeatures) * PX_PER_METER;
-    sceneryRelief
-      .poly([
-        left.x,
-        left.y - lift,
-        bottom.x,
-        bottom.y - lift,
-        bottom.x,
-        bottom.y,
-        left.x,
-        left.y,
-      ])
-      .fill({ color: 0x5c6978, alpha: 0.82 })
-      .poly([
-        bottom.x,
-        bottom.y - lift,
-        right.x,
-        right.y - lift,
-        right.x,
-        right.y,
-        bottom.x,
-        bottom.y,
-      ])
-      .fill({ color: 0x45515f, alpha: 0.88 })
-      .poly([
-        top.x,
-        top.y - lift,
-        right.x,
-        right.y - lift,
-        bottom.x,
-        bottom.y - lift,
-        left.x,
-        left.y - lift,
-      ])
-      .fill({ color: 0xdce6f2, alpha: 0.86 })
-      .stroke({ color: 0x8fb3d4, width: 2, alpha: 0.65 });
+  if (!hasTextures) {
+    const sceneryRelief = new Graphics();
+    sceneryRelief.zIndex = 8;
+    for (const f of env.reliefFeatures) {
+      if (f.visual !== "scenery") continue;
+      const top = mapToCourt(f.u0, f.v0);
+      const right = mapToCourt(f.u1, f.v0);
+      const bottom = mapToCourt(f.u1, f.v1);
+      const left = mapToCourt(f.u0, f.v1);
+      const lift = topOf(f, env.reliefFeatures) * PX_PER_METER;
+      sceneryRelief
+        .poly([
+          left.x,
+          left.y - lift,
+          bottom.x,
+          bottom.y - lift,
+          bottom.x,
+          bottom.y,
+          left.x,
+          left.y,
+        ])
+        .fill({ color: 0x5c6978, alpha: 0.82 })
+        .poly([
+          bottom.x,
+          bottom.y - lift,
+          right.x,
+          right.y - lift,
+          right.x,
+          right.y,
+          bottom.x,
+          bottom.y,
+        ])
+        .fill({ color: 0x45515f, alpha: 0.88 })
+        .poly([
+          top.x,
+          top.y - lift,
+          right.x,
+          right.y - lift,
+          bottom.x,
+          bottom.y - lift,
+          left.x,
+          left.y - lift,
+        ])
+        .fill({ color: 0xdce6f2, alpha: 0.86 })
+        .stroke({ color: 0x8fb3d4, width: 2, alpha: 0.65 });
+    }
+    stage3.addChild(sceneryRelief);
   }
-  stage3.addChild(sceneryRelief);
 
   // Stage 4: Authored EnvironmentCatalog & collision footprint columns
   const stage4 = new Container();
   stage4.zIndex = 4;
-  const authoredOverlay = new Graphics();
-  for (let i = 0; i < env.authored.columns.length; i += 3) {
-    const [cx, y0, y1] = env.authored.columns[i]!;
-    authoredOverlay
-      .moveTo(cx, y0)
-      .lineTo(cx, y1)
-      .stroke({ color: 0xa4d68f, width: 2, alpha: 0.28 });
+  if (!hasTextures) {
+    const authoredOverlay = new Graphics();
+    for (let i = 0; i < env.authored.columns.length; i += 3) {
+      const [cx, y0, y1] = env.authored.columns[i]!;
+      authoredOverlay
+        .moveTo(cx, y0)
+        .lineTo(cx, y1)
+        .stroke({ color: 0xa4d68f, width: 2, alpha: 0.28 });
+    }
+    stage4.addChild(
+      env.authored.authoredGround,
+      authoredOverlay,
+      env.authored.gatheringStage,
+    );
   }
-  stage4.addChild(
-    env.authored.authoredGround,
-    authoredOverlay,
-    env.authored.gatheringStage,
-  );
 
-  // Stage 5: Daylight cycle, 16 flickering torches, projected sun shadows, actor silhouette occlusion
+  // Stage 5: Daylight cycle, 16 flickering torches, projected sun shadows, multiply lightmap
   const stage5 = new Container();
   stage5.zIndex = 5;
   stage5.sortableChildren = true;
   const shadowGraphic = new Graphics();
   shadowGraphic.zIndex = 3.5;
   const torchesWrap = new Container();
+  torchesWrap.sortableChildren = true;
   torchesWrap.zIndex = 18;
   for (const tNode of env.torches.nodes) {
     torchesWrap.addChild(tNode.container);
@@ -639,25 +815,38 @@ export function sceneGround(
   occlusionGraphic.zIndex = 24;
   const ambientGraphic = new Graphics();
   ambientGraphic.zIndex = 30;
-  stage5.addChild(
-    shadowGraphic,
-    env.torches.lightingContainer,
-    torchesWrap,
-    occlusionGraphic,
-    ambientGraphic,
-  );
+
+  if (hasTextures) {
+    stage5.addChild(
+      env.shadows.container,
+      torchesWrap,
+      env.torches.lightingContainer,
+    );
+  } else {
+    stage5.addChild(
+      shadowGraphic,
+      env.torches.lightingContainer,
+      torchesWrap,
+      occlusionGraphic,
+      ambientGraphic,
+    );
+  }
 
   envStage.addChild(stage1, stage2, stage3, stage4, stage5);
   root.addChild(envStage);
 
   const mounted: MountedEnvState = {
     env,
+    hasTextures,
     stage1,
     stage2,
     stage3,
     stage4,
     stage5,
     gateGraphic,
+    gateSprite,
+    gateFrames,
+    campfireFlame,
     shadowGraphic,
     occlusionGraphic,
     ambientGraphic,
@@ -695,24 +884,47 @@ export function syncSceneEnvironment(
     mounted.stage4.visible = options.stage4 !== false;
     mounted.stage5.visible = options.stage5 !== false;
 
-    drawGateDoorGraphic(
-      mounted.gateGraphic,
-      env.gateDoor.open || gateOpen,
-      gateOpen ? 1 : env.gateDoor.progress,
-    );
-    drawProjectedShadowsGraphic(mounted.shadowGraphic, env);
-    drawActorOcclusionGraphic(
-      mounted.occlusionGraphic,
-      env,
-      options.actorPreview !== false,
-    );
+    if (mounted.hasTextures) {
+      if (mounted.gateSprite && mounted.gateFrames && mounted.gateFrames.length > 0) {
+        const p = gateOpen ? 1 : env.gateDoor.progress;
+        const idx = Math.max(
+          0,
+          Math.min(
+            mounted.gateFrames.length - 1,
+            Math.round(p * (mounted.gateFrames.length - 1)),
+          ),
+        );
+        mounted.gateSprite.texture = mounted.gateFrames[idx]!;
+      }
+      if (mounted.campfireFlame) {
+        const flicker =
+          0.92 +
+          0.08 * Math.sin(timeSec * 8.2) +
+          0.05 * Math.cos(timeSec * 13.7);
+        mounted.campfireFlame.width = 68 * (0.95 + 0.05 * Math.sin(timeSec * 11.1));
+        mounted.campfireFlame.height = 84 * flicker;
+        mounted.campfireFlame.alpha = 0.84 * flicker;
+      }
+    } else {
+      drawGateDoorGraphic(
+        mounted.gateGraphic,
+        env.gateDoor.open || gateOpen,
+        gateOpen ? 1 : env.gateDoor.progress,
+      );
+      drawProjectedShadowsGraphic(mounted.shadowGraphic, env);
+      drawActorOcclusionGraphic(
+        mounted.occlusionGraphic,
+        env,
+        options.actorPreview !== false,
+      );
 
-    mounted.ambientGraphic.clear();
-    const darkness = Math.max(0, (env.daylight.lightScale - 0.18) * 0.42);
-    if (darkness > 0.01) {
-      mounted.ambientGraphic
-        .roundRect(-620, -320, 2400, 1480, 64)
-        .fill({ color: env.daylight.tintHex, alpha: darkness });
+      mounted.ambientGraphic.clear();
+      const darkness = Math.max(0, (env.daylight.lightScale - 0.18) * 0.42);
+      if (darkness > 0.01) {
+        mounted.ambientGraphic
+          .roundRect(-620, -320, 2400, 1480, 64)
+          .fill({ color: env.daylight.tintHex, alpha: darkness });
+      }
     }
   }
 

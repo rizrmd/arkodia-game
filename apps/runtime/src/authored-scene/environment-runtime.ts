@@ -28,11 +28,14 @@ import {
   type EnvironmentMap,
 } from "./environment-catalog";
 import {
+  CAMPFIRE_NATIVE_PROP,
   COURT,
   COURT_CENTER,
   DEFAULT_WORLD_MAP,
   ISO,
+  STRONGHOLD_NATIVE_PROPS,
   STRONGHOLD_ORIGIN,
+  allStrongholdProps,
   campfireColumns,
   campfireProp,
   createCourtSurface,
@@ -191,16 +194,13 @@ export function createEnvironmentRuntime(
   const includeCampfire = options.includeCampfireInStrongholdProps ?? true;
   const strongholdProps = options.strongholdProps
     ? [...options.strongholdProps]
-    : [
-        ...starterEnclosureProps(),
-        ...(includeCampfire ? [campfireProp()] : []),
-      ];
+    : allStrongholdProps(includeCampfire);
 
   const strongholdColumns: FootprintColumn[] = [
     ...campfireColumns(COURT_CENTER.x, COURT_CENTER.y),
   ];
   for (const prop of strongholdProps) {
-    if (prop.id === "campfire") continue;
+    if (prop.id === "campfire" || !prop.solid) continue;
     strongholdColumns.push(...palisadeColumns(prop));
   }
 
@@ -210,7 +210,7 @@ export function createEnvironmentRuntime(
     textures["/modular-stronghold/v2/paving-warm-texture.png"] ?? Texture.WHITE;
 
   const snow = createInfiniteSnow(snowTex);
-  const courtSurface = createCourtSurface(pavingTex);
+  const courtSurface = createCourtSurface(pavingTex, { snowTexture: snowTex });
 
   const reliefLiftFn = (x: number, y: number) => liftAt(x, y, reliefFeatures);
   const frontier = createFrontierLayer(frontierProps, textures, {
@@ -226,31 +226,45 @@ export function createEnvironmentRuntime(
   let foundationCount = 0;
 
   for (const prop of strongholdProps) {
-    const f = createPropFoundation({
-      id: prop.id,
-      x: prop.x,
-      y: prop.y,
-      w: prop.w,
-      h: prop.h,
-      ax: prop.ax,
-      ay: prop.ay,
-      flip: prop.flip,
-      kind:
-        prop.id === "campfire"
-          ? "campfire"
-          : prop.tex.includes("gate")
-            ? "gate"
-            : prop.tex.includes("straight-se")
-              ? "wall-se"
-              : "wall-ne",
-    });
+    const isWallProp =
+      prop.tex.includes("straight-ne") ||
+      prop.tex.includes("straight-se") ||
+      prop.tex.includes("gate");
+    if (!isWallProp && prop.id !== "campfire") continue;
+    const f = createPropFoundation(
+      {
+        id: prop.id,
+        x: prop.x,
+        y: prop.y,
+        w: prop.w,
+        h: prop.h,
+        ax: prop.ax,
+        ay: prop.ay,
+        flip: prop.flip,
+        shear: prop.shear,
+        kind:
+          prop.id === "campfire"
+            ? "campfire"
+            : prop.tex.includes("gate")
+              ? "gate"
+              : prop.tex.includes("straight-se")
+                ? "wall-se"
+                : "wall-ne",
+      },
+      textures,
+    );
     f.face.zIndex = prop.y + 0.25;
     foundationsUnder.addChild(f.under);
     foundationsFace.addChild(f.face);
     foundationCount++;
   }
 
-  const shadows = createProjectedShadowLayer(strongholdProps, textures);
+  const shadowProps = strongholdProps.filter(
+    (p) =>
+      p.layer !== "ground" &&
+      p.tex !== "/modular-stronghold/v2/weeds-edge.png",
+  );
+  const shadows = createProjectedShadowLayer(shadowProps, textures);
 
   const envMap = options.environmentMap ?? DEFAULT_PUBLISHED_ENVIRONMENT_MAP;
   const envCatalog = options.environmentCatalog ?? DEFAULT_ENVIRONMENT_CATALOG;

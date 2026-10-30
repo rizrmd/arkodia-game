@@ -160,7 +160,12 @@ test("Stage 2: Frozen Frontier 46 sprites/kit, ground-plane rotation, cap linkin
   assert.ok(liftedProp);
   assert.equal(liftedProp.lift, 25);
 
-  const defaultProps = buildFrontierProps();
+  const defaultProps = buildFrontierProps({
+    placements: [
+      ...legacyFrontier.placements,
+      { a: "drift-ne", u: 473.5, v: 491.94, on: { u: 473.5, v: 491.94 } },
+    ],
+  });
   const capProp = defaultProps.find((p) => p.layer === "cap");
   assert.ok(capProp);
   assert.equal(capProp.solid, false);
@@ -171,8 +176,8 @@ test("Stage 2: Frozen Frontier 46 sprites/kit, ground-plane rotation, cap linkin
   assert.ok(Math.abs(mat.c - -2) < 1e-6);
 
   const layer = createFrontierLayer(fullProps.slice(0, 40), {});
-  assert.equal(layer.ground.zIndex, -10);
-  assert.equal(layer.shade.zIndex, 4);
+  assert.equal(layer.ground.zIndex, 2.6);
+  assert.equal(layer.shade.zIndex, 3.25);
   const culled = layer.cull(50000, 50000, 100, 100, 0);
   assert.equal(culled.visibleCount, 0);
   const allVisible = layer.cull(-50000, -50000, 100000, 100000, 512);
@@ -359,7 +364,7 @@ test("Stage 5: Daylight cycle (Rec. 601 luma floor), flickering torches, lightma
 
   const m = runtime.metrics();
   assert.equal(m.stage1.sizeTiles, 936);
-  assert.equal(m.stage2.frontierPropCount, 20);
+  assert.equal(m.stage2.frontierPropCount, 834);
   assert.equal(m.stage3.reliefFeatureCount, 4);
   assert.equal(m.stage4.environmentObjectCount, 4);
   assert.equal(m.stage5.torchCount, 16);

@@ -1,4 +1,15 @@
-import { Container, Graphics, Matrix, Sprite, Texture } from "pixi.js";
+import {
+  BlurFilter,
+  ColorMatrixFilter,
+  Container,
+  DOMAdapter,
+  Graphics,
+  ImageSource,
+  Matrix,
+  Rectangle,
+  Sprite,
+  Texture,
+} from "pixi.js";
 import {
   COURT_CENTER,
   type ReliefFeature,
@@ -220,27 +231,31 @@ export function sunAt(nowMs: number): SunVector {
 export type TorchLightSpec = {
   x: number;
   y: number;
+  z?: number;
+  r?: number;
+  wall?: boolean;
+  side?: number;
   radius?: number;
   intensity?: number;
 };
 
 export const DEFAULT_TORCH_LIGHTS: readonly TorchLightSpec[] = [
-  { x: 641, y: -44 },
-  { x: 761, y: 16 },
-  { x: 881, y: 76 },
-  { x: 1001, y: 136 },
-  { x: 513, y: -44 },
-  { x: 393, y: 16 },
-  { x: 273, y: 76 },
-  { x: 153, y: 136 },
-  { x: 112, y: 331 },
-  { x: 232, y: 391 },
-  { x: 352, y: 451 },
-  { x: 1042, y: 331 },
-  { x: 922, y: 391 },
-  { x: 802, y: 451 },
-  { x: 477, y: 742 },
-  { x: 677, y: 742 },
+  { x: 577, y: 120, z: 36, r: 196, wall: false, side: 1 },
+  { x: 745, y: 204, z: 36, r: 188, wall: false, side: 1 },
+  { x: 409, y: 204, z: 36, r: 188, wall: false, side: -1 },
+  { x: 969, y: 316, z: 36, r: 192, wall: false, side: 1 },
+  { x: 185, y: 316, z: 36, r: 192, wall: false, side: -1 },
+  { x: 857, y: 516, z: 36, r: 188, wall: false, side: -1 },
+  { x: 297, y: 516, z: 36, r: 188, wall: false, side: 1 },
+  { x: 649, y: 748, z: 34, r: 228, wall: false, side: -1 },
+  { x: 505, y: 748, z: 34, r: 228, wall: false, side: 1 },
+  { x: 577, y: 820, z: 36, r: 210, wall: false, side: 1 },
+  { x: 481, y: 696, z: 36, r: 176, wall: false, side: -1 },
+  { x: 673, y: 696, z: 36, r: 176, wall: false, side: 1 },
+  { x: 353, y: 588, z: 42, r: 172, wall: true, side: 1 },
+  { x: 801, y: 588, z: 42, r: 172, wall: true, side: -1 },
+  { x: 245, y: 300, z: 42, r: 172, wall: true, side: -1 },
+  { x: 909, y: 300, z: 42, r: 172, wall: true, side: 1 },
 ];
 
 export function evaluateLightmapAt(
@@ -265,7 +280,7 @@ export function evaluateLightmapAt(
   }
 
   for (const light of lights) {
-    const radius = light.radius ?? 190;
+    const radius = light.radius ?? light.r ?? 190;
     const d = Math.hypot(x - light.x, (y - light.y) * 1.35);
     if (d >= radius) continue;
     const w = (1 - d / radius) ** 2 * scale * (light.intensity ?? 0.46);
@@ -297,8 +312,21 @@ export type TorchNodeEntry = {
 
 export type TorchLayerResult = {
   nodes: TorchNodeEntry[];
+  groundContainer: Container;
   lightingContainer: Container;
   step: (timeSec: number, daylight: DaylightState) => void;
+};
+
+const REALISTIC_TORCH = {
+  srcW: 360,
+  srcH: 700,
+  topH: 378,
+  anchorX: 170,
+  anchorY: 576,
+  flameX: 172,
+  flameY: 224,
+  scaleWall: 0.088,
+  scalePost: 0.095,
 };
 
 let cachedGlowTex: Texture | null = null;
@@ -354,13 +382,116 @@ function defaultFlameTexture(): Texture {
   return Texture.WHITE;
 }
 
+function makeCanvas(w: number, h: number): HTMLCanvasElement | null {
+  try {
+    return DOMAdapter.get().createCanvas(
+      Math.max(1, Math.ceil(w)),
+      Math.max(1, Math.ceil(h)),
+    ) as unknown as HTMLCanvasElement;
+  } catch {
+    return null;
+  }
+}
+
+function sourceOf(tex: Texture | undefined): CanvasImageSource | null {
+  if (!tex || tex === Texture.WHITE) return null;
+  const src = (tex.source as { resource?: unknown } | undefined)?.resource;
+  if (!src) return null;
+  return src as CanvasImageSource;
+}
+
+function buildPostGroundTexture(
+  soilImg: CanvasImageSource | null,
+  driftImg: CanvasImageSource | null,
+): Texture | null {
+  const c = makeCanvas(64, 40);
+  if (!c) return null;
+  const ctx = c.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.save();
+  ctx.filter = "blur(4px)";
+  ctx.fillStyle = "rgba(20, 16, 12, 0.34)";
+  ctx.beginPath();
+  ctx.ellipse(32, 22, 18, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  if (soilImg) {
+    ctx.save();
+    ctx.globalAlpha = 0.52;
+    ctx.drawImage(soilImg, 8, 6, 48, 28);
+    ctx.restore();
+  }
+  if (driftImg) {
+    ctx.save();
+    ctx.globalAlpha = 0.42;
+    ctx.drawImage(driftImg, 10, 8, 44, 24);
+    ctx.restore();
+  }
+  return new Texture({ source: new ImageSource({ resource: c }) });
+}
+
+function buildPostColumnTexture(): Texture | null {
+  const c = makeCanvas(16, 56);
+  if (!c) return null;
+  const ctx = c.getContext("2d");
+  if (!ctx) return null;
+  const grad = ctx.createLinearGradient(4, 0, 12, 0);
+  grad.addColorStop(0, "#241811");
+  grad.addColorStop(0.45, "#4a3528");
+  grad.addColorStop(1, "#1c120d");
+  ctx.fillStyle = grad;
+  ctx.fillRect(5, 6, 6, 46);
+  ctx.fillStyle = "#18120e";
+  ctx.fillRect(4, 10, 8, 3);
+  ctx.fillRect(4, 42, 8, 3);
+  return new Texture({ source: new ImageSource({ resource: c }) });
+}
+
 export function createTorchLayer(
   lights: readonly TorchLightSpec[] = DEFAULT_TORCH_LIGHTS,
   textures: Record<string, Texture | undefined> = {},
   campfirePos: { x: number; y: number } = COURT_CENTER,
 ): TorchLayerResult {
-  const torchTex = textures["/realistic-torch/frame-3.webp"];
+  const f0 = textures["/realistic-torch/frame-0.webp"];
+  const f1 = textures["/realistic-torch/frame-1.webp"];
+  const f2 = textures["/realistic-torch/frame-2.webp"];
+  const f3 = textures["/realistic-torch/frame-3.webp"];
+
+  const hasRealisticTorch = Boolean(
+    f0 &&
+      f1 &&
+      f2 &&
+      f3 &&
+      f3.width >= REALISTIC_TORCH.srcW &&
+      f3.height >= REALISTIC_TORCH.srcH,
+  );
+
+  const bodyFrame = hasRealisticTorch
+    ? new Texture({
+        source: f3!.source,
+        frame: new Rectangle(
+          0,
+          REALISTIC_TORCH.topH,
+          REALISTIC_TORCH.srcW,
+          REALISTIC_TORCH.srcH - REALISTIC_TORCH.topH,
+        ),
+      })
+    : f3;
+
+  const topFrames = hasRealisticTorch
+    ? [f0!, f1!, f2!].map(
+        (t) =>
+          new Texture({
+            source: t.source,
+            frame: new Rectangle(0, 0, REALISTIC_TORCH.srcW, REALISTIC_TORCH.topH),
+          }),
+      )
+    : [];
+
   const flameTex =
+    topFrames[0] ??
     textures["/vfx/textures/flame.png"] ??
     textures["/vfx/textures/flare.png"] ??
     defaultFlameTexture();
@@ -369,72 +500,143 @@ export function createTorchLayer(
     textures["/vfx/textures/flare.png"] ??
     defaultGlowTexture();
 
+  const postGroundTex = buildPostGroundTexture(
+    sourceOf(textures["/foundation-transitions/soil-moss.png"]),
+    sourceOf(textures["/modular-stronghold/v2/snowdrift-edge.png"]),
+  );
+  const postColTex = buildPostColumnTexture();
+
   const nodes: TorchNodeEntry[] = [];
+  const groundContainer = new Container();
+  groundContainer.zIndex = 3.15;
+
   const lightingContainer = new Container();
-  lightingContainer.zIndex = 20;
+  lightingContainer.sortableChildren = true;
+  lightingContainer.zIndex = 9998;
+
+  // Build multiply lightmap + additive warm glow matching arkodia-archived/src/stronghold/lighting.ts
+  const lmScale = 0.25;
+  const lmPad = 900;
+  const lmLeft = -323 - lmPad;
+  const lmTop = -160 - lmPad;
+  const lmWorldW = 1800 + lmPad * 2;
+  const lmWorldH = 1120 + lmPad * 2;
+  const lmCanvas = makeCanvas(lmWorldW * lmScale, lmWorldH * lmScale);
+  let lmCtx: CanvasRenderingContext2D | null = null;
+  let lmSource: ImageSource | null = null;
+  if (lmCanvas) {
+    lmCtx = lmCanvas.getContext("2d");
+    lmSource = new ImageSource({ resource: lmCanvas });
+    const lmSprite = new Sprite(new Texture({ source: lmSource }));
+    lmSprite.position.set(lmLeft, lmTop);
+    lmSprite.scale.set(1 / lmScale);
+    lmSprite.blendMode = "multiply";
+    lmSprite.zIndex = 1;
+    lightingContainer.addChild(lmSprite);
+  }
+
+  const warmGlow = new Container();
+  warmGlow.zIndex = 2;
+  lightingContainer.addChild(warmGlow);
 
   const campHalo = new Sprite(glowTex);
   campHalo.anchor.set(0.5);
-  campHalo.position.set(campfirePos.x, campfirePos.y - 18);
-  campHalo.width = 480;
-  campHalo.height = 290;
+  campHalo.position.set(campfirePos.x, campfirePos.y - 26);
+  campHalo.width = 560;
+  campHalo.height = 360;
   campHalo.tint = 0xff9442;
-  campHalo.alpha = 0.28;
+  campHalo.alpha = 0.22;
   campHalo.blendMode = "add";
-  lightingContainer.addChild(campHalo);
+  warmGlow.addChild(campHalo);
 
   const torchHalos: Sprite[] = [];
 
   for (let i = 0; i < lights.length; i++) {
     const spec = lights[i]!;
+    const isWall = Boolean(spec.wall);
+    const zLift = spec.z ?? 36;
+    const scale = isWall ? REALISTIC_TORCH.scaleWall : REALISTIC_TORCH.scalePost;
+
+    if (!isWall && postGroundTex) {
+      const g = new Sprite(postGroundTex);
+      g.anchor.set(0.5, 0.55);
+      g.position.set(spec.x, spec.y + 3);
+      groundContainer.addChild(g);
+    }
+
     const wrap = new Container();
     wrap.position.set(spec.x, spec.y);
-    wrap.zIndex = spec.y + 1;
+    wrap.zIndex = spec.y + (isWall ? 6 : 2);
 
-    if (torchTex) {
-      const post = new Sprite(torchTex);
-      post.anchor.set(0.5, 0.9);
-      post.width = 44;
-      post.height = 68;
-      wrap.addChild(post);
-    } else {
-      const post = new Graphics();
-      post
-        .rect(-3, -38, 6, 38)
-        .fill(0x3a281b)
-        .circle(0, -40, 5)
-        .fill(0x231810);
-      wrap.addChild(post);
+    if (!isWall) {
+      if (postColTex) {
+        const post = new Sprite(postColTex);
+        post.anchor.set(0.5, 0.92);
+        post.position.set(0, 2);
+        wrap.addChild(post);
+      } else {
+        const post = new Graphics();
+        post.rect(-3, -38, 6, 40).fill(0x3b2a20);
+        wrap.addChild(post);
+      }
+    }
+
+    if (bodyFrame) {
+      const body = new Sprite(bodyFrame);
+      if (hasRealisticTorch) {
+        body.anchor.set(
+          REALISTIC_TORCH.anchorX / REALISTIC_TORCH.srcW,
+          (REALISTIC_TORCH.anchorY - REALISTIC_TORCH.topH) /
+            (REALISTIC_TORCH.srcH - REALISTIC_TORCH.topH),
+        );
+        body.scale.set(scale * (spec.side === -1 ? -1 : 1), scale);
+        body.position.set(0, -zLift + 16);
+      } else {
+        body.anchor.set(0.5, 0.9);
+        body.width = 34;
+        body.height = 54;
+      }
+      wrap.addChild(body);
     }
 
     const glow = new Sprite(glowTex);
     glow.anchor.set(0.5);
-    glow.position.set(0, -44);
+    glow.position.set(0, -zLift);
     glow.width = 76;
     glow.height = 76;
     glow.tint = 0xff8c3b;
-    glow.alpha = 0.42;
+    glow.alpha = 0.34;
     glow.blendMode = "add";
     wrap.addChild(glow);
 
     const flame = new Sprite(flameTex);
-    flame.anchor.set(0.5, 0.82);
-    flame.position.set(0, -40);
-    flame.width = 24;
-    flame.height = 34;
-    flame.tint = 0xffc46b;
-    flame.blendMode = "add";
+    if (hasRealisticTorch) {
+      flame.anchor.set(
+        REALISTIC_TORCH.anchorX / REALISTIC_TORCH.srcW,
+        REALISTIC_TORCH.anchorY / REALISTIC_TORCH.topH,
+      );
+      flame.scale.set(scale * (spec.side === -1 ? -1 : 1), scale);
+      flame.position.set(0, -zLift + 16);
+    } else {
+      flame.anchor.set(0.5, 0.82);
+      flame.position.set(0, -zLift);
+      flame.width = 24;
+      flame.height = 34;
+      flame.tint = 0xffc46b;
+      flame.blendMode = "add";
+    }
     wrap.addChild(flame);
 
     const groundHalo = new Sprite(glowTex);
     groundHalo.anchor.set(0.5);
-    groundHalo.position.set(spec.x, spec.y - 10);
-    groundHalo.width = 210;
-    groundHalo.height = 130;
+    groundHalo.position.set(spec.x, spec.y - zLift * 0.45);
+    const radius = spec.radius ?? spec.r ?? 188;
+    groundHalo.width = radius * 1.65;
+    groundHalo.height = radius * 1.15;
     groundHalo.tint = 0xff8a36;
-    groundHalo.alpha = 0.18;
+    groundHalo.alpha = 0.14;
     groundHalo.blendMode = "add";
-    lightingContainer.addChild(groundHalo);
+    warmGlow.addChild(groundHalo);
     torchHalos.push(groundHalo);
 
     nodes.push({
@@ -446,32 +648,88 @@ export function createTorchLayer(
     });
   }
 
+  let lastLmKey = "";
   const step = (timeSec: number, daylight: DaylightState) => {
     const lightScale = Math.max(0.18, daylight.lightScale);
     const campFlicker =
       0.92 +
       0.08 * Math.sin(timeSec * 7.3) +
       0.04 * Math.cos(timeSec * 13.1);
-    campHalo.alpha = 0.34 * lightScale * campFlicker;
-    campHalo.width = 480 * campFlicker;
-    campHalo.height = 290 * campFlicker;
+    campHalo.alpha = 0.24 * lightScale * campFlicker;
+    campHalo.width = 560 * campFlicker;
+    campHalo.height = 360 * campFlicker;
 
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i]!;
       const halo = torchHalos[i]!;
       const w1 = Math.sin(timeSec * 8.5 + node.phase);
       const w2 = Math.cos(timeSec * 14.2 + node.phase * 1.3);
-      const flicker = 0.88 + 0.1 * w1 + 0.06 * w2;
-      node.flame.height = 34 * flicker;
-      node.flame.width = 24 * (0.94 + 0.06 * w2);
-      node.flame.alpha = Math.min(1, (0.65 + 0.35 * lightScale) * flicker);
-      node.glow.alpha = 0.46 * lightScale * flicker;
-      halo.alpha = 0.22 * lightScale * flicker;
+      const flicker = 0.9 + 0.07 * w1 + 0.04 * w2;
+      if (hasRealisticTorch && topFrames.length === 3) {
+        const frameIdx =
+          Math.floor(timeSec * 8.5 + i * 1.3) % topFrames.length;
+        node.flame.texture = topFrames[Math.abs(frameIdx)]!;
+        const isWall = Boolean(node.spec.wall);
+        const sc =
+          (isWall ? REALISTIC_TORCH.scaleWall : REALISTIC_TORCH.scalePost) *
+          (0.96 + 0.05 * w1);
+        node.flame.scale.set(
+          sc * (node.spec.side === -1 ? -1 : 1),
+          sc * flicker,
+        );
+      } else {
+        node.flame.height = 34 * flicker;
+        node.flame.width = 24 * (0.94 + 0.06 * w2);
+        node.flame.alpha = Math.min(1, (0.65 + 0.35 * lightScale) * flicker);
+      }
+      node.glow.alpha = 0.32 * lightScale * flicker;
+      halo.alpha = 0.14 * lightScale * flicker;
+    }
+
+    if (lmCtx && lmCanvas && lmSource) {
+      const [ar, ag, ab] = daylight.ambient;
+      const ri = Math.round(ar * 255);
+      const gi = Math.round(ag * 255);
+      const bi = Math.round(ab * 255);
+      const key = `${ri},${gi},${bi},${Math.round(timeSec * 6)}`;
+      if (key !== lastLmKey) {
+        lastLmKey = key;
+        const w = lmCanvas.width;
+        const h = lmCanvas.height;
+        lmCtx.globalCompositeOperation = "source-over";
+        lmCtx.fillStyle = `rgb(${ri}, ${gi}, ${bi})`;
+        lmCtx.fillRect(0, 0, w, h);
+
+        lmCtx.globalCompositeOperation = "lighter";
+        const punch = (wx: number, wy: number, r: number, strength: number) => {
+          const cx = (wx - lmLeft) * lmScale;
+          const cy = (wy - lmTop) * lmScale;
+          const rad = r * lmScale;
+          const g = lmCtx!.createRadialGradient(cx, cy, rad * 0.06, cx, cy, rad);
+          const a = Math.min(1, strength * lightScale);
+          g.addColorStop(0, `rgba(255, 224, 176, ${a.toFixed(3)})`);
+          g.addColorStop(0.45, `rgba(240, 172, 102, ${(a * 0.52).toFixed(3)})`);
+          g.addColorStop(1, "rgba(0, 0, 0, 0)");
+          lmCtx!.fillStyle = g;
+          lmCtx!.beginPath();
+          lmCtx!.arc(cx, cy, rad, 0, Math.PI * 2);
+          lmCtx!.fill();
+        };
+
+        punch(campfirePos.x, campfirePos.y - 22, 340 * campFlicker, 0.78);
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i]!;
+          const r = (n.spec.radius ?? n.spec.r ?? 188) * 1.05;
+          punch(n.spec.x, n.spec.y - (n.spec.z ?? 36) * 0.5, r, 0.52);
+        }
+        lmSource.update();
+      }
     }
   };
 
   return {
     nodes,
+    groundContainer,
     lightingContainer,
     step,
   };
@@ -491,11 +749,15 @@ export function projectShadowMatrix(
   texHeight: number,
   sun: SunVector,
 ): Matrix {
-  const sx = (prop.w / Math.max(1, texWidth)) * (prop.flip ? -1 : 1);
-  const sy = (prop.h / Math.max(1, texHeight)) * 0.42;
-  const skewX = -sun.dx * sy * 0.55;
-  const skewY = sun.dy * sy * 0.25;
-  return new Matrix(sx, skewY, skewX, sy, prop.x, prop.y + 2);
+  const flip = prop.flip ? -1 : 1;
+  const sx = prop.w / Math.max(1, texWidth);
+  const sy = prop.h / Math.max(1, texHeight);
+  const a = flip * sx;
+  const c = -sx * sun.dx * (1 - prop.ay);
+  const d = sy * Math.abs(sun.dy) * (1 - prop.ay);
+  const tx = prop.x - a * texWidth * prop.ax - c * texHeight * prop.ay;
+  const ty = prop.y - d * texHeight * prop.ay;
+  return new Matrix(a, 0, c, d, tx, ty);
 }
 
 export type ProjectedShadowLayerResult = {
@@ -519,7 +781,20 @@ export function createProjectedShadowLayer(
   textures: Record<string, Texture | undefined>,
 ): ProjectedShadowLayerResult {
   const container = new Container();
-  container.zIndex = 3.5;
+  container.zIndex = 3.2;
+
+  try {
+    const tint = new ColorMatrixFilter();
+    tint.matrix = [
+      0, 0, 0, 0, 18 / 255,
+      0, 0, 0, 0, 26 / 255,
+      0, 0, 0, 0, 40 / 255,
+      0, 0, 0, 1, 0,
+    ];
+    container.filters = [tint, new BlurFilter({ strength: 4, quality: 2 })];
+  } catch {
+    // Headless fallback
+  }
 
   const entries: Array<{
     prop: {
@@ -539,15 +814,14 @@ export function createProjectedShadowLayer(
     const tex = textures[prop.tex];
     if (!tex) continue;
     const sprite = new Sprite(tex);
-    sprite.anchor.set(prop.ax, prop.ay);
-    sprite.tint = 0x090e16;
-    sprite.alpha = 0.2;
+    sprite.anchor.set(0, 0);
+    sprite.alpha = 0.22;
     container.addChild(sprite);
     entries.push({ prop, sprite, tex });
   }
 
   const sync = (sun: SunVector) => {
-    const alpha = Math.max(0.05, Math.min(0.26, 0.24 * sun.strength));
+    const alpha = Math.max(0.05, Math.min(0.28, 0.25 * sun.strength));
     for (const entry of entries) {
       entry.sprite.alpha = alpha;
       entry.sprite.setFromMatrix(

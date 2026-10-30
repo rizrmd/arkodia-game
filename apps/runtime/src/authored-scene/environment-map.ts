@@ -1,4 +1,5 @@
 import {
+  BlurFilter,
   Container,
   Graphics,
   Matrix,
@@ -16,7 +17,7 @@ export const STRONGHOLD_ORIGIN = {
   v: STRONGHOLD_AT.v - STRONGHOLD_ANCHOR.v,
 } as const;
 export const SNOW_DENSITY = 0.7;
-export const PAVING_DENSITY = 0.72;
+export const PAVING_DENSITY = 0.22;
 
 export type FootprintColumn = [x: number, y0: number, y1: number];
 
@@ -37,7 +38,7 @@ export type ReliefFeature = {
   visual?: "cliff" | "scenery";
   rampStartV?: number;
   rampStartU?: number;
-  outline?: ReadonlyArray< readonly [number, number]>;
+  outline?: ReadonlyArray<readonly [number, number]>;
 };
 
 export type WorldPrefabPlacement = {
@@ -347,7 +348,7 @@ export type InfiniteSnowState = {
 };
 
 export function createInfiniteSnow(
-  snowTexture: Texture,
+  snowTexture: Texture = Texture.WHITE,
   options?: {
     density?: number;
     pad?: number;
@@ -358,19 +359,30 @@ export function createInfiniteSnow(
   const density = options?.density ?? SNOW_DENSITY;
   const pad = options?.pad ?? 256;
   const bounds = options?.initialBounds ?? {
-    x: -1024,
-    y: -512,
-    width: 3200,
-    height: 2048,
+    x: -4800,
+    y: -4800,
+    width: 10800,
+    height: 10800,
   };
+  const tex = snowTexture ?? Texture.WHITE;
   const sprite = new TilingSprite({
-    texture: snowTexture,
+    texture: tex,
     width: bounds.width + pad * 2,
     height: bounds.height + pad * 2,
   });
-  sprite.tileScale.set(1 / density, 1 / density);
-  sprite.position.set(bounds.x - pad, bounds.y - pad);
-  sprite.tilePosition.set(-(bounds.x - pad), -(bounds.y - pad));
+  const x0Init = bounds.x - pad;
+  const y0Init = bounds.y - pad;
+  sprite.position.set(x0Init, y0Init);
+  sprite.tilePosition.set(-x0Init, -y0Init);
+  const hasRealTexture = tex !== Texture.WHITE && tex.width > 1;
+  if (hasRealTexture) {
+    const s = (density * 1024) / Math.max(1, tex.width);
+    sprite.tileTransform.setFromMatrix(
+      new Matrix(s, s * 0.5, -s, s * 0.5, COURT.x - x0Init, COURT.y - y0Init),
+    );
+  } else {
+    sprite.tileScale.set(1 / density, 1 / density);
+  }
   sprite.zIndex = options?.zIndex ?? -20;
 
   const sync = (
@@ -385,6 +397,12 @@ export function createInfiniteSnow(
     sprite.width = viewWidth + pad * 2;
     sprite.height = viewHeight + pad * 2;
     sprite.tilePosition.set(-x0, -y0);
+    if (hasRealTexture) {
+      const s = (density * 1024) / Math.max(1, tex.width);
+      sprite.tileTransform.setFromMatrix(
+        new Matrix(s, s * 0.5, -s, s * 0.5, COURT.x - x0, COURT.y - y0),
+      );
+    }
   };
 
   return { sprite, pad, density, sync };
@@ -401,13 +419,13 @@ export function syncInfiniteSnow(
 }
 
 export const GATEWAY_APRON_BOUNDS = {
-  x: 417,
-  y: 700,
-  width: 320,
-  height: 140,
-  edgeY: 785,
-  diamondApexY: 796,
-  slope: 0.35,
+  x: 407,
+  y: 540,
+  width: 340,
+  height: 260,
+  edgeY: 678,
+  diamondApexY: 800,
+  slope: 0.5,
 } as const;
 
 export function gatewayApronAlphaAt(wx: number, wy: number): {
@@ -415,28 +433,47 @@ export function gatewayApronAlphaAt(wx: number, wy: number): {
   shade: number;
   rgb: [number, number, number];
 } {
-  const { edgeY, diamondApexY, slope } = GATEWAY_APRON_BOUNDS;
-  const dx = Math.abs(wx - COURT.x);
-  if (wy - diamondApexY > (160 - dx) * slope) {
+  const { edgeY, slope } = GATEWAY_APRON_BOUNDS;
+  const tile = courtToTile(wx, wy);
+  if (tile.u < 0 || tile.v < 0 || tile.u > COURT.size || tile.v > COURT.size) {
     return { alpha: 0, shade: 0, rgb: [0, 0, 0] };
   }
-  const n1 = noise2(wx * 0.045, wy * 0.045);
-  const n2 = noise2(wx * 0.14 + 19, wy * 0.14 + 7);
-  const edge = edgeY + (n1 - 0.5) * 32 + (n2 - 0.5) * 12 - dx * 0.14;
-  const a = Math.max(0, Math.min(1, (wy - (edge - 26)) / 52));
-  if (a <= 0) {
+  const edge = edgeY - Math.abs(wx - COURT.x) * slope;
+  const n1 = noise2(wx / 36, wy / 36);
+  const n2 = noise2(wx / 13, wy / 13);
+  const d = wy - edge + (n1 - 0.5) * 26 + (n2 - 0.5) * 10;
+  if (d <= -28) {
     return { alpha: 0, shade: 0, rgb: [0, 0, 0] };
   }
-  const s = a * a * (3 - 2 * a);
-  const shade = 0.92 + (n2 - 0.5) * 0.08;
-  const r = Math.round((238 * s + 212 * (1 - s)) * shade);
-  const g = Math.round((243 * s + 222 * (1 - s)) * shade);
-  const b = Math.round((249 * s + 235 * (1 - s)) * shade);
-  const alpha = Math.round(s * 242) / 255;
+  const u = Math.max(0, Math.min(1, (d + 28) / 56));
+  const alpha = d >= 28 ? 1 : u * u * (3 - 2 * u);
+  const shade = 0.94 + (n2 - 0.5) * 0.06;
+  const r = Math.round((238 * alpha + 216 * (1 - alpha)) * shade);
+  const g = Math.round((243 * alpha + 225 * (1 - alpha)) * shade);
+  const b = Math.round((249 * alpha + 236 * (1 - alpha)) * shade);
   return { alpha, shade, rgb: [r, g, b] };
 }
 
-function buildGatewaySnowApronView(): Container {
+export function extractTextureCanvasSource(
+  tex?: Texture,
+): CanvasImageSource | null {
+  if (!tex || tex === Texture.WHITE) return null;
+  const src = (tex as unknown as { source?: { resource?: unknown } }).source
+    ?.resource;
+  if (!src) return null;
+  if (
+    (typeof HTMLImageElement !== "undefined" &&
+      src instanceof HTMLImageElement) ||
+    (typeof HTMLCanvasElement !== "undefined" &&
+      src instanceof HTMLCanvasElement) ||
+    (typeof ImageBitmap !== "undefined" && src instanceof ImageBitmap)
+  ) {
+    return src;
+  }
+  return null;
+}
+
+function buildGatewaySnowApronView(snowTexture?: Texture): Container {
   const wrap = new Container();
   wrap.zIndex = 2;
   const { x: x0, y: y0, width: w, height: h } = GATEWAY_APRON_BOUNDS;
@@ -447,19 +484,57 @@ function buildGatewaySnowApronView(): Container {
     canvas.height = h;
     const ctx = canvas.getContext("2d");
     if (ctx) {
-      const img = ctx.createImageData(w, h);
-      for (let py = 0; py < h; py++) {
-        for (let px = 0; px < w; px++) {
-          const sample = gatewayApronAlphaAt(x0 + px, y0 + py);
-          if (sample.alpha <= 0) continue;
-          const idx = (py * w + px) * 4;
-          img.data[idx] = sample.rgb[0];
-          img.data[idx + 1] = sample.rgb[1];
-          img.data[idx + 2] = sample.rgb[2];
-          img.data[idx + 3] = Math.round(sample.alpha * 255);
+      const snowImg = extractTextureCanvasSource(snowTexture);
+      if (snowImg && snowTexture) {
+        ctx.save();
+        ctx.beginPath();
+        const pts: [number, number][] = [
+          [0, 0],
+          [COURT.size, 0],
+          [COURT.size, COURT.size],
+          [0, COURT.size],
+        ];
+        pts.forEach(([u, v], idx) => {
+          const p = tileToCourt(u, v);
+          if (idx === 0) ctx.moveTo(p.x - x0, p.y - y0);
+          else ctx.lineTo(p.x - x0, p.y - y0);
+        });
+        ctx.closePath();
+        ctx.clip();
+        const pat = ctx.createPattern(snowImg, "repeat");
+        if (pat && typeof DOMMatrix !== "undefined") {
+          const s = (SNOW_DENSITY * 1024) / Math.max(1, snowTexture.width);
+          pat.setTransform(
+            new DOMMatrix([s, s * 0.5, -s, s * 0.5, COURT.x - x0, COURT.y - y0]),
+          );
+          ctx.fillStyle = pat;
+          ctx.fillRect(0, 0, w, h);
         }
+        ctx.restore();
+        const img = ctx.getImageData(0, 0, w, h);
+        for (let py = 0; py < h; py++) {
+          for (let px = 0; px < w; px++) {
+            const sample = gatewayApronAlphaAt(x0 + px, y0 + py);
+            const idx = (py * w + px) * 4;
+            img.data[idx + 3] = Math.round(img.data[idx + 3]! * sample.alpha);
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+      } else {
+        const img = ctx.createImageData(w, h);
+        for (let py = 0; py < h; py++) {
+          for (let px = 0; px < w; px++) {
+            const sample = gatewayApronAlphaAt(x0 + px, y0 + py);
+            if (sample.alpha <= 0) continue;
+            const idx = (py * w + px) * 4;
+            img.data[idx] = sample.rgb[0];
+            img.data[idx + 1] = sample.rgb[1];
+            img.data[idx + 2] = sample.rgb[2];
+            img.data[idx + 3] = Math.round(sample.alpha * 255);
+          }
+        }
+        ctx.putImageData(img, 0, 0);
       }
-      ctx.putImageData(img, 0, 0);
       const sprite = new Sprite(Texture.from(canvas));
       sprite.position.set(x0, y0);
       wrap.addChild(sprite);
@@ -479,7 +554,7 @@ function buildGatewaySnowApronView(): Container {
       COURT.x + 150,
       790,
       COURT.x,
-      832,
+      800,
       COURT.x - 150,
       790,
     ])
@@ -504,14 +579,15 @@ export type CourtSurfaceResult = {
 };
 
 export function createCourtSurface(
-  pavingTexture: Texture,
+  pavingTexture: Texture = Texture.WHITE,
   options?: {
     minTile?: number;
     maxTile?: number;
     pavingDensity?: number;
+    snowTexture?: Texture;
   },
 ): CourtSurfaceResult {
-  const minTile = options?.minTile ?? -0.5;
+  const minTile = options?.minTile ?? 0;
   const maxTile = options?.maxTile ?? COURT.size;
   const pavingDensity = options?.pavingDensity ?? PAVING_DENSITY;
 
@@ -519,46 +595,54 @@ export function createCourtSurface(
   container.sortableChildren = true;
   container.zIndex = 0;
 
-  const sMin = minTile - 0.3;
-  const sMax = maxTile + 0.3;
-  const sTop = tileToCourt(sMin, sMin);
-  const sRight = tileToCourt(sMax, sMin);
-  const sBottom = tileToCourt(sMax, sMax);
-  const sLeft = tileToCourt(sMin, sMax);
-
-  const contactShadow = new Graphics();
-  contactShadow.zIndex = 0;
-  contactShadow
-    .poly([
-      sTop.x,
-      sTop.y + 12,
-      sRight.x,
-      sRight.y + 12,
-      sBottom.x,
-      sBottom.y + 12,
-      sLeft.x,
-      sLeft.y + 12,
-    ])
-    .fill({ color: 0x0b1018, alpha: 0.28 })
-    .stroke({ color: 0x0b1018, width: 28, alpha: 0.12, join: "round" });
-  container.addChild(contactShadow);
-
   const top = tileToCourt(minTile, minTile);
   const right = tileToCourt(maxTile, minTile);
   const bottom = tileToCourt(maxTile, maxTile);
   const left = tileToCourt(minTile, maxTile);
 
+  const contactShadow = new Graphics();
+  contactShadow.zIndex = 0;
+  contactShadow
+    .poly([
+      top.x,
+      top.y,
+      right.x,
+      right.y,
+      bottom.x,
+      bottom.y,
+      left.x,
+      left.y,
+    ])
+    .stroke({ color: 0x29392d, width: 30, alpha: 0.16, join: "round" });
+  try {
+    contactShadow.filters = [new BlurFilter({ strength: 10, quality: 2 })];
+  } catch {
+    // Headless Node environment without DOM canvas
+  }
+  container.addChild(contactShadow);
+
   const pad = 64;
   const pavingTex = pavingTexture ?? Texture.WHITE;
+  const px0 = left.x - pad;
+  const py0 = top.y - pad;
   const paving = new TilingSprite({
     texture: pavingTex,
     width: right.x - left.x + pad * 2,
     height: bottom.y - top.y + pad * 2,
   });
-  paving.position.set(left.x - pad, top.y - pad);
-  paving.tileScale.set(1 / pavingDensity, 1 / pavingDensity);
-  paving.tint = pavingTex === Texture.WHITE ? 0x3b3631 : 0xd6d2cc;
-  paving.alpha = pavingTex === Texture.WHITE ? 0.78 : 1;
+  paving.position.set(px0, py0);
+  if (pavingTex !== Texture.WHITE && pavingTex.width > 1) {
+    const s = (pavingDensity * 1024) / Math.max(1, pavingTex.width);
+    paving.tileTransform.setFromMatrix(
+      new Matrix(s, s * 0.5, -s, s * 0.5, COURT.x - px0, COURT.y - py0),
+    );
+    paving.tint = 0xffffff;
+    paving.alpha = 1;
+  } else {
+    paving.tileScale.set(1 / pavingDensity, 1 / pavingDensity);
+    paving.tint = 0x3b3631;
+    paving.alpha = 0.78;
+  }
   paving.zIndex = 1;
 
   const pavingMask = new Graphics();
@@ -580,33 +664,10 @@ export function createCourtSurface(
 
   const jointLines = new Graphics();
   jointLines.zIndex = 1.5;
-  for (let i = 0; i <= COURT.size; i++) {
-    const a = tileToCourt(i, 0);
-    const b = tileToCourt(i, COURT.size);
-    const c = tileToCourt(0, i);
-    const d = tileToCourt(COURT.size, i);
-    jointLines
-      .moveTo(a.x, a.y)
-      .lineTo(b.x, b.y)
-      .moveTo(c.x, c.y)
-      .lineTo(d.x, d.y);
-  }
-  jointLines.stroke({ color: 0x26211d, width: 1, alpha: 0.16 });
-  jointLines
-    .poly([
-      top.x,
-      top.y,
-      right.x,
-      right.y,
-      bottom.x,
-      bottom.y,
-      left.x,
-      left.y,
-    ])
-    .stroke({ color: 0x38312b, width: 4, alpha: 0.36, join: "round" });
+  jointLines.visible = false;
   container.addChild(jointLines);
 
-  const snowApron = buildGatewaySnowApronView();
+  const snowApron = buildGatewaySnowApronView(options?.snowTexture);
   container.addChild(snowApron);
 
   return {
@@ -629,61 +690,166 @@ export type PropFoundationSpec = {
   ax?: number;
   ay?: number;
   flip?: boolean;
+  shear?: number;
   kind?: "wall-ne" | "wall-se" | "gate" | "campfire" | "building";
 };
 
 export type PropFoundationNodes = {
-  under: Graphics;
-  face: Graphics;
+  under: Container;
+  face: Container;
 };
 
 export function createPropFoundation(
   prop: PropFoundationSpec,
+  textures?: Record<string, Texture | undefined>,
 ): PropFoundationNodes {
-  const ax = prop.ax ?? 0.5;
-  const ay = prop.ay ?? 0.85;
-  const under = new Graphics();
+  const under = new Container();
   under.zIndex = 3;
-  const face = new Graphics();
+  const face = new Container();
   face.zIndex = 10.6;
 
-  const seed = Math.round(prop.x * 13 + prop.y * 29);
-  const jitter = (hash2(seed, 7) - 0.5) * 6;
-  const rx = Math.max(24, prop.w * 0.36);
-  const ry = Math.max(10, prop.h * (1 - ay) * 0.68);
-  const cx = prop.x + (0.5 - ax) * prop.w * 0.25;
-  const cy = prop.y;
-
-  under
-    .ellipse(cx, cy + 2, rx * 1.05, ry * 1.08)
-    .fill({ color: 0x221c17, alpha: 0.38 });
-
-  const driftCount = prop.kind === "campfire" ? 3 : 4;
-  for (let i = 0; i < driftCount; i++) {
-    const angle = (i / driftCount) * Math.PI + 0.25 + jitter * 0.02;
-    const dx = Math.cos(angle) * rx * 0.72;
-    const dy = Math.sin(angle) * ry * 0.65 + 3;
-    const drx = rx * (0.28 + hash2(seed + i, 19) * 0.14);
-    const dry = ry * (0.26 + hash2(seed + i, 31) * 0.12);
-    under
-      .ellipse(cx + dx, cy + dy, drx, dry)
-      .fill({ color: 0xe6eef6, alpha: 0.34 });
+  const isWall = prop.id.includes("ne") || prop.id.includes("nw") || prop.id.includes("se") || prop.id.includes("sw") || prop.id.includes("rampart");
+  const isCampfire = prop.id === "campfire";
+  if (!isWall && !isCampfire) {
+    return { under, face };
   }
 
-  under
-    .ellipse(cx, cy + 1, rx * 0.84, ry * 0.62)
-    .fill({ color: 0x0e131a, alpha: 0.32 });
+  const soilTex = textures?.["/foundation-transitions/soil-moss.png"];
+  const mossTex = textures?.["/foundation-transitions/moss.png"];
+  const driftTex = textures?.["/modular-stronghold/v2/snowdrift-edge.png"];
 
-  const mossWidth = rx * 0.76;
-  const mossHeight = Math.max(6, Math.min(16, prop.h * 0.065));
-  face
-    .ellipse(cx, cy - mossHeight * 0.35, mossWidth, mossHeight)
-    .fill({ color: 0x2f3b28, alpha: 0.18 })
-    .ellipse(cx, cy, mossWidth * 0.92, Math.max(4, mossHeight * 0.55))
-    .fill({ color: 0x0b1018, alpha: 0.22 });
+  const slope = prop.shear !== undefined ? prop.shear : prop.id.includes("se") ? 0.2 : -0.2;
+
+  if (soilTex && soilTex !== Texture.WHITE) {
+    const soil = new Sprite(soilTex);
+    soil.anchor.set(0.5, 0.52);
+    const sx = (prop.w * (isCampfire ? 0.56 : 0.72)) / Math.max(1, soilTex.width);
+    const sy = (isCampfire ? 42 : 28) / Math.max(1, soilTex.height);
+    soil.setFromMatrix(
+      new Matrix(sx, (isCampfire ? 0 : slope) * sx, 0, sy, prop.x, prop.y + 4),
+    );
+    soil.alpha = isCampfire ? 0.36 : 0.42;
+    under.addChild(soil);
+  } else {
+    const g = new Graphics();
+    const rx = Math.max(24, prop.w * 0.28);
+    const ry = Math.max(8, prop.h * 0.05);
+    g.ellipse(prop.x, prop.y + 2, rx, ry).fill({ color: 0x221c17, alpha: 0.16 });
+    under.addChild(g);
+  }
+
+  if (driftTex && driftTex !== Texture.WHITE && isWall) {
+    const drift = new Sprite(driftTex);
+    drift.anchor.set(0.5, 0.58);
+    const sx = (prop.w * 0.46) / Math.max(1, driftTex.width);
+    const sy = (prop.w * 0.22) / Math.max(1, driftTex.height);
+    drift.setFromMatrix(
+      new Matrix(sx, slope * sx, 0, sy, prop.x, prop.y + 6),
+    );
+    drift.alpha = 0.28;
+    under.addChild(drift);
+  }
+
+  if (mossTex && mossTex !== Texture.WHITE) {
+    const moss = new Sprite(mossTex);
+    moss.anchor.set(0.5, 0.72);
+    const sx = (prop.w * (isCampfire ? 0.44 : 0.62)) / Math.max(1, mossTex.width);
+    const sy = (isCampfire ? 24 : 18) / Math.max(1, mossTex.height);
+    moss.setFromMatrix(
+      new Matrix(sx, (isCampfire ? 0 : slope) * sx, 0, sy, prop.x, prop.y + 2),
+    );
+    moss.alpha = 0.22;
+    face.addChild(moss);
+  }
 
   return { under, face };
 }
+
+export type NativeStrongholdProp = {
+  id: string;
+  file: string;
+  x: number;
+  y: number;
+  width: number;
+  foot: number;
+  vertical: number;
+  shear: number;
+  depth: number;
+  layer: "ground" | "world";
+};
+
+export const STRONGHOLD_NATIVE_PROPS: NativeStrongholdProp[] = [
+  { id: "fir-young", file: "/modular-stronghold/v2/fir-young.png", x: 193, y: -160, width: 135, foot: 0.97, vertical: 1, shear: 0, depth: -160, layer: "world" },
+  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 65, y: -96, width: 154, foot: 0.97, vertical: 1, shear: 0, depth: -96, layer: "world" },
+  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: -191, y: 32, width: 173, foot: 0.97, vertical: 1, shear: 0, depth: 32, layer: "world" },
+  { id: "fir-young", file: "/modular-stronghold/v2/fir-young.png", x: 897, y: -192, width: 192, foot: 0.97, vertical: 1, shear: 0, depth: -192, layer: "world" },
+  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 1089, y: -96, width: 135, foot: 0.97, vertical: 1, shear: 0, depth: -96, layer: "world" },
+  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 1345, y: 32, width: 154, foot: 0.97, vertical: 1, shear: 0, depth: 32, layer: "world" },
+  { id: "fir-young", file: "/modular-stronghold/v2/fir-young.png", x: 1601, y: 160, width: 173, foot: 0.97, vertical: 1, shear: 0, depth: 160, layer: "world" },
+  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 1601, y: 608, width: 192, foot: 0.97, vertical: 1, shear: 0, depth: 608, layer: "world" },
+  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 1217, y: 800, width: 135, foot: 0.97, vertical: 1, shear: 0, depth: 800, layer: "world" },
+  { id: "fir-young", file: "/modular-stronghold/v2/fir-young.png", x: -447, y: 608, width: 154, foot: 0.97, vertical: 1, shear: 0, depth: 608, layer: "world" },
+  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: -63, y: 800, width: 173, foot: 0.97, vertical: 1, shear: 0, depth: 800, layer: "world" },
+  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: 77.8, y: -153.6, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: -153.6, layer: "world" },
+  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: 1076.2, y: -153.6, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: -153.6, layer: "world" },
+  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: 1524.2, y: 70.4, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: 70.4, layer: "world" },
+  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: 1377, y: 688, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: 688, layer: "world" },
+  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: -223, y: 688, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: 688, layer: "world" },
+  { id: "boulders-snow", file: "/modular-stronghold/v2/boulders-snow.png", x: -319, y: 96, width: 185, foot: 0.97, vertical: 1, shear: 0, depth: 96, layer: "world" },
+  { id: "boulders-snow", file: "/modular-stronghold/v2/boulders-snow.png", x: 1473, y: 96, width: 185, foot: 0.97, vertical: 1, shear: 0, depth: 96, layer: "world" },
+  { id: "boulders-snow", file: "/modular-stronghold/v2/boulders-snow.png", x: 1025, y: 768, width: 185, foot: 0.97, vertical: 1, shear: 0, depth: 768, layer: "world" },
+  { id: "boulders-snow", file: "/modular-stronghold/v2/boulders-snow.png", x: 129, y: 768, width: 185, foot: 0.97, vertical: 1, shear: 0, depth: 768, layer: "world" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 385, y: 0, width: 195, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 129, y: 128, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: -127, y: 256, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 769, y: 0, width: 195, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 1025, y: 128, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 1281, y: 256, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 1153, y: 448, width: 195, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 897, y: 576, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 1, y: 448, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 257, y: 576, width: 195, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 513, y: 640, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: -95, y: -48, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 1249, y: -48, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 1229.8, y: 550.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 845.8, y: 742.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: -75.8, y: 550.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 308.2, y: 742.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 321, y: 416, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 833, y: 480, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 385, y: 576, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 705, y: 352, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 464.15, y: -101.43, width: 330.6, foot: 0.5723, vertical: 0.75, shear: -0.1995, depth: -100, layer: "world" },
+  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-b.png", x: 213.05, y: 20.81, width: 303.16, foot: 0.5859, vertical: 0.75, shear: -0.2039, depth: 20, layer: "world" },
+  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: -15.85, y: 138.57, width: 330.6, foot: 0.5723, vertical: 0.75, shear: -0.1995, depth: 140, layer: "world" },
+  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: -255.85, y: 258.57, width: 330.6, foot: 0.5723, vertical: 0.75, shear: -0.1995, depth: 260, layer: "world" },
+  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 704.89, y: -98.43, width: 328.42, foot: 0.582, vertical: 0.75, shear: 0.199, depth: -100, layer: "world" },
+  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-b.png", x: 935.41, y: 19.69, width: 305.17, foot: 0.5938, vertical: 0.75, shear: 0.197, depth: 20, layer: "world" },
+  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 1184.89, y: 141.57, width: 328.42, foot: 0.582, vertical: 0.75, shear: 0.199, depth: 140, layer: "world" },
+  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 1424.89, y: 261.57, width: 328.42, foot: 0.582, vertical: 0.75, shear: 0.199, depth: 260, layer: "world" },
+  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: -271.09, y: 378.27, width: 287.37, foot: 0.582, vertical: 0.75, shear: 0.2383, depth: 376.63, layer: "world" },
+  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-b.png", x: -69.39, y: 489.55, width: 267.02, foot: 0.5938, vertical: 0.75, shear: 0.2363, depth: 489.88, layer: "world" },
+  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 148.91, y: 604.77, width: 287.37, foot: 0.582, vertical: 0.75, shear: 0.2383, depth: 603.13, layer: "world" },
+  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 358.91, y: 718.02, width: 287.37, foot: 0.582, vertical: 0.75, shear: 0.2383, depth: 716.38, layer: "world" },
+  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 1438.26, y: 375.13, width: 289.27, foot: 0.5723, vertical: 0.75, shear: -0.2388, depth: 376.63, layer: "world" },
+  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-b.png", x: 1218.55, y: 490.72, width: 265.26, foot: 0.5859, vertical: 0.75, shear: -0.2432, depth: 489.88, layer: "world" },
+  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 1018.26, y: 601.63, width: 289.27, foot: 0.5723, vertical: 0.75, shear: -0.2388, depth: 603.13, layer: "world" },
+  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 808.26, y: 714.88, width: 289.27, foot: 0.5723, vertical: 0.75, shear: -0.2388, depth: 716.38, layer: "world" },
+];
+
+export const CAMPFIRE_NATIVE_PROP: NativeStrongholdProp = {
+  id: "campfire",
+  file: "/buildings/starting-campfire/campfire-v1.png",
+  x: 577,
+  y: 320,
+  width: 320,
+  foot: 545 / 887,
+  vertical: 1,
+  shear: 0,
+  depth: 320,
+  layer: "world",
+};
 
 export type StrongholdPropDef = {
   id: string;
@@ -698,121 +864,106 @@ export type StrongholdPropDef = {
   trim: number;
   zBoost: number;
   solid: boolean;
+  layer?: "ground" | "world";
+  alpha?: number;
+  foot?: number;
+  vertical?: number;
+  shear?: number;
+  depth?: number;
 };
 
-export function starterEnclosureProps(): StrongholdPropDef[] {
-  const props: StrongholdPropDef[] = [];
-  const wallStep = { x: 240, y: 120 };
-  const wallTex = ["straight-ne-a", "straight-ne-b"];
-  const seTex = ["straight-se-a", "straight-se-b"];
-  const wallSize = { w: 300, h: 300, ax: 0.5, ay: 0.793 };
-  const n = 4;
-
-  const topNE = { x: 705, y: -98 };
-  for (let i = 0; i < n; i++) {
-    props.push({
-      id: `ne-${i}`,
-      tex: `/buildings/starter-boundary/${seTex[i % 2]}.png`,
-      x: Math.round(topNE.x + i * wallStep.x),
-      y: Math.round(topNE.y + i * wallStep.y),
-      ...wallSize,
+export function allStrongholdProps(includeCampfire = true): StrongholdPropDef[] {
+  const list: StrongholdPropDef[] = STRONGHOLD_NATIVE_PROPS.map((p, idx) => {
+    const isWall = p.id.startsWith("rampart-");
+    const aspect = isWall ? 256 / 416 : p.layer === "ground" ? 0.55 : 1.15;
+    return {
+      id: `${p.id}-${idx}`,
+      tex: p.file,
+      x: p.x,
+      y: p.y,
+      w: p.width,
+      h: p.width * aspect * p.vertical,
+      ax: 0.5,
+      ay: p.foot,
       flip: false,
       trim: 0,
       zBoost: 0,
-      solid: true,
-    });
-  }
-
-  const topNW = { x: 464, y: -101 };
-  for (let i = 0; i < n; i++) {
-    props.push({
-      id: `nw-${i}`,
-      tex: `/buildings/starter-boundary/${wallTex[i % 2]}.png`,
-      x: Math.round(topNW.x - i * wallStep.x),
-      y: Math.round(topNW.y + i * wallStep.y),
-      ...wallSize,
-      flip: true,
-      trim: 0,
-      zBoost: 0,
-      solid: true,
-    });
-  }
-
-  const swStart = { x: -271, y: 378 };
-  for (let i = 0; i < 3; i++) {
-    props.push({
-      id: `sw-${i}`,
-      tex: `/buildings/starter-boundary/${seTex[i % 2]}.png`,
-      x: Math.round(swStart.x + i * 210),
-      y: Math.round(swStart.y + i * 113),
-      ...wallSize,
-      flip: true,
-      trim: 0,
-      zBoost: 0,
-      solid: true,
-    });
-  }
-
-  const seStart = { x: 1438, y: 375 };
-  for (let i = 0; i < 3; i++) {
-    props.push({
-      id: `se-${i}`,
-      tex: `/buildings/starter-boundary/${wallTex[i % 2]}.png`,
-      x: Math.round(seStart.x - i * 210),
-      y: Math.round(seStart.y + i * 113),
-      ...wallSize,
-      flip: false,
-      trim: 0,
-      zBoost: 0,
-      solid: true,
-    });
-  }
-
-  props.push({
-    id: "sw-gate-plug",
-    tex: "/buildings/starter-boundary/straight-se-a.png",
-    x: 359,
-    y: 718,
-    ...wallSize,
-    flip: true,
-    trim: 0,
-    zBoost: -60,
-    solid: true,
+      solid: isWall,
+      layer: p.layer,
+      foot: p.foot,
+      vertical: p.vertical,
+      shear: p.shear,
+      depth: p.depth,
+    };
   });
-
-  props.push({
-    id: "gate-south",
+  // Add the South Gate prop (pal-s-gate) so gate-sheet.png / gate-closed.png renders at the South Gateway
+  list.push({
+    id: "pal-s-gate",
     tex: "/buildings/starter-boundary/gate-closed.png",
-    x: COURT.x,
-    y: 777,
-    w: 580,
-    h: 483,
-    ax: 0.5,
-    ay: 0.855,
-    flip: false,
-    trim: 0,
-    zBoost: 0,
-    solid: true,
-  });
-
-  return props;
-}
-
-export function campfireProp(): StrongholdPropDef {
-  const c = tileToCourt(7.5, 7.5);
-  return {
-    id: "campfire",
-    tex: "/buildings/starting-campfire/campfire-v1.png",
-    x: c.x,
-    y: c.y,
-    w: 220,
-    h: 220,
+    x: 577,
+    y: 798,
+    w: 270,
+    h: 135,
     ax: 0.5,
     ay: 0.72,
     flip: false,
     trim: 0,
     zBoost: 0,
     solid: true,
+    layer: "world",
+    foot: 0.72,
+    vertical: 1,
+    shear: 0,
+    depth: 778,
+  });
+  if (includeCampfire) {
+    list.push(campfireProp());
+  }
+  return list;
+}
+
+export function starterEnclosureProps(): StrongholdPropDef[] {
+  const walls = STRONGHOLD_NATIVE_PROPS.filter((p) =>
+    p.id.startsWith("rampart-"),
+  );
+  return walls.map((p, idx) => ({
+    id: `${p.id}-${idx}`,
+    tex: p.file,
+    x: p.x,
+    y: p.y,
+    w: p.width,
+    h: p.width * (256 / 416) * p.vertical,
+    ax: 0.5,
+    ay: p.foot,
+    flip: false,
+    trim: 0,
+    zBoost: 0,
+    solid: true,
+    foot: p.foot,
+    vertical: p.vertical,
+    shear: p.shear,
+    depth: p.depth,
+  }));
+}
+
+export function campfireProp(): StrongholdPropDef {
+  return {
+    id: "campfire",
+    tex: CAMPFIRE_NATIVE_PROP.file,
+    x: CAMPFIRE_NATIVE_PROP.x,
+    y: CAMPFIRE_NATIVE_PROP.y,
+    w: CAMPFIRE_NATIVE_PROP.width,
+    h: CAMPFIRE_NATIVE_PROP.width * (887 / 1024),
+    ax: 0.5,
+    ay: CAMPFIRE_NATIVE_PROP.foot,
+    flip: false,
+    trim: 0,
+    zBoost: 0,
+    solid: true,
+    foot: CAMPFIRE_NATIVE_PROP.foot,
+    vertical: CAMPFIRE_NATIVE_PROP.vertical,
+    shear: CAMPFIRE_NATIVE_PROP.shear,
+    depth: CAMPFIRE_NATIVE_PROP.depth,
   };
 }
 
@@ -835,7 +986,7 @@ export function palisadeColumns(prop: StrongholdPropDef): FootprintColumn[] {
   const isGate = prop.tex.includes("gate");
   const isSE = prop.tex.includes("straight-se");
   const dir = isSE ? !prop.flip : prop.flip;
-  const s = dir ? -0.5 : 0.5;
+  const s = prop.shear !== undefined ? prop.shear : dir ? -0.5 : 0.5;
   const hw = isGate ? 190 : 72;
   const t = isGate ? 18 : 12;
   const gateOpen = 62;
@@ -850,11 +1001,18 @@ export function palisadeColumns(prop: StrongholdPropDef): FootprintColumn[] {
 
 export const GATE_DOOR_CONFIG = {
   x: 577,
-  y: 777,
+  y: 778,
+  renderY: 798,
+  width: 270,
+  height: 135,
   openRadius: 120,
   closeRadius: 150,
   fps: 24,
   frames: 16,
+  cols: 4,
+  rows: 4,
+  frameW: 360,
+  frameH: 180,
   passableFrame: 12.8,
   passableAt: 0.8,
 } as const;

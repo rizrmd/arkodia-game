@@ -14,11 +14,64 @@ const mime = {
   ".json": "application/json",
   ".css": "text/css",
   ".png": "image/png",
+  ".webp": "image/webp",
   ".glb": "model/gltf-binary",
 };
 let loadedManifestKey = "";
 const contentAssets = new Map();
+const ENV_RUNTIME_ASSETS = {
+  "/frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp": {
+    sha256: "5083a8ebd8c8bb4bb4fccc0dcaaa9f71deb9821af1648fbf053506c37617961c",
+    size: 1221014,
+    releaseId: "65a1789db23220a150bc1257cd15b001",
+  },
+  "/terrain-height/natural/cliff-strip-v2.webp": {
+    sha256: "0349a1d72597a28387965448fe59406ac45115072e70cf931fc577da4817409c",
+    size: 1069210,
+    releaseId: "65a1789db23220a150bc1257cd15b001",
+  },
+  "/foundation-transitions/soil-moss.png": {
+    sha256: "7ec12a875ba46d0950d126165d842142bbc60a92616ceba78df853c02e0a4ad7",
+    size: 175072,
+    releaseId: "65a1789db23220a150bc1257cd15b001",
+  },
+  "/foundation-transitions/moss.png": {
+    sha256: "d8a264e1901c2cbbfbbdce9b6169d7ca0e00f5249e2216365497110fe20fbcb1",
+    size: 91209,
+    releaseId: "65a1789db23220a150bc1257cd15b001",
+  },
+  "/realistic-torch/frame-0.webp": {
+    sha256: "1a29e76bd0150a5a75182846245088ddb4048c99f0af1cc6bf45dc0d34f0fad2",
+    size: 29538,
+    releaseId: "65a1789db23220a150bc1257cd15b001",
+  },
+  "/realistic-torch/frame-1.webp": {
+    sha256: "3aacd2652597aad56249fbb1b454e3e93b583e5f5ee577a5dfbee18d0291dc63",
+    size: 29156,
+    releaseId: "65a1789db23220a150bc1257cd15b001",
+  },
+  "/realistic-torch/frame-2.webp": {
+    sha256: "5f617cec82c413bd7320aca32d403f3511e9cf74519b7fe7fcfb592a7a2e4659",
+    size: 28708,
+    releaseId: "65a1789db23220a150bc1257cd15b001",
+  },
+};
 async function getContentAsset(pathname) {
+  const normalized = pathname.startsWith("/assets/")
+    ? pathname.slice("/assets".length)
+    : pathname;
+  const envEntry = ENV_RUNTIME_ASSETS[normalized];
+  if (envEntry) {
+    return {
+      sha256: envEntry.sha256,
+      size: envEntry.size,
+      source: {
+        origin: "https://content.arkodia.online",
+        releaseId: envEntry.releaseId,
+        type: "content",
+      },
+    };
+  }
   for (const candidate of [
     resolve(root, "asset-lock/part-000.json"),
     resolve(root, "../../asset-lock/part-000.json"),

@@ -1,6 +1,14 @@
-import { Container, Graphics, Sprite, Texture } from "pixi.js";
+import {
+  DOMAdapter,
+  Container,
+  Graphics,
+  ImageSource,
+  Sprite,
+  Texture,
+} from "pixi.js";
 import {
   DEFAULT_WORLD_MAP,
+  SNOW_DENSITY,
   STRONGHOLD_ORIGIN,
   courtToMap,
   mapToCourt,
@@ -295,10 +303,178 @@ export type ReliefLayerResult = {
   features: ReliefFeature[];
 };
 
+const HILL_BASE_ATLAS = { x: 0, y: 1280, w: 1536, h: 768 };
+
+function sourceOf(tex: Texture | undefined): CanvasImageSource | null {
+  if (!tex || tex === Texture.WHITE) return null;
+  const src = (tex.source as { resource?: unknown } | undefined)?.resource;
+  if (!src) return null;
+  return src as CanvasImageSource;
+}
+
+function makeCanvas(w: number, h: number): HTMLCanvasElement | null {
+  try {
+    return DOMAdapter.get().createCanvas(
+      Math.max(1, Math.ceil(w)),
+      Math.max(1, Math.ceil(h)),
+    ) as unknown as HTMLCanvasElement;
+  } catch {
+    return null;
+  }
+}
+
+function createSnowPattern(
+  ctx: CanvasRenderingContext2D,
+  snowImg: CanvasImageSource,
+  originX: number,
+  originY: number,
+): CanvasPattern | null {
+  const pat = ctx.createPattern(snowImg, "repeat");
+  if (!pat || typeof DOMMatrix === "undefined") return pat;
+  const s = SNOW_DENSITY;
+  pat.setTransform(
+    new DOMMatrix([s, s * 0.5, -s, s * 0.5, -originX, -originY]),
+  );
+  return pat;
+}
+
+function paintHillSurface(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  originX: number,
+  originY: number,
+  snowImg: CanvasImageSource,
+) {
+  const trace = (insetY = 0) => {
+    ctx.beginPath();
+    HILL_SURFACE.forEach(([x, y], i) => {
+      const px = x * w;
+      const py = y * h + insetY;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.closePath();
+  };
+
+  ctx.save();
+  ctx.filter = "blur(8px)";
+  trace();
+  const pat = createSnowPattern(ctx, snowImg, originX, originY);
+  if (pat) {
+    ctx.fillStyle = pat;
+    ctx.globalAlpha = 0.88;
+    ctx.fill();
+  }
+  ctx.restore();
+
+  ctx.save();
+  trace();
+  ctx.clip();
+  if (pat) {
+    ctx.fillStyle = pat;
+    ctx.globalAlpha = 0.96;
+    ctx.fillRect(0, 0, w, h);
+  }
+  const shade = ctx.createLinearGradient(0, h * 0.16, 0, h * 0.9);
+  shade.addColorStop(0, "rgba(255, 255, 255, 0.18)");
+  shade.addColorStop(0.55, "rgba(220, 232, 245, 0.04)");
+  shade.addColorStop(1, "rgba(62, 82, 108, 0.22)");
+  ctx.fillStyle = shade;
+  ctx.fillRect(0, 0, w, h);
+  ctx.restore();
+
+  ctx.save();
+  ctx.filter = "blur(5px)";
+  ctx.strokeStyle = "rgba(236, 244, 252, 0.72)";
+  ctx.lineWidth = Math.max(6, w * 0.018);
+  ctx.lineJoin = "round";
+  trace();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function buildNaturalHillSprite(
+  f: ReliefFeature,
+  cliffStripImg: CanvasImageSource,
+  snowImg: CanvasImageSource,
+  cliffCapImg: CanvasImageSource | null,
+): Sprite | null {
+  const { left, top, w: targetW, h: targetH, flip } = hillArtBounds(f);
+  const w = Math.max(64, Math.ceil(targetW));
+  const h = Math.max(64, Math.ceil(targetH));
+  const c = makeCanvas(w, h);
+  if (!c) return null;
+  const ctx = c.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.save();
+  if (flip) {
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+  }
+  const { x, y, w: sw, h: sh } = HILL_BASE_ATLAS;
+  ctx.drawImage(cliffStripImg, x, y, sw, sh, 0, 0, w, h);
+  paintHillSurface(ctx, w, h, left, top, snowImg);
+  if (cliffCapImg) {
+    ctx.globalAlpha = 0.42;
+    ctx.drawImage(cliffCapImg, w * 0.14, h * 0.1, w * 0.68, h * 0.34);
+    ctx.globalAlpha = 0.32;
+    ctx.drawImage(cliffCapImg, w * 0.28, h * 0.52, w * 0.54, h * 0.28);
+  }
+  ctx.restore();
+
+  const sprite = new Sprite(new Texture({ source: new ImageSource({ resource: c }) }));
+  sprite.position.set(left, top);
+  sprite.zIndex = 2;
+  return sprite;
+}
+
+function buildReliefShadowSprite(f: ReliefFeature): Sprite | null {
+  const b = hillArtBounds(f);
+  const pad = 42;
+  const w = Math.ceil(b.w + pad * 2);
+  const h = Math.ceil(b.h + pad * 2);
+  const c = makeCanvas(w, h);
+  if (!c) return null;
+  const ctx = c.getContext("2d");
+  if (!ctx) return null;
+
+  ctx.save();
+  ctx.filter = "blur(16px)";
+  ctx.fillStyle = "rgba(18, 26, 40, 0.32)";
+  ctx.beginPath();
+  ctx.ellipse(
+    pad + b.w * 0.54,
+    pad + b.h * 0.62,
+    b.w * 0.44,
+    b.h * 0.28,
+    f.ascend === "-u" ? -0.18 : 0.18,
+    0,
+    Math.PI * 2,
+  );
+  ctx.fill();
+  ctx.restore();
+
+  const sprite = new Sprite(new Texture({ source: new ImageSource({ resource: c }) }));
+  sprite.position.set(b.left - pad, b.top - pad);
+  sprite.zIndex = 0;
+  return sprite;
+}
+
 export function createReliefLayer(
   textures: Record<string, Texture | undefined>,
   features: readonly ReliefFeature[] = DEFAULT_RELIEF_FEATURES,
 ): ReliefLayerResult {
+  const cliffStripImg = sourceOf(
+    textures["/terrain-height/natural/cliff-strip-v2.webp"],
+  );
+  const snowImg = sourceOf(
+    textures["/modular-stronghold/v2/snow-soft-texture.png"],
+  );
+  const cliffCapImg = sourceOf(
+    textures["/modular-stronghold/v2/cliff-snow.png"],
+  );
   const cliffTex =
     textures["/modular-stronghold/v2/cliff-snow.png"] ??
     textures["/modular-stronghold/v2/boulders-snow.png"] ??
@@ -310,55 +486,61 @@ export function createReliefLayer(
     if (f.visual === "scenery") continue;
 
     const wrap = new Container();
+    wrap.sortableChildren = true;
     const frontCorner = mapToCourt(f.u1, f.v1);
     wrap.zIndex = frontCorner.y;
 
     if (f.type === "hill") {
-      const b = hillArtBounds(f);
-      const shadow = new Graphics();
-      shadow
-        .ellipse(
-          b.left + b.w * 0.5,
-          b.top + b.h * 0.86,
-          b.w * 0.46,
-          b.h * 0.24,
-        )
-        .fill({ color: 0x0b1018, alpha: 0.24 });
-      wrap.addChild(shadow);
-
-      if (cliffTex !== Texture.WHITE) {
-        const sprite = new Sprite(cliffTex);
-        sprite.anchor.set(0.5, 0.5);
-        sprite.position.set(b.left + b.w * 0.5, b.top + b.h * 0.5);
-        const sx = (b.w / Math.max(1, cliffTex.width)) * (b.flip ? -1 : 1);
-        const sy = b.h / Math.max(1, cliffTex.height);
-        sprite.scale.set(sx, sy);
-        wrap.addChild(sprite);
+      const shadowSprite = buildReliefShadowSprite(f);
+      if (shadowSprite) {
+        wrap.addChild(shadowSprite);
       } else {
-        const cliffFace = new Graphics();
-        const facePts: number[] = [];
-        for (const [nx, ny] of HILL_SURFACE) {
-          const ux = b.flip ? 1 - nx : nx;
-          facePts.push(b.left + ux * b.w, b.top + Math.min(0.96, ny + 0.14) * b.h);
-        }
-        cliffFace
-          .poly(facePts)
-          .fill({ color: 0x3b4856, alpha: 0.78 })
-          .stroke({ color: 0x26313d, width: 3, alpha: 0.65, join: "round" });
-        wrap.addChild(cliffFace);
+        const b = hillArtBounds(f);
+        const shadow = new Graphics();
+        shadow
+          .ellipse(
+            b.left + b.w * 0.5,
+            b.top + b.h * 0.86,
+            b.w * 0.46,
+            b.h * 0.24,
+          )
+          .fill({ color: 0x0b1018, alpha: 0.24 });
+        wrap.addChild(shadow);
       }
 
-      const crest = new Graphics();
-      const pts: number[] = [];
-      for (const [nx, ny] of HILL_SURFACE) {
-        const ux = b.flip ? 1 - nx : nx;
-        pts.push(b.left + ux * b.w, b.top + ny * b.h);
+      const hillSprite =
+        cliffStripImg && snowImg
+          ? buildNaturalHillSprite(f, cliffStripImg, snowImg, cliffCapImg)
+          : null;
+      if (hillSprite) {
+        wrap.addChild(hillSprite);
+      } else {
+        const b = hillArtBounds(f);
+        if (cliffTex !== Texture.WHITE) {
+          const sprite = new Sprite(cliffTex);
+          sprite.anchor.set(0.5, 0.5);
+          sprite.position.set(b.left + b.w * 0.5, b.top + b.h * 0.5);
+          const sx = (b.w / Math.max(1, cliffTex.width)) * (b.flip ? -1 : 1);
+          const sy = b.h / Math.max(1, cliffTex.height);
+          sprite.scale.set(sx, sy);
+          wrap.addChild(sprite);
+        } else {
+          const cliffFace = new Graphics();
+          const facePts: number[] = [];
+          for (const [nx, ny] of HILL_SURFACE) {
+            const ux = b.flip ? 1 - nx : nx;
+            facePts.push(
+              b.left + ux * b.w,
+              b.top + Math.min(0.96, ny + 0.14) * b.h,
+            );
+          }
+          cliffFace
+            .poly(facePts)
+            .fill({ color: 0x3b4856, alpha: 0.78 })
+            .stroke({ color: 0x26313d, width: 3, alpha: 0.65, join: "round" });
+          wrap.addChild(cliffFace);
+        }
       }
-      crest
-        .poly(pts)
-        .fill({ color: 0xeef4fa, alpha: 0.55 })
-        .stroke({ color: 0xc8d6e5, width: 2, alpha: 0.45, join: "round" });
-      wrap.addChild(crest);
     } else {
       const top = mapToCourt(f.u0, f.v0);
       const right = mapToCourt(f.u1, f.v0);

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"errors"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -44,6 +45,32 @@ func (d DiskObjects) Get(_ context.Context, k string) ([]byte, error) {
 	return os.ReadFile(filepath.Join(d.Root, k))
 }
 
+type SQLiteObjects struct {
+	API         *API
+	FallbackDir string
+}
+
+func (s SQLiteObjects) Put(ctx context.Context, k string, b []byte) error {
+	if s.FallbackDir != "" {
+		if err := (DiskObjects{Root: s.FallbackDir}).Put(ctx, k, b); err != nil {
+			return err
+		}
+	}
+	_, err := s.API.query(ctx).Exec(ctx, "INSERT INTO content_asset_objects(sha256,data) VALUES($1,$2) ON CONFLICT(sha256) DO UPDATE SET data=excluded.data,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now')", k, b)
+	return err
+}
+func (s SQLiteObjects) Get(ctx context.Context, k string) ([]byte, error) {
+	var b []byte
+	err := s.API.query(ctx).QueryRow(ctx, "SELECT data FROM content_asset_objects WHERE sha256=$1", k).Scan(&b)
+	if err == nil {
+		return b, nil
+	}
+	if !errors.Is(err, sql.ErrNoRows) || s.FallbackDir == "" {
+		return nil, err
+	}
+	return os.ReadFile(filepath.Join(s.FallbackDir, k))
+}
+
 type S3Objects struct {
 	Client *minio.Client
 	Bucket string
@@ -72,9 +99,5 @@ func objectsFromEnv() (Objects, error) {
 		}
 		return S3Objects{c, os.Getenv("S3_BUCKET")}, nil
 	}
-	root := os.Getenv("ASSET_DIR")
-	if root == "" {
-		return nil, errors.New("ASSET_DIR or S3_ENDPOINT required")
-	}
-	return DiskObjects{root}, nil
+	return SQLiteObjects{FallbackDir: os.Getenv("ASSET_DIR")}, nil
 }

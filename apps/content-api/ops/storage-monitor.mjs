@@ -10,11 +10,17 @@ export async function directoryBytes(root){
  }
  return total;
 }
+async function fileBytes(p){
+ const s=await stat(p).catch(e=>{if(e.code==='ENOENT')return null;throw e;});
+ return s&&s.isFile()?s.size:0;
+}
 export async function storageReport(home){
  const fs=await statfs(home),total=fs.blocks*fs.bsize,free=fs.bavail*fs.bsize,used=total-free,percent=total?used/total*100:100;
  const assets=await directoryBytes(path.join(home,'data/assets'));
  const archive=await directoryBytes(path.join(home,'data/archive'));
- return {schemaVersion:1,at:new Date().toISOString(),filesystem:{total,free,used,percent,status:percent>=80?'stop':percent>=70?'warning':'ok'},assetBytes:assets,archiveBytes:archive,publishedObjectsDeleted:0};
+ let sqliteBytes=0;
+ for(const suffix of ['','-'+'wal','-'+'shm']) sqliteBytes+=await fileBytes(path.join(home,'data/content.db'+suffix));
+ return {schemaVersion:1,at:new Date().toISOString(),storage:'sqlite',sqliteBytes,filesystem:{total,free,used,percent,status:percent>=80?'stop':percent>=70?'warning':'ok'},assetBytes:assets,archiveBytes:archive,publishedObjectsDeleted:0};
 }
 export function startStorageMonitor(home,log=console.log){
  let running=false;

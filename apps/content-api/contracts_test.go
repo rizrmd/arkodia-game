@@ -4,40 +4,20 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"github.com/jackc/pgx/v5"
 	"image"
 	"image/png"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestV2PermissionsIdempotencyAndRollback(t *testing.T) {
-	dsn := os.Getenv("TEST_DATABASE_URL")
-	if dsn == "" {
-		t.Skip("set TEST_DATABASE_URL")
-	}
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close(ctx)
-	schema := fmt.Sprintf("contracts_%d", time.Now().UnixNano())
-	if _, err = conn.Exec(ctx, "CREATE SCHEMA "+schema); err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Exec(ctx, "DROP SCHEMA "+schema+" CASCADE")
-	sep := "?"
-	if strings.Contains(dsn, "?") {
-		sep = "&"
-	}
-	dsn += sep + "search_path=" + schema
+	dsn := filepath.Join(t.TempDir(), "contracts.db")
 	admin := strings.Repeat("admin", 8)
 	author := strings.Repeat("author", 8)
 	publisher := strings.Repeat("publisher", 6)
@@ -181,8 +161,8 @@ func TestV2PermissionsIdempotencyAndRollback(t *testing.T) {
 	request("GET", "/v1/releases/"+release.ID+"/documents/combat", nil, "", "", 200)
 	request("POST", "/v1/releases", selection, publisher, "publish-one", 201)
 	var events int
-	if err = api.DB.QueryRow(ctx, "SELECT count(*) FROM content_channel_events WHERE channel='contracts'").Scan(&events); err != nil || events != 3 {
+	if err = api.DB.QueryRowContext(ctx, "SELECT count(*) FROM content_channel_events WHERE channel='contracts'").Scan(&events); err != nil || events != 3 {
 		t.Fatalf("duplicate channel events: %d %v", events, err)
 	}
-	t.Log("verified: real v2 payload save/read, role separation, durable idempotency, conflict/retry, closed references, cycles, corruption, immutable releases, rollback and restart")
+	t.Log("verified: real v2 payload save/read, role separation, durable idempotency, conflict/retry, closed references, cycles, corruption, immutable releases, rollback and SQLite restart")
 }

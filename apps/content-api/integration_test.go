@@ -4,49 +4,20 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"github.com/jackc/pgx/v5"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
-	"time"
 )
 
 func TestContentLifecycle(t *testing.T) {
-	dsn := os.Getenv("TEST_DATABASE_URL")
-	if dsn == "" {
-		t.Skip("set TEST_DATABASE_URL to an isolated PostgreSQL database")
-	}
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close(ctx)
-	schema := fmt.Sprintf("test_%d", time.Now().UnixNano())
-	if _, err = conn.Exec(ctx, "CREATE SCHEMA "+schema); err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Exec(ctx, "DROP SCHEMA "+schema+" CASCADE")
-	cfg, err := pgx.ParseConfig(dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
-	cfg.RuntimeParams["search_path"] = schema
-	// pgx URL accepts the search_path query option, which every pool connection inherits.
-	sep := "?"
-	if strings.Contains(dsn, "?") {
-		sep = "&"
-	}
-	dsn += sep + "search_path=" + schema
+	dsn := filepath.Join(t.TempDir(), "content.db")
 	token := strings.Repeat("test-token", 5)
-	root := t.TempDir()
-	objects := DiskObjects{root}
-	api, err := openAPI(ctx, dsn, token, "https://content.example", objects)
+	api, err := openAPI(ctx, dsn, token, "https://content.example", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,16 +120,16 @@ func TestContentLifecycle(t *testing.T) {
 	if !bytes.Equal(before, request("GET", publicPath+"/documents/map", nil, false, 200)) {
 		t.Fatal("release mutated")
 	}
-	if _, e := api.DB.Exec(ctx, "UPDATE content_releases SET manifest='{}' WHERE id=$1", release.ID); e == nil {
+	if _, e := api.DB.ExecContext(ctx, "UPDATE content_releases SET manifest='{}' WHERE id=$1", release.ID); e == nil {
 		t.Fatal("database allowed immutable release update")
 	}
-	if _, e := api.DB.Exec(ctx, "DELETE FROM content_release_documents WHERE release_id=$1", release.ID); e == nil {
+	if _, e := api.DB.ExecContext(ctx, "DELETE FROM content_release_documents WHERE release_id=$1", release.ID); e == nil {
 		t.Fatal("database allowed snapshot deletion")
 	}
-	// Restart the entire API and pool against the same PostgreSQL and disk objects.
+	// Restart the entire API and pool against the same SQLite database.
 	srv.Close()
 	api.DB.Close()
-	api, err = openAPI(ctx, dsn, token, "https://content.example", DiskObjects{root})
+	api, err = openAPI(ctx, dsn, token, "https://content.example", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,5 +168,5 @@ func TestContentLifecycle(t *testing.T) {
 		t.Fatal("delete failed")
 	}
 	request("GET", "/v1/drafts/base", nil, true, 404)
-	t.Log("verified: all document kinds, authenticated CRUD, concurrent conflict, validation, immutable publish, game read, API restart persistence")
+	t.Log("verified: all document kinds, authenticated CRUD, concurrent conflict, validation, immutable publish, game read, SQLite API restart persistence")
 }

@@ -6,20 +6,21 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
+	"database/sql"
 	_ "embed"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/ncruces/go-sqlite3/driver"
 	"github.com/santhosh-tekuri/jsonschema/v5"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"regexp"
 	"runtime/debug"
 	"sort"
@@ -83,7 +84,7 @@ type Manifest struct {
 	Assets        []Asset `json:"assets"`
 }
 type API struct {
-	DB        *pgxpool.Pool
+	DB        *sql.DB
 	Objects   Objects
 	Token     string
 	PublicURL string
@@ -134,16 +135,16 @@ func (a *API) authorize(role string, h http.HandlerFunc) http.HandlerFunc {
 func (a *API) handler() http.Handler {
 	m := http.NewServeMux()
 	m.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		respond(w, 200, map[string]string{"service": "Arkodia Content API", "version": "1", "commit": buildRevision(), "health": "/healthz", "schema": "/contracts/document.schema.json"})
+		respond(w, 200, map[string]string{"service": "Arkodia Content API", "version": "1", "storage": "sqlite", "commit": buildRevision(), "health": "/healthz", "schema": "/contracts/document.schema.json"})
 	})
 	m.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 		defer cancel()
-		if a.DB.Ping(ctx) != nil {
+		if a.DB.PingContext(ctx) != nil {
 			fail(w, 503, "database_unavailable")
 			return
 		}
-		respond(w, 200, map[string]string{"status": "ok", "commit": buildRevision()})
+		respond(w, 200, map[string]string{"status": "ok", "storage": "sqlite", "commit": buildRevision()})
 	})
 	m.HandleFunc("GET /contracts/document.schema.json", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/schema+json")
@@ -192,10 +193,12 @@ func (a *API) listDrafts(w http.ResponseWriter, r *http.Request) {
 	out := []Draft{}
 	for rows.Next() {
 		var d Draft
-		if rows.Scan(&d.ID, &d.Revision, &d.Document) != nil {
+		var raw []byte
+		if rows.Scan(&d.ID, &d.Revision, &raw) != nil {
 			fail(w, 500, "database_error")
 			return
 		}
+		d.Document = json.RawMessage(raw)
 		out = append(out, d)
 	}
 	if rows.Err() != nil {
@@ -206,8 +209,9 @@ func (a *API) listDrafts(w http.ResponseWriter, r *http.Request) {
 }
 func (a *API) getDraft(w http.ResponseWriter, r *http.Request) {
 	var d Draft
-	err := a.query(r.Context()).QueryRow(r.Context(), "SELECT id,revision,document FROM content_drafts WHERE id=$1", r.PathValue("id")).Scan(&d.ID, &d.Revision, &d.Document)
-	if errors.Is(err, pgx.ErrNoRows) {
+	var raw []byte
+	err := a.query(r.Context()).QueryRow(r.Context(), "SELECT id,revision,document FROM content_drafts WHERE id=$1", r.PathValue("id")).Scan(&d.ID, &d.Revision, &raw)
+	if errors.Is(err, sql.ErrNoRows) {
 		fail(w, 404, "draft_not_found")
 		return
 	}
@@ -215,6 +219,7 @@ func (a *API) getDraft(w http.ResponseWriter, r *http.Request) {
 		fail(w, 500, "database_error")
 		return
 	}
+	d.Document = json.RawMessage(raw)
 	w.Header().Set("ETag", fmt.Sprintf(`"%d"`, d.Revision))
 	respond(w, 200, d)
 }
@@ -287,11 +292,11 @@ func (a *API) saveDraft(w http.ResponseWriter, r *http.Request) {
 	}
 	var rev int64
 	if in.Revision == 0 {
-		err = a.query(r.Context()).QueryRow(r.Context(), "INSERT INTO content_drafts(id,kind,revision,document) VALUES($1,$2,1,$3) ON CONFLICT DO NOTHING RETURNING revision", id, doc.Kind, in.Document).Scan(&rev)
+		err = a.query(r.Context()).QueryRow(r.Context(), "INSERT INTO content_drafts(id,kind,revision,document) VALUES($1,$2,1,$3) ON CONFLICT DO NOTHING RETURNING revision", id, doc.Kind, []byte(in.Document)).Scan(&rev)
 	} else {
-		err = a.query(r.Context()).QueryRow(r.Context(), "UPDATE content_drafts SET document=$1,revision=revision+1,updated_at=now() WHERE id=$2 AND revision=$3 AND kind=$4 AND document->>'schemaVersion'=$5 AND COALESCE(document#>>'{data,format}','')=$6 AND COALESCE(document#>>'{provenance,legacyId}','')=$7 RETURNING revision", in.Document, id, in.Revision, doc.Kind, fmt.Sprint(doc.SchemaVersion), fmt.Sprint(valueOrEmpty(doc.Data["format"])), fmt.Sprint(valueOrEmpty(doc.Provenance["legacyId"]))).Scan(&rev)
+		err = a.query(r.Context()).QueryRow(r.Context(), "UPDATE content_drafts SET document=$1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=$2 AND revision=$3 AND kind=$4 AND CAST(json_extract(CAST(document AS TEXT),'$.schemaVersion') AS TEXT)=$5 AND COALESCE(CAST(json_extract(CAST(document AS TEXT),'$.data.format') AS TEXT),'')=$6 AND COALESCE(CAST(json_extract(CAST(document AS TEXT),'$.provenance.legacyId') AS TEXT),'')=$7 RETURNING revision", []byte(in.Document), id, in.Revision, doc.Kind, fmt.Sprint(doc.SchemaVersion), fmt.Sprint(valueOrEmpty(doc.Data["format"])), fmt.Sprint(valueOrEmpty(doc.Provenance["legacyId"]))).Scan(&rev)
 	}
-	if errors.Is(err, pgx.ErrNoRows) {
+	if errors.Is(err, sql.ErrNoRows) {
 		fail(w, 409, "revision_conflict")
 		return
 	}
@@ -313,7 +318,8 @@ func (a *API) deleteDraft(w http.ResponseWriter, r *http.Request) {
 		fail(w, 500, "database_error")
 		return
 	}
-	if tag.RowsAffected() != 1 {
+	rows, err := tag.RowsAffected()
+	if err != nil || rows != 1 {
 		fail(w, 409, "revision_conflict")
 		return
 	}
@@ -389,7 +395,7 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer tx.Rollback(r.Context())
-	// Sorting gives stable lock order for competing publications.
+	// Sorting gives stable order for competing publications.
 	sort.Slice(in.Documents, func(i, j int) bool { return in.Documents[i].ID < in.Documents[j].ID })
 	drafts := []Draft{}
 	assetSet := map[string]bool{}
@@ -400,8 +406,9 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		var d Draft
-		err = tx.QueryRow(r.Context(), "SELECT id,revision,document FROM content_drafts WHERE id=$1 FOR SHARE", s.ID).Scan(&d.ID, &d.Revision, &d.Document)
-		if errors.Is(err, pgx.ErrNoRows) || err == nil && d.Revision != s.Revision {
+		var raw []byte
+		err = tx.QueryRow(r.Context(), "SELECT id,revision,document FROM content_drafts WHERE id=$1", s.ID).Scan(&d.ID, &d.Revision, &raw)
+		if errors.Is(err, sql.ErrNoRows) || err == nil && d.Revision != s.Revision {
 			fail(w, 409, "revision_conflict")
 			return
 		}
@@ -409,6 +416,7 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 			fail(w, 500, "database_error")
 			return
 		}
+		d.Document = json.RawMessage(raw)
 		var doc Document
 		if json.Unmarshal(d.Document, &doc) != nil {
 			fail(w, 500, "invalid_stored_document")
@@ -479,7 +487,7 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 	_, err = tx.Exec(r.Context(), "INSERT INTO content_releases(id,manifest) VALUES($1,$2)", release, body)
 	if err == nil {
 		for _, d := range drafts {
-			_, err = tx.Exec(r.Context(), "INSERT INTO content_release_documents(release_id,document_id,revision,document) VALUES($1,$2,$3,$4)", release, d.ID, d.Revision, d.Document)
+			_, err = tx.Exec(r.Context(), "INSERT INTO content_release_documents(release_id,document_id,revision,document) VALUES($1,$2,$3,$4)", release, d.ID, d.Revision, []byte(d.Document))
 			if err != nil {
 				break
 			}
@@ -493,20 +501,23 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	var previous *string
+	var previous sql.NullString
 	_ = tx.QueryRow(r.Context(), "SELECT release_id FROM content_channels WHERE name=$1", in.Channel).Scan(&previous)
-	if err == nil {
-		_, err = tx.Exec(r.Context(), "INSERT INTO content_channels(name,release_id) VALUES($1,$2) ON CONFLICT(name) DO UPDATE SET release_id=EXCLUDED.release_id", in.Channel, release)
+	var prevPtr *string
+	if previous.Valid {
+		prevPtr = &previous.String
 	}
 	if err == nil {
-		_, err = tx.Exec(r.Context(), "INSERT INTO content_channel_events(channel,previous_release,release_id,action) VALUES($1,$2,$3,'publish')", in.Channel, previous, release)
+		_, err = tx.Exec(r.Context(), "INSERT INTO content_channels(name,release_id) VALUES($1,$2) ON CONFLICT(name) DO UPDATE SET release_id=excluded.release_id", in.Channel, release)
+	}
+	if err == nil {
+		_, err = tx.Exec(r.Context(), "INSERT INTO content_channel_events(channel,previous_release,release_id,action) VALUES($1,$2,$3,'publish')", in.Channel, prevPtr, release)
 	}
 	if err == nil {
 		err = tx.Commit(r.Context())
 	}
 	if err != nil {
-		var pe *pgconn.PgError
-		if errors.As(err, &pe) && (pe.Code == "40001" || pe.Code == "40P01") {
+		if strings.Contains(strings.ToLower(err.Error()), "busy") || strings.Contains(strings.ToLower(err.Error()), "locked") {
 			fail(w, 409, "publication_conflict_retry")
 			return
 		}
@@ -559,21 +570,63 @@ func (a *API) publishedAsset(w http.ResponseWriter, r *http.Request) {
 	}
 	a.serveAsset(w, r, r.PathValue("sha"), true)
 }
+func sqliteDSN(dsn string) (string, error) {
+	dsn = strings.TrimSpace(dsn)
+	if dsn == "" {
+		return "", errors.New("invalid DATABASE_URL")
+	}
+	for _, bad := range []string{"postgres://", "postgresql://", "http://", "https://"} {
+		if strings.HasPrefix(strings.ToLower(dsn), bad) {
+			return "", errors.New("invalid DATABASE_URL")
+		}
+	}
+	dsn = strings.TrimPrefix(dsn, "sqlite://")
+	dsn = strings.TrimPrefix(dsn, "sqlite:")
+	pragmas := "_pragma=busy_timeout(10000)&_pragma=journal_mode(WAL)&_pragma=foreign_keys(ON)&_pragma=synchronous(NORMAL)&_txlock=immediate"
+	if dsn == ":memory:" {
+		return "file::memory:?cache=shared&" + pragmas, nil
+	}
+	if strings.HasPrefix(dsn, "file:") {
+		u, err := url.Parse(dsn)
+		if err != nil {
+			return "", errors.New("invalid DATABASE_URL")
+		}
+		if p := u.Path; p != "" && p != ":memory:" {
+			if err := os.MkdirAll(filepath.Dir(p), 0700); err != nil {
+				return "", err
+			}
+		}
+		sep := "?"
+		if strings.Contains(dsn, "?") {
+			sep = "&"
+		}
+		return dsn + sep + pragmas, nil
+	}
+	abs, err := filepath.Abs(dsn)
+	if err != nil {
+		return "", errors.New("invalid DATABASE_URL")
+	}
+	if err := os.MkdirAll(filepath.Dir(abs), 0700); err != nil {
+		return "", err
+	}
+	u := url.URL{Scheme: "file", Path: filepath.ToSlash(abs)}
+	return u.String() + "?" + pragmas, nil
+}
 func openAPI(ctx context.Context, dsn, token, publicURL string, objects Objects) (*API, error) {
 	if len(token) < 32 {
 		return nil, errors.New("CONTENT_API_TOKEN must contain at least 32 characters")
 	}
-	cfg, err := pgxpool.ParseConfig(dsn)
+	uri, err := sqliteDSN(dsn)
 	if err != nil {
-		return nil, errors.New("invalid DATABASE_URL")
+		return nil, err
 	}
-	cfg.MaxConns = 6
-	cfg.MinConns = 1
-	db, err := pgxpool.NewWithConfig(ctx, cfg)
+	db, err := sql.Open("sqlite3", uri)
 	if err != nil {
 		return nil, errors.New("database connection failed")
 	}
-	if _, err = db.Exec(ctx, ddl); err != nil {
+	db.SetMaxOpenConns(6)
+	db.SetMaxIdleConns(2)
+	if _, err = db.ExecContext(ctx, ddl); err != nil {
 		db.Close()
 		return nil, fmt.Errorf("schema initialization: %w", err)
 	}
@@ -593,7 +646,14 @@ func openAPI(ctx context.Context, dsn, token, publicURL string, objects Objects)
 			origins[o] = true
 		}
 	}
-	return &API{db, objects, token, strings.TrimRight(publicURL, "/"), schema, origins}, nil
+	api := &API{db, objects, token, strings.TrimRight(publicURL, "/"), schema, origins}
+	if api.Objects == nil {
+		api.Objects = SQLiteObjects{API: api, FallbackDir: os.Getenv("ASSET_DIR")}
+	} else if so, ok := api.Objects.(SQLiteObjects); ok && so.API == nil {
+		so.API = api
+		api.Objects = so
+	}
+	return api, nil
 }
 func buildRevision() string {
 	if b, ok := debug.ReadBuildInfo(); ok {
@@ -616,7 +676,14 @@ func main() {
 	if !strings.HasPrefix(publicURL, "https://") {
 		log.Fatal("PUBLIC_URL must be HTTPS")
 	}
-	a, err := openAPI(ctx, os.Getenv("DATABASE_URL"), os.Getenv("CONTENT_API_TOKEN"), publicURL, objects)
+	dsn := os.Getenv("SQLITE_PATH")
+	if dsn == "" {
+		dsn = os.Getenv("DATABASE_URL")
+	}
+	if dsn == "" {
+		dsn = "./data/content.db"
+	}
+	a, err := openAPI(ctx, dsn, os.Getenv("CONTENT_API_TOKEN"), publicURL, objects)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -632,7 +699,7 @@ func main() {
 		defer cancel()
 		srv.Shutdown(shutdown)
 	}()
-	log.Printf("Content API listening on %s", addr)
+	log.Printf("Content API listening on %s (sqlite: %s)", addr, dsn)
 	if err = srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
 	}

@@ -1,36 +1,62 @@
 CREATE TABLE IF NOT EXISTS content_drafts (
- id text PRIMARY KEY, kind text NOT NULL, revision bigint NOT NULL CHECK(revision>0),
- document jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now()
+ id TEXT PRIMARY KEY, kind TEXT NOT NULL, revision INTEGER NOT NULL CHECK(revision>0),
+ document BLOB NOT NULL, updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
 CREATE TABLE IF NOT EXISTS content_assets (
- sha256 text PRIMARY KEY, size bigint NOT NULL, media_type text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+ sha256 TEXT PRIMARY KEY, size INTEGER NOT NULL, media_type TEXT NOT NULL,
+ created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+CREATE TABLE IF NOT EXISTS content_asset_objects (
+ sha256 TEXT PRIMARY KEY, data BLOB NOT NULL,
+ updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
 CREATE TABLE IF NOT EXISTS content_releases (
- id text PRIMARY KEY, manifest jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+ id TEXT PRIMARY KEY, manifest BLOB NOT NULL,
+ created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
 CREATE TABLE IF NOT EXISTS content_release_documents (
- release_id text NOT NULL REFERENCES content_releases(id), document_id text NOT NULL,
- revision bigint NOT NULL, document jsonb NOT NULL, PRIMARY KEY(release_id,document_id)
+ release_id TEXT NOT NULL REFERENCES content_releases(id), document_id TEXT NOT NULL,
+ revision INTEGER NOT NULL, document BLOB NOT NULL, PRIMARY KEY(release_id,document_id)
 );
 CREATE TABLE IF NOT EXISTS content_release_assets (
- release_id text NOT NULL REFERENCES content_releases(id), sha256 text NOT NULL REFERENCES content_assets(sha256), PRIMARY KEY(release_id,sha256)
+ release_id TEXT NOT NULL REFERENCES content_releases(id), sha256 TEXT NOT NULL REFERENCES content_assets(sha256),
+ PRIMARY KEY(release_id,sha256)
 );
-CREATE TABLE IF NOT EXISTS content_channels (name text PRIMARY KEY, release_id text NOT NULL REFERENCES content_releases(id));
+CREATE TABLE IF NOT EXISTS content_channels (
+ name TEXT PRIMARY KEY, release_id TEXT NOT NULL REFERENCES content_releases(id)
+);
 -- Defense in depth: published snapshots and manifests cannot be changed or removed.
-CREATE OR REPLACE FUNCTION content_reject_mutation() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'published content is immutable'; END $$;
-DROP TRIGGER IF EXISTS immutable_release ON content_releases;
-CREATE TRIGGER immutable_release BEFORE UPDATE OR DELETE ON content_releases FOR EACH ROW EXECUTE FUNCTION content_reject_mutation();
-DROP TRIGGER IF EXISTS immutable_document ON content_release_documents;
-CREATE TRIGGER immutable_document BEFORE UPDATE OR DELETE ON content_release_documents FOR EACH ROW EXECUTE FUNCTION content_reject_mutation();
-DROP TRIGGER IF EXISTS immutable_asset ON content_release_assets;
-CREATE TRIGGER immutable_asset BEFORE UPDATE OR DELETE ON content_release_assets FOR EACH ROW EXECUTE FUNCTION content_reject_mutation();
+DROP TRIGGER IF EXISTS immutable_release_update;
+CREATE TRIGGER immutable_release_update BEFORE UPDATE ON content_releases BEGIN
+ SELECT RAISE(ABORT, 'published content is immutable');
+END;
+DROP TRIGGER IF EXISTS immutable_release_delete;
+CREATE TRIGGER immutable_release_delete BEFORE DELETE ON content_releases BEGIN
+ SELECT RAISE(ABORT, 'published content is immutable');
+END;
+DROP TRIGGER IF EXISTS immutable_document_update;
+CREATE TRIGGER immutable_document_update BEFORE UPDATE ON content_release_documents BEGIN
+ SELECT RAISE(ABORT, 'published content is immutable');
+END;
+DROP TRIGGER IF EXISTS immutable_document_delete;
+CREATE TRIGGER immutable_document_delete BEFORE DELETE ON content_release_documents BEGIN
+ SELECT RAISE(ABORT, 'published content is immutable');
+END;
+DROP TRIGGER IF EXISTS immutable_asset_update;
+CREATE TRIGGER immutable_asset_update BEFORE UPDATE ON content_release_assets BEGIN
+ SELECT RAISE(ABORT, 'published content is immutable');
+END;
+DROP TRIGGER IF EXISTS immutable_asset_delete;
+CREATE TRIGGER immutable_asset_delete BEFORE DELETE ON content_release_assets BEGIN
+ SELECT RAISE(ABORT, 'published content is immutable');
+END;
 CREATE TABLE IF NOT EXISTS content_idempotency (
- scope text NOT NULL, key text NOT NULL, request_hash text NOT NULL,
- status integer NOT NULL, headers jsonb NOT NULL, response bytea NOT NULL,
- created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(scope,key)
+ scope TEXT NOT NULL, key TEXT NOT NULL, request_hash TEXT NOT NULL,
+ status INTEGER NOT NULL, headers BLOB NOT NULL, response BLOB NOT NULL,
+ created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')), PRIMARY KEY(scope,key)
 );
 CREATE TABLE IF NOT EXISTS content_channel_events (
- sequence bigserial PRIMARY KEY, channel text NOT NULL, previous_release text,
- release_id text NOT NULL REFERENCES content_releases(id), action text NOT NULL,
- created_at timestamptz NOT NULL DEFAULT now()
+ sequence INTEGER PRIMARY KEY AUTOINCREMENT, channel TEXT NOT NULL, previous_release TEXT,
+ release_id TEXT NOT NULL REFERENCES content_releases(id), action TEXT NOT NULL,
+ created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );

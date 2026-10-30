@@ -33,7 +33,7 @@ with tempfile.TemporaryDirectory(prefix='content-deploy-') as tmp:
  binary_sha=hashlib.sha256(binary.read_bytes()).hexdigest()
  with gzip.open(stage/'content-api.gz','wb') as f:f.write(binary.read_bytes())
  binary.unlink()
- for name in ['boot.sh','supervise.mjs','storage-monitor.mjs','backup.sh','install-postgres.py','verify-live.mjs']:shutil.copyfile(OPS/name,stage/name)
+ for name in ['boot.sh','supervise.mjs','storage-monitor.mjs','backup.sh','verify-live.mjs']:shutil.copyfile(OPS/name,stage/name)
  route=secrets.token_urlsafe(24)
  class Handler(http.server.SimpleHTTPRequestHandler):
   def __init__(self,*a,**kw):super().__init__(*a,directory=str(stage),**kw)
@@ -44,16 +44,16 @@ with tempfile.TemporaryDirectory(prefix='content-deploy-') as tmp:
  server=http.server.ThreadingHTTPServer(('0.0.0.0',args.port),Handler)
  threading.Thread(target=server.serve_forever,daemon=True).start()
  try:
-  script='set -eu\nmkdir -p "$HOME/app"\n'
+  script='set -eu\nmkdir -p "$HOME/app" "$HOME/data" "$HOME/data/assets"\n'
   for path in stage.iterdir():
    url=args.member_origin.rstrip('/')+'/'+route+'/'+path.name
    script+=f'curl -4 --retry 4 --retry-all-errors --connect-timeout 10 --max-time 120 -fsS {shlex.quote(url)} -o "$HOME/app/{path.name}.new"\n'
    script+=f'printf "%s  %s\\n" {hashlib.sha256(path.read_bytes()).hexdigest()} "$HOME/app/{path.name}.new" | sha256sum -c -\n'
    script+=f'mv "$HOME/app/{path.name}.new" "$HOME/app/{path.name}"\n'
-  script+='gunzip -f "$HOME/app/content-api.gz"\nchmod 755 "$HOME/app/content-api"\npython3 "$HOME/app/install-postgres.py"\n'
+  script+='gunzip -f "$HOME/app/content-api.gz"\nchmod 755 "$HOME/app/content-api"\nrm -f "$HOME/app/install-postgres.py"\n'
   cli('sandboxes','exec',SANDBOX,'--name','deploy-content-api','--cmd',script)
   wait_job('deploy-content-api')
  finally:server.shutdown()
  cli('sandboxes','update',SANDBOX,'--boot-script','exec sh "$HOME/app/boot.sh"')
  cli('sandboxes','boot',SANDBOX)
- print(json.dumps({'status':'boot_started','binarySha256':binary_sha,'url':'https://content.arkodia.online','note':'Verify HTTPS readiness and live lifecycle before claiming success.'}))
+ print(json.dumps({'status':'boot_started','storage':'sqlite','binarySha256':binary_sha,'url':'https://content.arkodia.online','note':'Verify HTTPS readiness and live lifecycle before claiming success.'}))

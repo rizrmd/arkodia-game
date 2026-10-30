@@ -3,32 +3,115 @@ package main
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
 )
 
 type transactionKey struct{}
+
 type queryDB interface {
-	Exec(context.Context, string, ...any) (pgconn.CommandTag, error)
-	Query(context.Context, string, ...any) (pgx.Rows, error)
-	QueryRow(context.Context, string, ...any) pgx.Row
+	Exec(context.Context, string, ...any) (sql.Result, error)
+	Query(context.Context, string, ...any) (*sql.Rows, error)
+	QueryRow(context.Context, string, ...any) *sql.Row
+}
+
+type txDB interface {
+	queryDB
+	Commit(context.Context) error
+	Rollback(context.Context) error
+}
+
+type sqlQueryAdapter struct {
+	exec     func(context.Context, string, ...any) (sql.Result, error)
+	query    func(context.Context, string, ...any) (*sql.Rows, error)
+	queryRow func(context.Context, string, ...any) *sql.Row
+}
+
+func (s sqlQueryAdapter) Exec(ctx context.Context, q string, args ...any) (sql.Result, error) {
+	return s.exec(ctx, q, args...)
+}
+func (s sqlQueryAdapter) Query(ctx context.Context, q string, args ...any) (*sql.Rows, error) {
+	return s.query(ctx, q, args...)
+}
+func (s sqlQueryAdapter) QueryRow(ctx context.Context, q string, args ...any) *sql.Row {
+	return s.queryRow(ctx, q, args...)
+}
+
+type sqlTxAdapter struct {
+	sqlQueryAdapter
+	tx       *sql.Tx
+	savept   bool
+	finished bool
+}
+
+func (t *sqlTxAdapter) Commit(ctx context.Context) error {
+	if t.finished {
+		return nil
+	}
+	t.finished = true
+	if t.savept {
+		_, err := t.tx.ExecContext(ctx, "RELEASE SAVEPOINT content_nested")
+		return err
+	}
+	return t.tx.Commit()
+}
+
+func (t *sqlTxAdapter) Rollback(ctx context.Context) error {
+	if t.finished {
+		return nil
+	}
+	t.finished = true
+	if t.savept {
+		_, err := t.tx.ExecContext(ctx, "ROLLBACK TO SAVEPOINT content_nested")
+		_, _ = t.tx.ExecContext(ctx, "RELEASE SAVEPOINT content_nested")
+		return err
+	}
+	return t.tx.Rollback()
+}
+
+func wrapTx(tx *sql.Tx, savept bool) *sqlTxAdapter {
+	return &sqlTxAdapter{
+		sqlQueryAdapter: sqlQueryAdapter{
+			exec:     tx.ExecContext,
+			query:    tx.QueryContext,
+			queryRow: tx.QueryRowContext,
+		},
+		tx:     tx,
+		savept: savept,
+	}
 }
 
 func (a *API) query(ctx context.Context) queryDB {
-	if tx, ok := ctx.Value(transactionKey{}).(pgx.Tx); ok {
-		return tx
+	if tx, ok := ctx.Value(transactionKey{}).(*sql.Tx); ok {
+		return sqlQueryAdapter{
+			exec:     tx.ExecContext,
+			query:    tx.QueryContext,
+			queryRow: tx.QueryRowContext,
+		}
 	}
-	return a.DB
+	return sqlQueryAdapter{
+		exec:     a.DB.ExecContext,
+		query:    a.DB.QueryContext,
+		queryRow: a.DB.QueryRowContext,
+	}
 }
-func (a *API) begin(ctx context.Context) (pgx.Tx, error) {
-	if tx, ok := ctx.Value(transactionKey{}).(pgx.Tx); ok {
-		return tx.Begin(ctx)
+
+func (a *API) begin(ctx context.Context) (txDB, error) {
+	if tx, ok := ctx.Value(transactionKey{}).(*sql.Tx); ok {
+		if _, err := tx.ExecContext(ctx, "SAVEPOINT content_nested"); err != nil {
+			return nil, err
+		}
+		return wrapTx(tx, true), nil
 	}
-	return a.DB.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.Serializable})
+	tx, err := a.DB.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return nil, err
+	}
+	return wrapTx(tx, false), nil
 }
 
 type responseBuffer struct {
@@ -50,7 +133,7 @@ func (b *responseBuffer) Write(p []byte) (int, error) {
 	return b.body.Write(p)
 }
 
-// Successful mutation and durable retry response commit in the same PostgreSQL transaction.
+// Successful mutation and durable retry response commit in the same SQLite transaction.
 func (a *API) idempotent(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" || r.Method == "HEAD" {
@@ -74,20 +157,16 @@ func (a *API) idempotent(h http.HandlerFunc) http.HandlerFunc {
 		r.Body = io.NopCloser(bytes.NewReader(body))
 		scope := hash([]byte(r.Header.Get("Authorization")))
 		reqHash := hash(append([]byte(r.Method+"\n"+r.URL.RequestURI()+"\n"+r.Header.Get("If-Match")+"\n"), body...))
-		tx, err := a.DB.BeginTx(r.Context(), pgx.TxOptions{IsoLevel: pgx.Serializable})
+		tx, err := a.DB.BeginTx(r.Context(), &sql.TxOptions{Isolation: sql.LevelSerializable})
 		if err != nil {
 			fail(w, 503, "database_error")
 			return
 		}
-		defer tx.Rollback(r.Context())
-		if _, err = tx.Exec(r.Context(), "SELECT pg_advisory_xact_lock(hashtextextended($1,0))", scope+":"+key); err != nil {
-			fail(w, 503, "idempotency_lock_failed")
-			return
-		}
+		defer tx.Rollback()
 		var previous string
 		var status int
 		var headersRaw, b []byte
-		err = tx.QueryRow(r.Context(), "SELECT request_hash,status,headers,response FROM content_idempotency WHERE scope=$1 AND key=$2", scope, key).Scan(&previous, &status, &headersRaw, &b)
+		err = tx.QueryRowContext(r.Context(), "SELECT request_hash,status,headers,response FROM content_idempotency WHERE scope=$1 AND key=$2", scope, key).Scan(&previous, &status, &headersRaw, &b)
 		if err == nil {
 			if previous != reqHash {
 				fail(w, 409, "idempotency_key_reused")
@@ -103,7 +182,7 @@ func (a *API) idempotent(h http.HandlerFunc) http.HandlerFunc {
 			w.Write(b)
 			return
 		}
-		if err != pgx.ErrNoRows {
+		if !errors.Is(err, sql.ErrNoRows) {
 			fail(w, 503, "database_error")
 			return
 		}
@@ -114,9 +193,9 @@ func (a *API) idempotent(h http.HandlerFunc) http.HandlerFunc {
 		}
 		if buf.status < 400 {
 			headers, _ := json.Marshal(buf.header)
-			_, err = tx.Exec(r.Context(), "INSERT INTO content_idempotency(scope,key,request_hash,status,headers,response) VALUES($1,$2,$3,$4,$5,$6)", scope, key, reqHash, buf.status, headers, buf.body.Bytes())
+			_, err = tx.ExecContext(r.Context(), "INSERT INTO content_idempotency(scope,key,request_hash,status,headers,response) VALUES($1,$2,$3,$4,$5,$6)", scope, key, reqHash, buf.status, headers, buf.body.Bytes())
 			if err == nil {
-				err = tx.Commit(r.Context())
+				err = tx.Commit()
 			}
 			if err != nil {
 				fail(w, 409, "transaction_conflict_retry")
@@ -159,7 +238,8 @@ func (a *API) rollbackChannel(w http.ResponseWriter, r *http.Request) {
 		fail(w, 503, "database_error")
 		return
 	}
-	if tag.RowsAffected() != 1 {
+	rows, err := tag.RowsAffected()
+	if err != nil || rows != 1 {
 		fail(w, 409, "channel_conflict")
 		return
 	}

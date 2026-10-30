@@ -217,6 +217,18 @@ export type SceneGroundOptions = {
 };
 
 let envTexturesPromise: Promise<Record<string, Texture>> | null = null;
+const loadedEnvTextures: Record<string, Texture> = {};
+const envProgressListeners = new Set<(textures: Record<string, Texture>) => void>();
+
+export function getLoadedEnvironmentRuntimeTextures(): Record<string, Texture> {
+  const valid: Record<string, Texture> = {};
+  for (const [k, v] of Object.entries(loadedEnvTextures)) {
+    if (v && !v.destroyed && v.source && !v.source.destroyed) {
+      valid[k] = v;
+    }
+  }
+  return valid;
+}
 
 function createProceduralSnowTexture(): Texture {
   if (typeof document !== "undefined") {
@@ -245,108 +257,124 @@ function createProceduralSnowTexture(): Texture {
   return Texture.WHITE;
 }
 
+const ENV_TEXTURE_SPECS: readonly {
+  key: string;
+  path: string;
+  wave: 1 | 2;
+  useSnowFallback?: boolean;
+}[] = [
+  { key: "/modular-stronghold/v2/snow-soft-texture.png", path: "modular-stronghold/v2/snow-soft-texture.png", wave: 1, useSnowFallback: true },
+  { key: "/modular-stronghold/v2/paving-warm-texture.png", path: "modular-stronghold/v2/paving-warm-texture.png", wave: 1 },
+  { key: "/buildings/starter-boundary/straight-ne-a.png", path: "buildings/starter-boundary/straight-ne-a.png", wave: 1 },
+  { key: "/buildings/starter-boundary/straight-ne-b.png", path: "buildings/starter-boundary/straight-ne-b.png", wave: 1 },
+  { key: "/buildings/starter-boundary/straight-se-a.png", path: "buildings/starter-boundary/straight-se-a.png", wave: 1 },
+  { key: "/buildings/starter-boundary/straight-se-b.png", path: "buildings/starter-boundary/straight-se-b.png", wave: 1 },
+  { key: "/buildings/starter-boundary/gate-closed.png", path: "buildings/starter-boundary/gate-closed.png", wave: 1 },
+  { key: "/buildings/starter-boundary/gate-sheet.png", path: "buildings/starter-boundary/gate-sheet.png", wave: 1 },
+  { key: "/buildings/starting-campfire/campfire-v1.png", path: "buildings/starting-campfire/campfire-v1.png", wave: 1 },
+  { key: "/frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp", path: "frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp", wave: 1 },
+  { key: "/terrain-height/natural/cliff-strip-v2.webp", path: "terrain-height/natural/cliff-strip-v2.webp", wave: 1 },
+  { key: "/realistic-torch/frame-0.webp", path: "realistic-torch/frame-0.webp", wave: 1 },
+  { key: "/realistic-torch/frame-1.webp", path: "realistic-torch/frame-1.webp", wave: 1 },
+  { key: "/realistic-torch/frame-2.webp", path: "realistic-torch/frame-2.webp", wave: 1 },
+  { key: "/realistic-torch/frame-3.webp", path: "realistic-torch/frame-3.webp", wave: 1 },
+  { key: "/modular-stronghold/v2/paving-worn.png", path: "modular-stronghold/v2/paving-worn.png", wave: 2 },
+  { key: "/modular-stronghold/v2/snowdrift-edge.png", path: "modular-stronghold/v2/snowdrift-edge.png", wave: 2, useSnowFallback: true },
+  { key: "/modular-stronghold/v2/weeds-edge.png", path: "modular-stronghold/v2/weeds-edge.png", wave: 2 },
+  { key: "/modular-stronghold/v2/fir-young.png", path: "modular-stronghold/v2/fir-young.png", wave: 2 },
+  { key: "/modular-stronghold/v2/spruce-mature.png", path: "modular-stronghold/v2/spruce-mature.png", wave: 2 },
+  { key: "/modular-stronghold/v2/boulders-snow.png", path: "modular-stronghold/v2/boulders-snow.png", wave: 2 },
+  { key: "/modular-stronghold/v2/cliff-snow.png", path: "modular-stronghold/v2/cliff-snow.png", wave: 2 },
+  { key: "/foundation-transitions/soil-moss.png", path: "foundation-transitions/soil-moss.png", wave: 2 },
+  { key: "/foundation-transitions/moss.png", path: "foundation-transitions/moss.png", wave: 2 },
+  { key: "/vfx/textures/flame.png", path: "vfx/textures/flame.png", wave: 2 },
+  { key: "/buildings/bastion/bastion-v1.png", path: "bastion.png", wave: 2 },
+];
+
 export function loadEnvironmentRuntimeTextures(
   baseUrl = "",
+  onProgress?: (textures: Record<string, Texture>) => void,
 ): Promise<Record<string, Texture>> {
-  if (envTexturesPromise) return envTexturesPromise;
+  if (onProgress) {
+    envProgressListeners.add(onProgress);
+  }
+  const existing = getLoadedEnvironmentRuntimeTextures();
+  if (Object.keys(existing).length === ENV_TEXTURE_SPECS.length) {
+    if (onProgress) {
+      envProgressListeners.delete(onProgress);
+      onProgress(existing);
+    }
+    return Promise.resolve(existing);
+  }
+  if (envTexturesPromise) {
+    return envTexturesPromise.finally(() => {
+      if (onProgress) envProgressListeners.delete(onProgress);
+    });
+  }
   const resolveAsset = (name: string) =>
     baseUrl ? new URL(`/assets/${name}`, baseUrl).href : `/assets/${name}`;
   const loadTex = async (path: string, fallback?: Texture): Promise<Texture> => {
+    const url = resolveAsset(path);
     try {
-      return await Assets.load<Texture>(resolveAsset(path));
+      if (typeof fetch === "function" && typeof createImageBitmap === "function") {
+        const res = await fetch(url, {
+          credentials: "omit",
+          signal:
+            typeof AbortSignal !== "undefined" && "timeout" in AbortSignal
+              ? AbortSignal.timeout(12000)
+              : undefined,
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const blob = await res.blob();
+        const bitmap = await createImageBitmap(blob);
+        return Texture.from(bitmap);
+      }
+      return await Assets.load<Texture>(url);
     } catch {
       return fallback ?? Texture.WHITE;
     }
   };
+  const notifyProgress = () => {
+    const snap = getLoadedEnvironmentRuntimeTextures();
+    for (const cb of envProgressListeners) {
+      try {
+        cb(snap);
+      } catch {
+        // Ignore listener errors
+      }
+    }
+  };
   envTexturesPromise = (async () => {
     const fallbackSnow = createProceduralSnowTexture();
-    const [
-      snowSoft,
-      pavingWarm,
-      pavingWorn,
-      snowdriftEdge,
-      weedsEdge,
-      firYoung,
-      spruceMature,
-      bouldersSnow,
-      cliffSnow,
-      straightNeA,
-      straightNeB,
-      straightSeA,
-      straightSeB,
-      gateClosed,
-      gateSheet,
-      campfireV1,
-      frontierAtlas,
-      cliffStripV2,
-      soilMoss,
-      moss,
-      torch0,
-      torch1,
-      torch2,
-      torch3,
-      flame,
-      bastion,
-    ] = await Promise.all([
-      loadTex("modular-stronghold/v2/snow-soft-texture.png", fallbackSnow),
-      loadTex("modular-stronghold/v2/paving-warm-texture.png"),
-      loadTex("modular-stronghold/v2/paving-worn.png"),
-      loadTex("modular-stronghold/v2/snowdrift-edge.png", fallbackSnow),
-      loadTex("modular-stronghold/v2/weeds-edge.png"),
-      loadTex("modular-stronghold/v2/fir-young.png"),
-      loadTex("modular-stronghold/v2/spruce-mature.png"),
-      loadTex("modular-stronghold/v2/boulders-snow.png"),
-      loadTex("modular-stronghold/v2/cliff-snow.png"),
-      loadTex("buildings/starter-boundary/straight-ne-a.png"),
-      loadTex("buildings/starter-boundary/straight-ne-b.png"),
-      loadTex("buildings/starter-boundary/straight-se-a.png"),
-      loadTex("buildings/starter-boundary/straight-se-b.png"),
-      loadTex("buildings/starter-boundary/gate-closed.png"),
-      loadTex("buildings/starter-boundary/gate-sheet.png"),
-      loadTex("buildings/starting-campfire/campfire-v1.png"),
-      loadTex("frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp"),
-      loadTex("terrain-height/natural/cliff-strip-v2.webp"),
-      loadTex("foundation-transitions/soil-moss.png"),
-      loadTex("foundation-transitions/moss.png"),
-      loadTex("realistic-torch/frame-0.webp"),
-      loadTex("realistic-torch/frame-1.webp"),
-      loadTex("realistic-torch/frame-2.webp"),
-      loadTex("realistic-torch/frame-3.webp"),
-      loadTex("vfx/textures/flame.png"),
-      loadTex("bastion.png"),
-    ]);
-    return {
-      "/modular-stronghold/v2/snow-soft-texture.png": snowSoft,
-      "/modular-stronghold/v2/paving-warm-texture.png": pavingWarm,
-      "/modular-stronghold/v2/paving-worn.png": pavingWorn,
-      "/modular-stronghold/v2/snowdrift-edge.png": snowdriftEdge,
-      "/modular-stronghold/v2/weeds-edge.png": weedsEdge,
-      "/modular-stronghold/v2/fir-young.png": firYoung,
-      "/modular-stronghold/v2/spruce-mature.png": spruceMature,
-      "/modular-stronghold/v2/boulders-snow.png": bouldersSnow,
-      "/modular-stronghold/v2/cliff-snow.png": cliffSnow,
-      "/buildings/starter-boundary/straight-ne-a.png": straightNeA,
-      "/buildings/starter-boundary/straight-ne-b.png": straightNeB,
-      "/buildings/starter-boundary/straight-se-a.png": straightSeA,
-      "/buildings/starter-boundary/straight-se-b.png": straightSeB,
-      "/buildings/starter-boundary/gate-closed.png": gateClosed,
-      "/buildings/starter-boundary/gate-sheet.png": gateSheet,
-      "/buildings/starting-campfire/campfire-v1.png": campfireV1,
-      "/frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp": frontierAtlas,
-      "/terrain-height/natural/cliff-strip-v2.webp": cliffStripV2,
-      "/foundation-transitions/soil-moss.png": soilMoss,
-      "/foundation-transitions/moss.png": moss,
-      "/realistic-torch/frame-0.webp": torch0,
-      "/realistic-torch/frame-1.webp": torch1,
-      "/realistic-torch/frame-2.webp": torch2,
-      "/realistic-torch/frame-3.webp": torch3,
-      "/vfx/textures/flame.png": flame,
-      "/buildings/bastion/bastion-v1.png": bastion,
+    const loadWave = async (wave: 1 | 2) => {
+      const specs = ENV_TEXTURE_SPECS.filter((s) => s.wave === wave);
+      await Promise.all(
+        specs.map(async (spec) => {
+          const cached = loadedEnvTextures[spec.key];
+          if (cached && !cached.destroyed && cached.source && !cached.source.destroyed) {
+            return;
+          }
+          const tex = await loadTex(
+            spec.path,
+            spec.useSnowFallback ? fallbackSnow : undefined,
+          );
+          loadedEnvTextures[spec.key] = tex;
+        }),
+      );
+      notifyProgress();
     };
-  })().catch((e) => {
-    envTexturesPromise = null;
-    throw e;
-  });
+    await loadWave(1);
+    await loadWave(2);
+    return getLoadedEnvironmentRuntimeTextures();
+  })()
+    .catch((e) => {
+      envTexturesPromise = null;
+      throw e;
+    })
+    .finally(() => {
+      if (onProgress) envProgressListeners.delete(onProgress);
+      envTexturesPromise = null;
+    });
   return envTexturesPromise;
 }
 
@@ -610,23 +638,6 @@ export function sceneGround(
       } else {
         s.zIndex = prop.depth ?? prop.y;
         strongholdUpright.addChild(s);
-      }
-
-      if (prop.id === "campfire") {
-        const flameTex = options.textures["/vfx/textures/flame.png"];
-        if (flameTex && flameTex !== Texture.WHITE) {
-          const cf = new Sprite(flameTex);
-          cf.anchor.set(0.5, 0.78);
-          cf.position.set(prop.x, prop.y - 24);
-          cf.width = 68;
-          cf.height = 84;
-          cf.tint = 0xffa84b;
-          cf.alpha = 0.88;
-          cf.blendMode = "add";
-          cf.zIndex = prop.y + 1;
-          strongholdUpright.addChild(cf);
-          campfireFlame = cf;
-        }
       }
     }
 

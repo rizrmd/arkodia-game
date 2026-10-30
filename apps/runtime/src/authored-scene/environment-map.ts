@@ -419,13 +419,13 @@ export function syncInfiniteSnow(
 }
 
 export const GATEWAY_APRON_BOUNDS = {
-  x: 407,
-  y: 540,
-  width: 340,
-  height: 260,
-  edgeY: 678,
+  x: 417,
+  y: 700,
+  width: 320,
+  height: 140,
+  edgeY: 785,
   diamondApexY: 800,
-  slope: 0.5,
+  slope: 0.35,
 } as const;
 
 export function gatewayApronAlphaAt(wx: number, wy: number): {
@@ -435,18 +435,25 @@ export function gatewayApronAlphaAt(wx: number, wy: number): {
 } {
   const { edgeY, slope } = GATEWAY_APRON_BOUNDS;
   const tile = courtToTile(wx, wy);
-  if (tile.u < 0 || tile.v < 0 || tile.u > COURT.size || tile.v > COURT.size) {
+  if (
+    tile.u < -0.5 ||
+    tile.v < -0.5 ||
+    tile.u > COURT.size + 0.5 ||
+    tile.v > COURT.size + 0.5
+  ) {
     return { alpha: 0, shade: 0, rgb: [0, 0, 0] };
   }
   const edge = edgeY - Math.abs(wx - COURT.x) * slope;
-  const n1 = noise2(wx / 36, wy / 36);
-  const n2 = noise2(wx / 13, wy / 13);
-  const d = wy - edge + (n1 - 0.5) * 26 + (n2 - 0.5) * 10;
-  if (d <= -28) {
+  const noise =
+    Math.sin(wx * 0.37 + wy * 0.23) * 5 +
+    Math.sin(wx * 0.91 - wy * 0.71) * 2.5;
+  const d = wy - edge + noise;
+  if (d <= -20) {
     return { alpha: 0, shade: 0, rgb: [0, 0, 0] };
   }
-  const u = Math.max(0, Math.min(1, (d + 28) / 56));
-  const alpha = d >= 28 ? 1 : u * u * (3 - 2 * u);
+  const u = Math.max(0, Math.min(1, (d + 20) / 40));
+  const alpha = d >= 20 ? 1 : u * u * (3 - 2 * u);
+  const n2 = noise2(wx / 13, wy / 13);
   const shade = 0.94 + (n2 - 0.5) * 0.06;
   const r = Math.round((238 * alpha + 216 * (1 - alpha)) * shade);
   const g = Math.round((243 * alpha + 225 * (1 - alpha)) * shade);
@@ -587,7 +594,7 @@ export function createCourtSurface(
     snowTexture?: Texture;
   },
 ): CourtSurfaceResult {
-  const minTile = options?.minTile ?? 0;
+  const minTile = options?.minTile ?? -0.5;
   const maxTile = options?.maxTile ?? COURT.size;
   const pavingDensity = options?.pavingDensity ?? PAVING_DENSITY;
 
@@ -776,6 +783,7 @@ export type NativeStrongholdProp = {
   shear: number;
   depth: number;
   layer: "ground" | "world";
+  opacity?: number;
 };
 
 export const STRONGHOLD_NATIVE_PROPS: NativeStrongholdProp[] = [
@@ -816,10 +824,10 @@ export const STRONGHOLD_NATIVE_PROPS: NativeStrongholdProp[] = [
   { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 845.8, y: 742.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
   { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: -75.8, y: 550.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
   { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 308.2, y: 742.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 321, y: 416, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 833, y: 480, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 385, y: 576, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 705, y: 352, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 321, y: 416, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground", opacity: 0.7 },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 833, y: 480, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground", opacity: 0.7 },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 385, y: 576, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground", opacity: 0.7 },
+  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 705, y: 352, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground", opacity: 0.7 },
   { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 464.15, y: -101.43, width: 330.6, foot: 0.5723, vertical: 0.75, shear: -0.1995, depth: -100, layer: "world" },
   { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-b.png", x: 213.05, y: 20.81, width: 303.16, foot: 0.5859, vertical: 0.75, shear: -0.2039, depth: 20, layer: "world" },
   { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: -15.85, y: 138.57, width: 330.6, foot: 0.5723, vertical: 0.75, shear: -0.1995, depth: 140, layer: "world" },
@@ -890,6 +898,7 @@ export function allStrongholdProps(includeCampfire = true): StrongholdPropDef[] 
       zBoost: 0,
       solid: isWall,
       layer: p.layer,
+      alpha: p.opacity,
       foot: p.foot,
       vertical: p.vertical,
       shear: p.shear,
@@ -905,13 +914,13 @@ export function allStrongholdProps(includeCampfire = true): StrongholdPropDef[] 
     w: 270,
     h: 135,
     ax: 0.5,
-    ay: 0.72,
+    ay: 0.97,
     flip: false,
     trim: 0,
     zBoost: 0,
     solid: true,
     layer: "world",
-    foot: 0.72,
+    foot: 0.97,
     vertical: 1,
     shear: 0,
     depth: 778,
@@ -1011,8 +1020,8 @@ export const GATE_DOOR_CONFIG = {
   frames: 16,
   cols: 4,
   rows: 4,
-  frameW: 360,
-  frameH: 180,
+  frameW: 512,
+  frameH: 256,
   passableFrame: 12.8,
   passableAt: 0.8,
 } as const;

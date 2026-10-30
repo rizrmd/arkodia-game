@@ -240,22 +240,22 @@ export type TorchLightSpec = {
 };
 
 export const DEFAULT_TORCH_LIGHTS: readonly TorchLightSpec[] = [
-  { x: 577, y: 120, z: 36, r: 196, wall: false, side: 1 },
-  { x: 745, y: 204, z: 36, r: 188, wall: false, side: 1 },
-  { x: 409, y: 204, z: 36, r: 188, wall: false, side: -1 },
-  { x: 969, y: 316, z: 36, r: 192, wall: false, side: 1 },
-  { x: 185, y: 316, z: 36, r: 192, wall: false, side: -1 },
-  { x: 857, y: 516, z: 36, r: 188, wall: false, side: -1 },
-  { x: 297, y: 516, z: 36, r: 188, wall: false, side: 1 },
-  { x: 649, y: 748, z: 34, r: 228, wall: false, side: -1 },
-  { x: 505, y: 748, z: 34, r: 228, wall: false, side: 1 },
-  { x: 577, y: 820, z: 36, r: 210, wall: false, side: 1 },
-  { x: 481, y: 696, z: 36, r: 176, wall: false, side: -1 },
-  { x: 673, y: 696, z: 36, r: 176, wall: false, side: 1 },
-  { x: 353, y: 588, z: 42, r: 172, wall: true, side: 1 },
-  { x: 801, y: 588, z: 42, r: 172, wall: true, side: -1 },
-  { x: 245, y: 300, z: 42, r: 172, wall: true, side: -1 },
-  { x: 909, y: 300, z: 42, r: 172, wall: true, side: 1 },
+  { x: 769, y: -64, z: 65, r: 172, wall: true, side: 1 },
+  { x: 385, y: -64, z: 65, r: 172, wall: true, side: -1 },
+  { x: -223, y: 432, z: 65, r: 172, wall: true, side: -1 },
+  { x: 1377, y: 432, z: 65, r: 172, wall: true, side: 1 },
+  { x: 1057, y: 80, z: 65, r: 172, wall: true, side: 1 },
+  { x: 97, y: 80, z: 65, r: 172, wall: true, side: -1 },
+  { x: 65, y: 576, z: 65, r: 172, wall: true, side: -1 },
+  { x: 1089, y: 576, z: 65, r: 172, wall: true, side: 1 },
+  { x: 1345, y: 224, z: 65, r: 172, wall: true, side: 1 },
+  { x: -191, y: 224, z: 65, r: 172, wall: true, side: -1 },
+  { x: 353, y: 720, z: 65, r: 172, wall: true, side: -1 },
+  { x: 801, y: 720, z: 65, r: 172, wall: true, side: 1 },
+  { x: 577, y: 128, z: 48, r: 196, wall: false, side: 1 },
+  { x: 193, y: 320, z: 48, r: 192, wall: false, side: -1 },
+  { x: 961, y: 320, z: 48, r: 192, wall: false, side: 1 },
+  { x: 577, y: 608, z: 48, r: 210, wall: false, side: 1 },
 ];
 
 export function evaluateLightmapAt(
@@ -318,15 +318,15 @@ export type TorchLayerResult = {
 };
 
 const REALISTIC_TORCH = {
-  srcW: 360,
-  srcH: 700,
-  topH: 378,
-  anchorX: 170,
-  anchorY: 576,
-  flameX: 172,
-  flameY: 224,
-  scaleWall: 0.088,
-  scalePost: 0.095,
+  srcW: 180,
+  srcH: 290,
+  topH: 132,
+  anchorX: 90,
+  anchorY: 238,
+  flameX: 90,
+  flameY: 112,
+  scaleWall: 24 / 180,
+  scalePost: 26 / 180,
 };
 
 let cachedGlowTex: Texture | null = null;
@@ -403,32 +403,68 @@ function sourceOf(tex: Texture | undefined): CanvasImageSource | null {
 function buildPostGroundTexture(
   soilImg: CanvasImageSource | null,
   driftImg: CanvasImageSource | null,
+  index = 0,
 ): Texture | null {
-  const c = makeCanvas(64, 40);
+  const c = makeCanvas(216, 108);
   if (!c) return null;
-  const ctx = c.getContext("2d");
-  if (!ctx) return null;
+  const g = c.getContext("2d");
+  if (!g) return null;
 
-  ctx.save();
-  ctx.filter = "blur(4px)";
-  ctx.fillStyle = "rgba(20, 16, 12, 0.34)";
-  ctx.beginPath();
-  ctx.ellipse(32, 22, 18, 9, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
+  g.scale(3, 3);
+  g.translate(36, 19);
+  let seed = 917 + index * 431;
+  const random = () =>
+    ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+  const shade = g.createRadialGradient(0, 0, 1, 0, 0, 29);
+  shade.addColorStop(0, "#343b2480");
+  shade.addColorStop(1, "#40472b00");
+  g.save();
+  g.scale(1, 0.38);
+  g.fillStyle = shade;
+  g.fillRect(-32, -32, 64, 64);
+  g.restore();
 
   if (soilImg) {
-    ctx.save();
-    ctx.globalAlpha = 0.52;
-    ctx.drawImage(soilImg, 8, 6, 48, 28);
-    ctx.restore();
+    g.save();
+    g.globalAlpha = 0.28;
+    g.drawImage(soilImg, -22, -11, 44, 22);
+    g.restore();
   }
   if (driftImg) {
-    ctx.save();
-    ctx.globalAlpha = 0.42;
-    ctx.drawImage(driftImg, 10, 8, 44, 24);
-    ctx.restore();
+    g.save();
+    g.globalAlpha = 0.18;
+    g.drawImage(driftImg, -20, -10, 40, 20);
+    g.restore();
   }
+
+  for (let i = 0; i < 180; i++) {
+    const angle = random() * Math.PI * 2;
+    const r = Math.sqrt(random());
+    const x = Math.cos(angle) * r * 30;
+    const y = Math.sin(angle) * r * 10;
+    g.globalAlpha = 0.35 + random() * 0.45;
+    g.fillStyle = ["#555d35", "#687043", "#7b7d4c", "#464d2e"][i % 4]!;
+    g.beginPath();
+    g.ellipse(x, y, 1 + random() * 3, 0.4 + random() * 1.1, -0.35, 0, Math.PI * 2);
+    g.fill();
+  }
+  g.globalAlpha = 0.85;
+  for (let i = 0; i < 26; i++) {
+    const x = (random() - 0.5) * 44;
+    const y = (random() - 0.5) * 13;
+    const h = 2 + random() * 5;
+    g.strokeStyle = i % 2 ? "#777d48" : "#454f2e";
+    g.lineWidth = 0.55;
+    g.beginPath();
+    g.moveTo(x, y);
+    g.quadraticCurveTo(x - 1, y - h * 0.6, x + (random() - 0.5) * 4, y - h);
+    g.stroke();
+  }
+  g.globalAlpha = 1;
+  g.fillStyle = "#27271f88";
+  g.beginPath();
+  g.ellipse(0, 0, 4, 1.6, 0, 0, Math.PI * 2);
+  g.fill();
   return new Texture({ source: new ImageSource({ resource: c }) });
 }
 
@@ -490,9 +526,23 @@ export function createTorchLayer(
       )
     : [];
 
+  const rawSheetFlame = textures["/vfx/textures/flame.png"];
+  const croppedSheetFlame =
+    rawSheetFlame && rawSheetFlame !== Texture.WHITE && rawSheetFlame.width >= 64
+      ? new Texture({
+          source: rawSheetFlame.source,
+          frame: new Rectangle(
+            0,
+            0,
+            Math.floor(rawSheetFlame.width / 4),
+            Math.floor(rawSheetFlame.height / 4),
+          ),
+        })
+      : undefined;
+
   const flameTex =
     topFrames[0] ??
-    textures["/vfx/textures/flame.png"] ??
+    croppedSheetFlame ??
     textures["/vfx/textures/flare.png"] ??
     defaultFlameTexture();
   const glowTex =
@@ -559,8 +609,10 @@ export function createTorchLayer(
 
     if (!isWall && postGroundTex) {
       const g = new Sprite(postGroundTex);
-      g.anchor.set(0.5, 0.55);
-      g.position.set(spec.x, spec.y + 3);
+      g.anchor.set(0.5, 19 / 36);
+      g.width = 72;
+      g.height = 36;
+      g.position.set(spec.x, spec.y);
       groundContainer.addChild(g);
     }
 

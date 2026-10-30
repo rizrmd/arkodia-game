@@ -32,6 +32,12 @@ export const server = http.createServer(async (req, res) => {
       return;
     }
     const path = new URL(req.url, "http://runtime").pathname;
+    // Bootstrap readiness only. Artifact installation still verifies the exact public build SHA.
+    if (path === "/" && !(await stat(resolve(root, "index.html")).catch(() => null))) {
+      res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+      res.end(req.method === "HEAD" ? undefined : JSON.stringify({ status: "initializing" }));
+      return;
+    }
     if (path.startsWith("/content/")) {
       const upstream = path.slice(8);
       if (!publicPath(upstream)) {

@@ -25,6 +25,10 @@ test("gateway rejects writes and private routes at HTTP boundary", async () => {
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
   const base = `http://127.0.0.1:${server.address().port}`;
   try {
+    const bootstrap = await fetch(base + "/");
+    assert.equal(bootstrap.status, 200);
+    assert.deepEqual(await bootstrap.json(), { status: "initializing" });
+    assert.equal((await fetch(base + "/build.json")).status, 404);
     assert.equal(
       (
         await fetch(base + "/content/v1/releases", {

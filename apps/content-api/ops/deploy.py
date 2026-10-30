@@ -10,10 +10,10 @@ def cli(*args):
  if p.returncode:raise RuntimeError(p.stderr or p.stdout)
  return json.loads(p.stdout)
 
-def wait_job(name,deadline=600):
+def wait_job(name,pid,deadline=600):
  end=time.monotonic()+deadline
  while time.monotonic()<end:
-  process=next((p for p in cli('sandboxes','ps',SANDBOX) if p['name']==name),None)
+  process=next((p for p in cli('sandboxes','ps',SANDBOX) if p['name']==name and p.get('pid')==pid),None)
   if process and not process.get('running'):
    logs=cli('sandboxes','logs',SANDBOX,'--name',name,'--lines','30').get('log','')
    print(logs,flush=True)
@@ -23,9 +23,17 @@ def wait_job(name,deadline=600):
  raise RuntimeError('Deployment job exceeded 600 seconds; inspect logs before retrying')
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--member-origin',required=True,help='HTTPS domain routed to this member sandbox on --port')
-parser.add_argument('--port',type=int,default=3000)
+parser.add_argument('--member-origin',default='',help='HTTPS domain routed to this member sandbox on --port')
+parser.add_argument('--port',type=int,default=3193)
 args=parser.parse_args()
+who=cli('whoami');domains=cli('organization','sandbox-domains','list','--user',who['user_id'])
+transfer_name=f"arkodia-content-transfer-{who['user_id'].lower()}-arkodia.fural.space"
+transfer=next((d for d in domains if d['hostname']==transfer_name),None)
+if not args.member_origin:
+ if transfer is None:transfer=cli('organization','sandbox-domains','add','--hostname',transfer_name,'--port',str(args.port),'--user',who['user_id'])
+ else:cli('organization','sandbox-domains','update',transfer['id'],'--enabled','true','--port',str(args.port))
+ args.member_origin='https://'+transfer_name
+
 with tempfile.TemporaryDirectory(prefix='content-deploy-') as tmp:
  stage=pathlib.Path(tmp);binary=stage/'content-api'
  go=shutil.which('go') or str(pathlib.Path.home()/'.local/bin/go')
@@ -51,9 +59,11 @@ with tempfile.TemporaryDirectory(prefix='content-deploy-') as tmp:
    script+=f'printf "%s  %s\\n" {hashlib.sha256(path.read_bytes()).hexdigest()} "$HOME/app/{path.name}.new" | sha256sum -c -\n'
    script+=f'mv "$HOME/app/{path.name}.new" "$HOME/app/{path.name}"\n'
   script+='gunzip -f "$HOME/app/content-api.gz"\nchmod 755 "$HOME/app/content-api"\nrm -f "$HOME/app/install-postgres.py"\n'
-  cli('sandboxes','exec',SANDBOX,'--name','deploy-content-api','--cmd',script)
-  wait_job('deploy-content-api')
- finally:server.shutdown()
+  run=cli('sandboxes','exec',SANDBOX,'--name','deploy-content-api','--cmd',script)
+  wait_job('deploy-content-api',run.get('pid'))
+ finally:
+  server.shutdown()
+  if transfer is not None:cli('organization','sandbox-domains','update',transfer['id'],'--enabled','false')
  cli('sandboxes','update',SANDBOX,'--boot-script','exec sh "$HOME/app/boot.sh"')
  cli('sandboxes','boot',SANDBOX)
  print(json.dumps({'status':'boot_started','storage':'sqlite','binarySha256':binary_sha,'url':'https://content.arkodia.online','note':'Verify HTTPS readiness and live lifecycle before claiming success.'}))

@@ -12,7 +12,7 @@ export async function createHeroRenderer(hero: string, base = new URL('/models/'
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.28;
   const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-.94,.94,1.9,-.4,.1,20);
+  const camera = new THREE.OrthographicCamera(-.94,.94,1.15,-1.15,.1,20);
   camera.position.set(0, 3.4, 6); camera.lookAt(0,.75,0);
   scene.add(new THREE.HemisphereLight(0xfff4e0,0x261c24,1.65));
   const sun = new THREE.DirectionalLight(0xfff0cc,2.75);sun.position.set(3.2,5.4,2.8);scene.add(sun);

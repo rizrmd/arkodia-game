@@ -22,6 +22,7 @@ import {
   GATE_DOOR_CONFIG,
   createEnvironmentRuntime,
   mapToCourt,
+  noise2,
   sceneToEnvironmentMap,
   topOf,
   PX_PER_METER,
@@ -212,7 +213,93 @@ export type SceneGroundOptions = {
   daylightPhase?: string;
   gateOpen?: boolean;
   actorPreview?: boolean;
+  textures?: Record<string, Texture | undefined>;
 };
+
+let envTexturesPromise: Promise<Record<string, Texture>> | null = null;
+
+function createProceduralSnowTexture(): Texture {
+  if (typeof document !== "undefined") {
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      const img = ctx.createImageData(128, 128);
+      for (let y = 0; y < 128; y++) {
+        for (let x = 0; x < 128; x++) {
+          const n1 = noise2(x * 0.08, y * 0.08);
+          const n2 = noise2(x * 0.22 + 17, y * 0.22 + 31);
+          const v = 0.84 + (n1 - 0.5) * 0.1 + (n2 - 0.5) * 0.05;
+          const idx = (y * 128 + x) * 4;
+          img.data[idx] = Math.round(218 * v);
+          img.data[idx + 1] = Math.round(229 * v);
+          img.data[idx + 2] = Math.round(240 * v);
+          img.data[idx + 3] = 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      return Texture.from(canvas);
+    }
+  }
+  return Texture.WHITE;
+}
+
+export function loadEnvironmentRuntimeTextures(
+  baseUrl = "",
+): Promise<Record<string, Texture>> {
+  if (envTexturesPromise) return envTexturesPromise;
+  const resolveAsset = (name: string) =>
+    baseUrl ? new URL(`/assets/${name}`, baseUrl).href : `/assets/${name}`;
+  envTexturesPromise = (async () => {
+    const [
+      paving,
+      cliff,
+      spruce,
+      wall,
+      gate,
+      campfire,
+      flame,
+      brazier,
+      bastion,
+    ] = await Promise.all([
+      Assets.load<Texture>(resolveAsset("paving-warm-texture.png")),
+      Assets.load<Texture>(resolveAsset("cliff-snow.png")),
+      Assets.load<Texture>(resolveAsset("spruce-mature.png")),
+      Assets.load<Texture>(resolveAsset("wall-broken.png")),
+      Assets.load<Texture>(resolveAsset("gateway-grand.png")),
+      Assets.load<Texture>(resolveAsset("buildings/core/campfire.png")),
+      Assets.load<Texture>(resolveAsset("flame.png")),
+      Assets.load<Texture>(resolveAsset("brazier.png")),
+      Assets.load<Texture>(resolveAsset("bastion.png")),
+    ]);
+    const snow = createProceduralSnowTexture();
+    return {
+      "/modular-stronghold/v2/snow-soft-texture.png": snow,
+      "/modular-stronghold/v2/snowdrift-edge.png": snow,
+      "/modular-stronghold/v2/paving-warm-texture.png": paving,
+      "/modular-stronghold/v2/paving-worn.png": paving,
+      "/modular-stronghold/v2/cliff-snow.png": cliff,
+      "/modular-stronghold/v2/boulders-snow.png": cliff,
+      "/modular-stronghold/v2/spruce-mature.png": spruce,
+      "/modular-stronghold/v2/fir-young.png": spruce,
+      "/modular-stronghold/v2/weeds-edge.png": spruce,
+      "/buildings/starter-boundary/straight-ne-a.png": wall,
+      "/buildings/starter-boundary/straight-ne-b.png": wall,
+      "/buildings/starter-boundary/straight-se-a.png": wall,
+      "/buildings/starter-boundary/straight-se-b.png": wall,
+      "/buildings/starter-boundary/gate-closed.png": gate,
+      "/buildings/starting-campfire/campfire-v1.png": campfire,
+      "/vfx/textures/flame.png": flame,
+      "/realistic-torch/frame-3.webp": brazier,
+      "/buildings/bastion/bastion-v1.png": bastion,
+    };
+  })().catch((e) => {
+    envTexturesPromise = null;
+    throw e;
+  });
+  return envTexturesPromise;
+}
 
 type MountedEnvState = {
   env: EnvironmentRuntime;
@@ -352,8 +439,12 @@ export function sceneGround(
   root.addChild(g);
   root.sortableChildren = true;
 
+  const hasTextures = Boolean(
+    options.textures && Object.keys(options.textures).length > 0,
+  );
   const env = createEnvironmentRuntime({
     environmentMap: sceneToEnvironmentMap(scene),
+    textures: options.textures,
   });
 
   const envStage = new Container();
@@ -372,14 +463,20 @@ export function sceneGround(
   const stage1 = new Container();
   stage1.zIndex = 1;
   stage1.sortableChildren = true;
-  const snowField = new Graphics()
-    .roundRect(-620, -320, 2400, 1480, 64)
-    .fill({ color: 0x2a3947, alpha: 0.44 })
-    .ellipse(COURT_CENTER.x, COURT_CENTER.y + 40, 1080, 560)
-    .stroke({ color: 0x8fb3d4, width: 2, alpha: 0.22 });
-  snowField.zIndex = -5;
+  if (hasTextures) {
+    env.snow.sprite.zIndex = -10;
+    env.snow.sprite.alpha = 0.72;
+    stage1.addChild(env.snow.sprite);
+  } else {
+    const snowField = new Graphics()
+      .roundRect(-620, -320, 2400, 1480, 64)
+      .fill({ color: 0x2a3947, alpha: 0.44 })
+      .ellipse(COURT_CENTER.x, COURT_CENTER.y + 40, 1080, 560)
+      .stroke({ color: 0x8fb3d4, width: 2, alpha: 0.22 });
+    snowField.zIndex = -5;
+    stage1.addChild(snowField);
+  }
   stage1.addChild(
-    snowField,
     env.courtSurface.container,
     env.foundations.under,
     env.foundations.face,
@@ -412,40 +509,49 @@ export function sceneGround(
   const stage2 = new Container();
   stage2.zIndex = 2;
   stage2.sortableChildren = true;
-  const frontierVector = new Graphics();
-  frontierVector.zIndex = 6;
-  for (const fp of env.frontierProps) {
-    const lift = env.liftAt(fp.x, fp.y) + fp.lift;
-    const py = fp.y - lift;
-    if (fp.asset.includes("pine")) {
-      const r = Math.max(22, fp.w * 0.22);
-      const h = Math.max(54, fp.h * 0.48);
-      frontierVector
-        .poly([fp.x, py - h, fp.x + r, py - 10, fp.x - r, py - 10])
-        .fill({ color: 0x25423b, alpha: 0.88 })
-        .poly([
-          fp.x,
-          py - h * 0.92,
-          fp.x + r * 0.72,
-          py - h * 0.42,
-          fp.x - r * 0.72,
-          py - h * 0.42,
-        ])
-        .fill({ color: 0xdbe7f2, alpha: 0.75 });
-    } else if (fp.layer === "ground") {
-      frontierVector
-        .ellipse(fp.x, py, Math.max(18, fp.w * 0.25), Math.max(10, fp.h * 0.18))
-        .fill({ color: 0x6f7c8a, alpha: 0.34 });
-    } else {
-      const rw = Math.max(20, fp.w * 0.26);
-      const rh = Math.max(22, fp.h * 0.28);
-      frontierVector
-        .roundRect(fp.x - rw * 0.5, py - rh, rw, rh, 4)
-        .fill({ color: 0x6c7a89, alpha: 0.78 })
-        .stroke({ color: 0xd8e4f0, width: 2, alpha: 0.55 });
+  if (hasTextures) {
+    stage2.addChild(env.frontier.ground, env.frontier.shade, env.frontier.upright);
+  } else {
+    const frontierVector = new Graphics();
+    frontierVector.zIndex = 6;
+    for (const fp of env.frontierProps) {
+      const lift = env.liftAt(fp.x, fp.y) + fp.lift;
+      const py = fp.y - lift;
+      if (fp.asset.includes("pine")) {
+        const r = Math.max(22, fp.w * 0.22);
+        const h = Math.max(54, fp.h * 0.48);
+        frontierVector
+          .poly([fp.x, py - h, fp.x + r, py - 10, fp.x - r, py - 10])
+          .fill({ color: 0x25423b, alpha: 0.88 })
+          .poly([
+            fp.x,
+            py - h * 0.92,
+            fp.x + r * 0.72,
+            py - h * 0.42,
+            fp.x - r * 0.72,
+            py - h * 0.42,
+          ])
+          .fill({ color: 0xdbe7f2, alpha: 0.75 });
+      } else if (fp.layer === "ground") {
+        frontierVector
+          .ellipse(
+            fp.x,
+            py,
+            Math.max(18, fp.w * 0.25),
+            Math.max(10, fp.h * 0.18),
+          )
+          .fill({ color: 0x6f7c8a, alpha: 0.34 });
+      } else {
+        const rw = Math.max(20, fp.w * 0.26);
+        const rh = Math.max(22, fp.h * 0.28);
+        frontierVector
+          .roundRect(fp.x - rw * 0.5, py - rh, rw, rh, 4)
+          .fill({ color: 0x6c7a89, alpha: 0.78 })
+          .stroke({ color: 0xd8e4f0, width: 2, alpha: 0.55 });
+      }
     }
+    stage2.addChild(env.frontier.shade, frontierVector);
   }
-  stage2.addChild(env.frontier.shade, frontierVector);
 
   // Stage 3: Terrain relief hills (east-ridge 3m, west-terrace 1.5m), plateaus & ramps
   const stage3 = new Container();

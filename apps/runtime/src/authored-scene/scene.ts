@@ -17,6 +17,7 @@ export type Part = {
   kind: "sprite" | "pillar";
   asset: string;
   sha256?: string;
+  sourceTransform?: [number, number, number, number];
   x: number;
   y: number;
   scale: number;
@@ -259,6 +260,17 @@ export function parseScene(input: unknown): Scene {
             /^https?:\/\//.test(p.asset) &&
             (!p.sha256 || /^[a-f0-9]{64}$/.test(p.sha256)),
           "Invalid scene texture",
+        );
+      if (p.sourceTransform)
+        requireValue(
+          Array.isArray(p.sourceTransform) &&
+            p.sourceTransform.length === 4 &&
+            p.sourceTransform.every(finite) &&
+            Math.abs(
+              p.sourceTransform[0] * p.sourceTransform[3] -
+                p.sourceTransform[1] * p.sourceTransform[2],
+            ) > 1e-12,
+          "Invalid artwork transform",
         );
       if (p.presentation) {
         const v = p.presentation;

@@ -104,8 +104,13 @@ export async function createSceneNode(o: Instance): Promise<SceneNode> {
             asset: p.asset,
             category: p.category ?? o.category,
           });
-      s.anchor.set(0.5, profile.anchorY);
-      if (profile.plane) {
+      s.anchor.set(
+        p.sourceTransform ? 0 : 0.5,
+        p.sourceTransform ? 0 : profile.anchorY,
+      );
+      if (p.sourceTransform)
+        s.setFromMatrix(new Matrix(...p.sourceTransform, 0, 0));
+      else if (profile.plane) {
         const sx = profile.width / (2 * t.width),
           sy = profile.width / (2 * t.height);
         s.setFromMatrix(new Matrix(sx, sx * 0.5, -sy, sy * 0.5, 0, 0));

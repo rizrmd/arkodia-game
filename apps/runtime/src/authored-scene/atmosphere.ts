@@ -321,12 +321,12 @@ const REALISTIC_TORCH = {
   srcW: 180,
   srcH: 290,
   topH: 132,
-  anchorX: 90,
-  anchorY: 238,
-  flameX: 90,
-  flameY: 112,
-  scaleWall: 24 / 180,
-  scalePost: 26 / 180,
+  width: 24,
+  height: 39,
+  top: 15.75,
+  postStart: 13.5,
+  postWidth: 3.75,
+  flameHeight: (39 * 132) / 290,
 };
 
 let cachedGlowTex: Texture | null = null;
@@ -391,13 +391,6 @@ function makeCanvas(w: number, h: number): HTMLCanvasElement | null {
   } catch {
     return null;
   }
-}
-
-function sourceOf(tex: Texture | undefined): CanvasImageSource | null {
-  if (!tex || tex === Texture.WHITE) return null;
-  const src = (tex.source as { resource?: unknown } | undefined)?.resource;
-  if (!src) return null;
-  return src as CanvasImageSource;
 }
 
 function buildPostGroundTexture(
@@ -468,23 +461,6 @@ function buildPostGroundTexture(
   return new Texture({ source: new ImageSource({ resource: c }) });
 }
 
-function buildPostColumnTexture(): Texture | null {
-  const c = makeCanvas(16, 56);
-  if (!c) return null;
-  const ctx = c.getContext("2d");
-  if (!ctx) return null;
-  const grad = ctx.createLinearGradient(4, 0, 12, 0);
-  grad.addColorStop(0, "#241811");
-  grad.addColorStop(0.45, "#4a3528");
-  grad.addColorStop(1, "#1c120d");
-  ctx.fillStyle = grad;
-  ctx.fillRect(5, 6, 6, 46);
-  ctx.fillStyle = "#18120e";
-  ctx.fillRect(4, 10, 8, 3);
-  ctx.fillRect(4, 42, 8, 3);
-  return new Texture({ source: new ImageSource({ resource: c }) });
-}
-
 export function createTorchLayer(
   lights: readonly TorchLightSpec[] = DEFAULT_TORCH_LIGHTS,
   textures: Record<string, Texture | undefined> = {},
@@ -506,7 +482,7 @@ export function createTorchLayer(
 
   const bodyFrame = hasRealisticTorch
     ? new Texture({
-        source: f3!.source,
+        source: f1!.source,
         frame: new Rectangle(
           0,
           REALISTIC_TORCH.topH,
@@ -550,12 +526,6 @@ export function createTorchLayer(
     textures["/vfx/textures/flare.png"] ??
     defaultGlowTexture();
 
-  const postGroundTex = buildPostGroundTexture(
-    sourceOf(textures["/foundation-transitions/soil-moss.png"]),
-    sourceOf(textures["/modular-stronghold/v2/snowdrift-edge.png"]),
-  );
-  const postColTex = buildPostColumnTexture();
-
   const nodes: TorchNodeEntry[] = [];
   const groundContainer = new Container();
   groundContainer.zIndex = 3.15;
@@ -564,27 +534,6 @@ export function createTorchLayer(
   lightingContainer.sortableChildren = true;
   lightingContainer.zIndex = 9998;
 
-  // Build multiply lightmap + additive warm glow matching arkodia-archived/src/stronghold/lighting.ts
-  const lmScale = 0.25;
-  const lmPad = 900;
-  const lmLeft = -323 - lmPad;
-  const lmTop = -160 - lmPad;
-  const lmWorldW = 1800 + lmPad * 2;
-  const lmWorldH = 1120 + lmPad * 2;
-  const lmCanvas = makeCanvas(lmWorldW * lmScale, lmWorldH * lmScale);
-  let lmCtx: CanvasRenderingContext2D | null = null;
-  let lmSource: ImageSource | null = null;
-  if (lmCanvas) {
-    lmCtx = lmCanvas.getContext("2d");
-    lmSource = new ImageSource({ resource: lmCanvas });
-    const lmSprite = new Sprite(new Texture({ source: lmSource }));
-    lmSprite.position.set(lmLeft, lmTop);
-    lmSprite.scale.set(1 / lmScale);
-    lmSprite.blendMode = "multiply";
-    lmSprite.zIndex = 1;
-    lightingContainer.addChild(lmSprite);
-  }
-
   const warmGlow = new Container();
   warmGlow.zIndex = 2;
   lightingContainer.addChild(warmGlow);
@@ -592,28 +541,31 @@ export function createTorchLayer(
   const campHalo = new Sprite(glowTex);
   campHalo.anchor.set(0.5);
   campHalo.position.set(campfirePos.x, campfirePos.y - 26);
-  campHalo.width = 560;
-  campHalo.height = 360;
-  campHalo.tint = 0xff9442;
-  campHalo.alpha = 0.22;
+  campHalo.width = 210;
+  campHalo.height = 115;
+  campHalo.tint = 0xff9646;
+  campHalo.alpha = 0.18;
   campHalo.blendMode = "add";
   warmGlow.addChild(campHalo);
 
   const torchHalos: Sprite[] = [];
+  let postIndex = 0;
 
   for (let i = 0; i < lights.length; i++) {
     const spec = lights[i]!;
     const isWall = Boolean(spec.wall);
-    const zLift = spec.z ?? 36;
-    const scale = isWall ? REALISTIC_TORCH.scaleWall : REALISTIC_TORCH.scalePost;
+    const zLift = spec.z ?? (isWall ? 65 : 48);
 
-    if (!isWall && postGroundTex) {
-      const g = new Sprite(postGroundTex);
-      g.anchor.set(0.5, 19 / 36);
-      g.width = 72;
-      g.height = 36;
-      g.position.set(spec.x, spec.y);
-      groundContainer.addChild(g);
+    if (!isWall) {
+      const postGroundTex = buildPostGroundTexture(null, null, postIndex++);
+      if (postGroundTex) {
+        const g = new Sprite(postGroundTex);
+        g.anchor.set(0.5, 19 / 36);
+        g.width = 72;
+        g.height = 36;
+        g.position.set(spec.x, spec.y);
+        groundContainer.addChild(g);
+      }
     }
 
     const wrap = new Container();
@@ -621,59 +573,57 @@ export function createTorchLayer(
     wrap.zIndex = spec.y + (isWall ? 6 : 2);
 
     if (!isWall) {
-      if (postColTex) {
-        const post = new Sprite(postColTex);
-        post.anchor.set(0.5, 0.92);
-        post.position.set(0, 2);
-        wrap.addChild(post);
-      } else {
-        const post = new Graphics();
-        post.rect(-3, -38, 6, 40).fill(0x3b2a20);
-        wrap.addChild(post);
-      }
+      const post = new Graphics();
+      post
+        .moveTo(0, -zLift + REALISTIC_TORCH.postStart)
+        .lineTo(0, 0)
+        .stroke({
+          color: 0x3b2a20,
+          width: REALISTIC_TORCH.postWidth,
+          cap: "butt",
+        });
+      wrap.addChild(post);
     }
 
     if (bodyFrame) {
       const body = new Sprite(bodyFrame);
       if (hasRealisticTorch) {
-        body.anchor.set(
-          REALISTIC_TORCH.anchorX / REALISTIC_TORCH.srcW,
-          (REALISTIC_TORCH.anchorY - REALISTIC_TORCH.topH) /
-            (REALISTIC_TORCH.srcH - REALISTIC_TORCH.topH),
+        body.anchor.set(0.5, 0);
+        body.position.set(
+          0,
+          -zLift - REALISTIC_TORCH.top + REALISTIC_TORCH.flameHeight,
         );
-        body.scale.set(scale * (spec.side === -1 ? -1 : 1), scale);
-        body.position.set(0, -zLift + 16);
+        body.width = REALISTIC_TORCH.width;
+        body.height = REALISTIC_TORCH.height - REALISTIC_TORCH.flameHeight;
       } else {
         body.anchor.set(0.5, 0.9);
-        body.width = 34;
-        body.height = 54;
+        body.width = 24;
+        body.height = 39;
       }
       wrap.addChild(body);
     }
 
     const glow = new Sprite(glowTex);
     glow.anchor.set(0.5);
-    glow.position.set(0, -zLift);
-    glow.width = 76;
-    glow.height = 76;
-    glow.tint = 0xff8c3b;
-    glow.alpha = 0.34;
+    glow.position.set(0, -zLift - 7);
+    glow.width = 36;
+    glow.height = 36;
+    glow.tint = 0xff9646;
+    glow.alpha = 0.22;
     glow.blendMode = "add";
     wrap.addChild(glow);
 
     const flame = new Sprite(flameTex);
     if (hasRealisticTorch) {
-      flame.anchor.set(
-        REALISTIC_TORCH.anchorX / REALISTIC_TORCH.srcW,
-        REALISTIC_TORCH.anchorY / REALISTIC_TORCH.topH,
-      );
-      flame.scale.set(scale * (spec.side === -1 ? -1 : 1), scale);
-      flame.position.set(0, -zLift + 16);
+      flame.anchor.set(0.5, 0);
+      flame.position.set(0, -zLift - REALISTIC_TORCH.top);
+      flame.width = REALISTIC_TORCH.width;
+      flame.height = REALISTIC_TORCH.flameHeight;
     } else {
       flame.anchor.set(0.5, 0.82);
       flame.position.set(0, -zLift);
-      flame.width = 24;
-      flame.height = 34;
+      flame.width = 18;
+      flame.height = 24;
       flame.tint = 0xffc46b;
       flame.blendMode = "add";
     }
@@ -681,12 +631,11 @@ export function createTorchLayer(
 
     const groundHalo = new Sprite(glowTex);
     groundHalo.anchor.set(0.5);
-    groundHalo.position.set(spec.x, spec.y - zLift * 0.45);
-    const radius = spec.radius ?? spec.r ?? 188;
-    groundHalo.width = radius * 1.65;
-    groundHalo.height = radius * 1.15;
-    groundHalo.tint = 0xff8a36;
-    groundHalo.alpha = 0.14;
+    groundHalo.position.set(spec.x, spec.y);
+    groundHalo.width = 190;
+    groundHalo.height = 104;
+    groundHalo.tint = 0xff9646;
+    groundHalo.alpha = 0.12;
     groundHalo.blendMode = "add";
     warmGlow.addChild(groundHalo);
     torchHalos.push(groundHalo);
@@ -700,82 +649,34 @@ export function createTorchLayer(
     });
   }
 
-  let lastLmKey = "";
   const step = (timeSec: number, daylight: DaylightState) => {
     const lightScale = Math.max(0.18, daylight.lightScale);
     const campFlicker =
-      0.92 +
-      0.08 * Math.sin(timeSec * 7.3) +
-      0.04 * Math.cos(timeSec * 13.1);
-    campHalo.alpha = 0.24 * lightScale * campFlicker;
-    campHalo.width = 560 * campFlicker;
-    campHalo.height = 360 * campFlicker;
+      0.94 +
+      0.04 * Math.sin(timeSec * 7.3) +
+      0.02 * Math.cos(timeSec * 13.1);
+    campHalo.alpha = 0.18 * lightScale * campFlicker;
+    campHalo.width = 210 * campFlicker;
+    campHalo.height = 115 * campFlicker;
 
+    const frameStep = Math.floor((timeSec * 1000) / 160);
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i]!;
       const halo = torchHalos[i]!;
       const w1 = Math.sin(timeSec * 8.5 + node.phase);
       const w2 = Math.cos(timeSec * 14.2 + node.phase * 1.3);
-      const flicker = 0.9 + 0.07 * w1 + 0.04 * w2;
+      const flicker = 0.94 + 0.04 * w1 + 0.02 * w2;
       if (hasRealisticTorch && topFrames.length === 3) {
-        const frameIdx =
-          Math.floor(timeSec * 8.5 + i * 1.3) % topFrames.length;
-        node.flame.texture = topFrames[Math.abs(frameIdx)]!;
-        const isWall = Boolean(node.spec.wall);
-        const sc =
-          (isWall ? REALISTIC_TORCH.scaleWall : REALISTIC_TORCH.scalePost) *
-          (0.96 + 0.05 * w1);
-        node.flame.scale.set(
-          sc * (node.spec.side === -1 ? -1 : 1),
-          sc * flicker,
-        );
+        node.flame.texture = topFrames[Math.abs(frameStep + i) % 3]!;
+        node.flame.width = REALISTIC_TORCH.width;
+        node.flame.height = REALISTIC_TORCH.flameHeight;
       } else {
-        node.flame.height = 34 * flicker;
-        node.flame.width = 24 * (0.94 + 0.06 * w2);
+        node.flame.height = 24 * flicker;
+        node.flame.width = 18 * (0.94 + 0.06 * w2);
         node.flame.alpha = Math.min(1, (0.65 + 0.35 * lightScale) * flicker);
       }
-      node.glow.alpha = 0.32 * lightScale * flicker;
-      halo.alpha = 0.14 * lightScale * flicker;
-    }
-
-    if (lmCtx && lmCanvas && lmSource) {
-      const [ar, ag, ab] = daylight.ambient;
-      const ri = Math.round(ar * 255);
-      const gi = Math.round(ag * 255);
-      const bi = Math.round(ab * 255);
-      const key = `${ri},${gi},${bi},${Math.round(timeSec * 6)}`;
-      if (key !== lastLmKey) {
-        lastLmKey = key;
-        const w = lmCanvas.width;
-        const h = lmCanvas.height;
-        lmCtx.globalCompositeOperation = "source-over";
-        lmCtx.fillStyle = `rgb(${ri}, ${gi}, ${bi})`;
-        lmCtx.fillRect(0, 0, w, h);
-
-        lmCtx.globalCompositeOperation = "lighter";
-        const punch = (wx: number, wy: number, r: number, strength: number) => {
-          const cx = (wx - lmLeft) * lmScale;
-          const cy = (wy - lmTop) * lmScale;
-          const rad = r * lmScale;
-          const g = lmCtx!.createRadialGradient(cx, cy, rad * 0.06, cx, cy, rad);
-          const a = Math.min(1, strength * lightScale);
-          g.addColorStop(0, `rgba(255, 224, 176, ${a.toFixed(3)})`);
-          g.addColorStop(0.45, `rgba(240, 172, 102, ${(a * 0.52).toFixed(3)})`);
-          g.addColorStop(1, "rgba(0, 0, 0, 0)");
-          lmCtx!.fillStyle = g;
-          lmCtx!.beginPath();
-          lmCtx!.arc(cx, cy, rad, 0, Math.PI * 2);
-          lmCtx!.fill();
-        };
-
-        punch(campfirePos.x, campfirePos.y - 22, 340 * campFlicker, 0.78);
-        for (let i = 0; i < nodes.length; i++) {
-          const n = nodes[i]!;
-          const r = (n.spec.radius ?? n.spec.r ?? 188) * 1.05;
-          punch(n.spec.x, n.spec.y - (n.spec.z ?? 36) * 0.5, r, 0.52);
-        }
-        lmSource.update();
-      }
+      node.glow.alpha = 0.22 * lightScale * flicker;
+      halo.alpha = 0.12 * lightScale * flicker;
     }
   };
 

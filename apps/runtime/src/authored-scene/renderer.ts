@@ -278,13 +278,13 @@ const ENV_TEXTURE_SPECS: readonly {
   { key: "/realistic-torch/frame-1.webp", path: "realistic-torch/frame-1.webp", wave: 1 },
   { key: "/realistic-torch/frame-2.webp", path: "realistic-torch/frame-2.webp", wave: 1 },
   { key: "/realistic-torch/frame-3.webp", path: "realistic-torch/frame-3.webp", wave: 1 },
-  { key: "/modular-stronghold/v2/paving-worn.png", path: "modular-stronghold/v2/paving-worn.png", wave: 2 },
-  { key: "/modular-stronghold/v2/snowdrift-edge.png", path: "modular-stronghold/v2/snowdrift-edge.png", wave: 2, useSnowFallback: true },
-  { key: "/modular-stronghold/v2/weeds-edge.png", path: "modular-stronghold/v2/weeds-edge.png", wave: 2 },
-  { key: "/modular-stronghold/v2/fir-young.png", path: "modular-stronghold/v2/fir-young.png", wave: 2 },
-  { key: "/modular-stronghold/v2/spruce-mature.png", path: "modular-stronghold/v2/spruce-mature.png", wave: 2 },
-  { key: "/modular-stronghold/v2/boulders-snow.png", path: "modular-stronghold/v2/boulders-snow.png", wave: 2 },
-  { key: "/modular-stronghold/v2/cliff-snow.png", path: "modular-stronghold/v2/cliff-snow.png", wave: 2 },
+  { key: "/modular-stronghold/v2/paving-worn.png", path: "modular-stronghold/v2/paving-worn.png", wave: 1 },
+  { key: "/modular-stronghold/v2/snowdrift-edge.png", path: "modular-stronghold/v2/snowdrift-edge.png", wave: 1, useSnowFallback: true },
+  { key: "/modular-stronghold/v2/weeds-edge.png", path: "modular-stronghold/v2/weeds-edge.png", wave: 1 },
+  { key: "/modular-stronghold/v2/fir-young.png", path: "modular-stronghold/v2/fir-young.png", wave: 1 },
+  { key: "/modular-stronghold/v2/spruce-mature.png", path: "modular-stronghold/v2/spruce-mature.png", wave: 1 },
+  { key: "/modular-stronghold/v2/boulders-snow.png", path: "modular-stronghold/v2/boulders-snow.png", wave: 1 },
+  { key: "/modular-stronghold/v2/cliff-snow.png", path: "modular-stronghold/v2/cliff-snow.png", wave: 1 },
   { key: "/foundation-transitions/soil-moss.png", path: "foundation-transitions/soil-moss.png", wave: 2 },
   { key: "/foundation-transitions/moss.png", path: "foundation-transitions/moss.png", wave: 2 },
   { key: "/vfx/textures/flame.png", path: "vfx/textures/flame.png", wave: 2 },
@@ -380,6 +380,7 @@ export function loadEnvironmentRuntimeTextures(
 
 type MountedEnvState = {
   env: EnvironmentRuntime;
+  envStage: Container;
   hasTextures: boolean;
   stage1: Container;
   stage2: Container;
@@ -848,6 +849,7 @@ export function sceneGround(
 
   const mounted: MountedEnvState = {
     env,
+    envStage,
     hasTextures,
     stage1,
     stage2,
@@ -869,6 +871,29 @@ export function sceneGround(
 
   syncSceneEnvironment(root, scene.playback?.time ?? 0, options);
   return env;
+}
+
+export function syncEnvironmentViewport(
+  root: Container,
+  screenWidth: number,
+  screenHeight: number,
+): void {
+  const mounted = findMountedState(root);
+  if (!mounted || !mounted.hasTextures) return;
+  const rx = root.position.x;
+  const ry = root.position.y;
+  const rsx = Math.max(0.001, Math.abs(root.scale.x));
+  const rsy = Math.max(0.001, Math.abs(root.scale.y));
+  const ex = mounted.envStage.position.x;
+  const ey = mounted.envStage.position.y;
+  const esx = Math.max(0.001, Math.abs(mounted.envStage.scale.x));
+  const esy = Math.max(0.001, Math.abs(mounted.envStage.scale.y));
+  const viewX = (-rx / rsx - ex) / esx;
+  const viewY = (-ry / rsy - ey) / esy;
+  const viewW = Math.max(1000, screenWidth / (rsx * esx));
+  const viewH = Math.max(800, screenHeight / (rsy * esy));
+  mounted.env.snow.sync(viewX, viewY, viewW, viewH);
+  mounted.env.frontier.cull(viewX, viewY, viewW, viewH, 1024);
 }
 
 export function syncSceneEnvironment(
@@ -896,6 +921,7 @@ export function syncSceneEnvironment(
     mounted.stage5.visible = options.stage5 !== false;
 
     if (mounted.hasTextures) {
+      mounted.env.snow.sprite.tint = env.daylight.tintHex;
       if (mounted.gateSprite && mounted.gateFrames && mounted.gateFrames.length > 0) {
         const p = gateOpen ? 1 : env.gateDoor.progress;
         const idx = Math.max(

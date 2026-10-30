@@ -15,20 +15,18 @@ export function parseBuildingBundle(input:unknown): {instances:Instance[]} {
  return b as {instances:Instance[]};
 }
 export async function loadBuildingScene(app:Application,url:string){
- const label=new Text({text:'Loading building catalog…',style:{fill:0xffffff,fontSize:20}});label.position.set(24,24);app.stage.addChild(label);
- try{
- const response=await fetch(url);if(!response.ok)throw new Error(`Catalog HTTP ${response.status}`);const bundle=parseBuildingBundle(await response.json());
- const root=new Container();
- for(const o of [...bundle.instances].filter(o=>o.visible).sort((a,b)=>a.y-b.y)){
-  const node=new Container();
-  for(const p of o.definition.parts){
-   let visual:Sprite|Graphics;
-   if(p.kind==='pillar')visual=new Graphics().rect(-9,-65,18,60).fill(p.color).rect(-14,-72,28,9).fill(p.color).rect(-14,-8,28,8).fill(p.color);
-   else {visual=new Sprite(await Assets.load(p.asset));visual.anchor.set(.5,.8);visual.width=180;visual.scale.y=visual.scale.x;visual.tint=p.color;}
-   visual.position.set(p.x,p.y);visual.scale.set(visual.scale.x*p.scale,visual.scale.y*p.scale);visual.angle=p.rotation;node.addChild(visual);
-  }
-  node.position.set(o.x/100*app.screen.width,o.y/100*app.screen.height);node.scale.set(o.scale);node.angle=o.rotation;root.addChild(node);
+ const response=await fetch(url);if(!response.ok)throw Error(`Catalog HTTP ${response.status}`);
+ const input=await response.json();
+ if(input.scene?.schema==='arkodia.scene'){
+  const {loadAuthoredScene}=await import('./authored-scene/load');
+  return loadAuthoredScene(app,url);
  }
- app.stage.addChild(root);label.text=`Building catalog · ${bundle.instances.length} instances`;app.stage.addChild(label);
- }catch(e){label.text=`Unable to load building catalog: ${String(e)}`;}
+ const bundle=parseBuildingBundle(input);
+ const {WORLD,placementProfile}=await import('./authored-scene/scene');
+ const {createSceneNode,resizeScene,sceneGround}=await import('./authored-scene/renderer');
+ const scene={schema:'arkodia.scene' as const,version:1 as const,coordinateSystem:'percent-projected-world/pixel-local' as const,world:{...WORLD},instances:bundle.instances.map(o=>({...o,asset:'',category:'Buildings',definition:{id:o.id,name:o.name,parts:o.definition.parts.map(p=>({...p,presentation:placementProfile({asset:p.asset,category:'Buildings'})}))}}))};
+ const root=new Container();sceneGround(root,scene);
+ for(const o of scene.instances.filter(o=>o.visible))root.addChild(await createSceneNode(o));
+ resizeScene(root,app.screen.width,app.screen.height,scene);app.stage.addChild(root);
+ app.renderer.on('resize',()=>resizeScene(root,app.screen.width,app.screen.height,scene));
 }

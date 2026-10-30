@@ -1,0 +1,2738 @@
+{
+  "editorURL": "http://127.0.0.1:3210",
+  "runtimeURL": "http://127.0.0.1:3211",
+  "checks": [
+    "All 13 types and frame3: editor/game actual Pixi nodes match assets/hashes, position, anchor/pivot, matrix, scale, rotation, depth, tint and animation frame",
+    "Independent Duplicate: editor/game actual Pixi nodes match assets/hashes, position, anchor/pivot, matrix, scale, rotation, depth, tint and animation frame",
+    "Captured drag and undo/redo: editor/game actual Pixi nodes match assets/hashes, position, anchor/pivot, matrix, scale, rotation, depth, tint and animation frame",
+    "Persisted reload: editor/game actual Pixi nodes match assets/hashes, position, anchor/pivot, matrix, scale, rotation, depth, tint and animation frame"
+  ],
+  "snapshots": [
+    {
+      "label": "All 13 types and frame3",
+      "time": 0.125,
+      "objectCount": 13,
+      "nodes": [
+        {
+          "id": "parity-0",
+          "name": "Stone Gateway 1",
+          "category": "Buildings",
+          "position": [
+            150,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/gateway-grand.png",
+              "sha256": "e9bc3e4dd91c285ca8e0492424381865bc5c50368e3dd9647dc8f99ada1217c5",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15,
+                0,
+                0,
+                0.15,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                749
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-1",
+          "name": "Broken Wall 1",
+          "category": "Buildings",
+          "position": [
+            320,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/wall-broken.png",
+              "sha256": "44d1f72647c617d689f312a20f63cee9e83fdb5a53f9f43113b955945304b84f",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15,
+                0,
+                0,
+                0.15,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                772
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-2",
+          "name": "Bastion 1",
+          "category": "Buildings",
+          "position": [
+            490,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/bastion.png",
+              "sha256": "8ee7464dd8aa064c839ebdf547646464b7259d2bc424cfc4e20f7ebe287f4874",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.16574585635359115,
+                0,
+                0,
+                0.16574585635359115,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1086,
+                970
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-3",
+          "name": "Stronghold Core 1",
+          "category": "Buildings",
+          "position": [
+            660,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/core.png",
+              "sha256": "728e699ad8ff18cedf0e6387c9e9d8d6efd629cb0acc1a185994d618efc09fda",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.125,
+                0,
+                0,
+                0.125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1440,
+                1440
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-4",
+          "name": "Brazier 1",
+          "category": "Props",
+          "position": [
+            830,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 14.999999999999998,
+          "pivot": [
+            3,
+            5
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/brazier.png",
+              "sha256": "ce0bba103743e9cfbfe279df9acd9532510326f7c1a982b2a3f783435019998e",
+              "anchor": [
+                0.5,
+                0.9
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15126050420168066,
+                0,
+                0,
+                0.15126050420168066,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                595,
+                893
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-5",
+          "name": "Ancient Spruce 1",
+          "category": "Props",
+          "position": [
+            150,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/spruce-mature.png",
+              "sha256": "62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.19845644983461963,
+                0,
+                0,
+                0.19845644983461963,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                907,
+                1200
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-6",
+          "name": "Warm Paving 1",
+          "category": "Ground",
+          "position": [
+            320,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -9664,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+              "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.064453125,
+                0.0322265625,
+                -0.064453125,
+                0.03222656250000001,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1024,
+                1024
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-7",
+          "name": "Player Spawn 1",
+          "category": "Spawns",
+          "position": [
+            490,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -664,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/flame.png",
+              "sha256": "aa93948883ee9b1f33abda74a878b5ab15f860de24599fc364e7cdad096c0a2f",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.11702127659574468,
+                0.05851063829787234,
+                -0.11702127659574468,
+                0.058510638297872355,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                188,
+                188
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-8",
+          "name": "Forge 1",
+          "category": "Buildings",
+          "position": [
+            660,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/forge.png",
+              "sha256": "bd066d0cc3822b95307da730d381821227dae43cc1f118becec84a952e68b11e",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.28125,
+                0,
+                0,
+                0.28125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                640,
+                492
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-9",
+          "name": "Barracks 1",
+          "category": "Buildings",
+          "position": [
+            830,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/barracks.png",
+              "sha256": "2b32f626beb08663dd5f778084941ae2c3bd6ae767e3e9d378da7c2f3bb6ae68",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.28125,
+                0,
+                0,
+                0.28125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                640,
+                407
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-10",
+          "name": "Snow Cliff 1",
+          "category": "Cliffs",
+          "position": [
+            150,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 532,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/cliff-snow.png",
+              "sha256": "5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.26666666666666666,
+                0,
+                0,
+                0.26666666666666666,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                595
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-11",
+          "name": "Water Surface 1",
+          "category": "Water",
+          "position": [
+            320,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -9468,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+              "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.064453125,
+                0.0322265625,
+                -0.064453125,
+                0.03222656250000001,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1024,
+                1024
+              ],
+              "tint": 5739690
+            }
+          ]
+        },
+        {
+          "id": "parity-12",
+          "name": "Animated Gate 1",
+          "category": "Buildings",
+          "position": [
+            490,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 532,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/gate-sheet.png",
+              "sha256": "ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.3515625,
+                0,
+                0,
+                0.3515625,
+                0,
+                0
+              ],
+              "frame": [
+                1536,
+                0,
+                512,
+                256
+              ],
+              "tint": 16777215
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Independent Duplicate",
+      "time": 0.125,
+      "objectCount": 14,
+      "nodes": [
+        {
+          "id": "parity-0",
+          "name": "Stone Gateway 1",
+          "category": "Buildings",
+          "position": [
+            150,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/gateway-grand.png",
+              "sha256": "e9bc3e4dd91c285ca8e0492424381865bc5c50368e3dd9647dc8f99ada1217c5",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15,
+                0,
+                0,
+                0.15,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                749
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-1",
+          "name": "Broken Wall 1",
+          "category": "Buildings",
+          "position": [
+            320,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/wall-broken.png",
+              "sha256": "44d1f72647c617d689f312a20f63cee9e83fdb5a53f9f43113b955945304b84f",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15,
+                0,
+                0,
+                0.15,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                772
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-2",
+          "name": "Bastion 1",
+          "category": "Buildings",
+          "position": [
+            490,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/bastion.png",
+              "sha256": "8ee7464dd8aa064c839ebdf547646464b7259d2bc424cfc4e20f7ebe287f4874",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.16574585635359115,
+                0,
+                0,
+                0.16574585635359115,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1086,
+                970
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-3",
+          "name": "Stronghold Core 1",
+          "category": "Buildings",
+          "position": [
+            660,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/core.png",
+              "sha256": "728e699ad8ff18cedf0e6387c9e9d8d6efd629cb0acc1a185994d618efc09fda",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.125,
+                0,
+                0,
+                0.125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1440,
+                1440
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-4",
+          "name": "Brazier 1",
+          "category": "Props",
+          "position": [
+            830,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 14.999999999999998,
+          "pivot": [
+            3,
+            5
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/brazier.png",
+              "sha256": "ce0bba103743e9cfbfe279df9acd9532510326f7c1a982b2a3f783435019998e",
+              "anchor": [
+                0.5,
+                0.9
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15126050420168066,
+                0,
+                0,
+                0.15126050420168066,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                595,
+                893
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "f53b8fb4-4df8-4dd5-af74-f7f155f8f3c5",
+          "name": "Brazier 2",
+          "category": "Props",
+          "position": [
+            870,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 14.999999999999998,
+          "pivot": [
+            3,
+            5
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "b2b61623-b4df-4b62-a23d-fdbd2688b3d8",
+              "asset": "https://editor.arkodia.online/assets/brazier.png",
+              "sha256": "ce0bba103743e9cfbfe279df9acd9532510326f7c1a982b2a3f783435019998e",
+              "anchor": [
+                0.5,
+                0.9
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15126050420168066,
+                0,
+                0,
+                0.15126050420168066,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                595,
+                893
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-5",
+          "name": "Ancient Spruce 1",
+          "category": "Props",
+          "position": [
+            150,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/spruce-mature.png",
+              "sha256": "62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.19845644983461963,
+                0,
+                0,
+                0.19845644983461963,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                907,
+                1200
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-6",
+          "name": "Warm Paving 1",
+          "category": "Ground",
+          "position": [
+            320,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -9664,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+              "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.064453125,
+                0.0322265625,
+                -0.064453125,
+                0.03222656250000001,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1024,
+                1024
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-7",
+          "name": "Player Spawn 1",
+          "category": "Spawns",
+          "position": [
+            490,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -664,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/flame.png",
+              "sha256": "aa93948883ee9b1f33abda74a878b5ab15f860de24599fc364e7cdad096c0a2f",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.11702127659574468,
+                0.05851063829787234,
+                -0.11702127659574468,
+                0.058510638297872355,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                188,
+                188
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-8",
+          "name": "Forge 1",
+          "category": "Buildings",
+          "position": [
+            660,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/forge.png",
+              "sha256": "bd066d0cc3822b95307da730d381821227dae43cc1f118becec84a952e68b11e",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.28125,
+                0,
+                0,
+                0.28125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                640,
+                492
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-9",
+          "name": "Barracks 1",
+          "category": "Buildings",
+          "position": [
+            830,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/barracks.png",
+              "sha256": "2b32f626beb08663dd5f778084941ae2c3bd6ae767e3e9d378da7c2f3bb6ae68",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.28125,
+                0,
+                0,
+                0.28125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                640,
+                407
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-10",
+          "name": "Snow Cliff 1",
+          "category": "Cliffs",
+          "position": [
+            150,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 532,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/cliff-snow.png",
+              "sha256": "5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.26666666666666666,
+                0,
+                0,
+                0.26666666666666666,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                595
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-11",
+          "name": "Water Surface 1",
+          "category": "Water",
+          "position": [
+            320,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -9468,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+              "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.064453125,
+                0.0322265625,
+                -0.064453125,
+                0.03222656250000001,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1024,
+                1024
+              ],
+              "tint": 5739690
+            }
+          ]
+        },
+        {
+          "id": "parity-12",
+          "name": "Animated Gate 1",
+          "category": "Buildings",
+          "position": [
+            490,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 532,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/gate-sheet.png",
+              "sha256": "ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.3515625,
+                0,
+                0,
+                0.3515625,
+                0,
+                0
+              ],
+              "frame": [
+                1536,
+                0,
+                512,
+                256
+              ],
+              "tint": 16777215
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Captured drag and undo/redo",
+      "time": 0.125,
+      "objectCount": 14,
+      "nodes": [
+        {
+          "id": "parity-0",
+          "name": "Stone Gateway 1",
+          "category": "Buildings",
+          "position": [
+            150,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/gateway-grand.png",
+              "sha256": "e9bc3e4dd91c285ca8e0492424381865bc5c50368e3dd9647dc8f99ada1217c5",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15,
+                0,
+                0,
+                0.15,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                749
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-1",
+          "name": "Broken Wall 1",
+          "category": "Buildings",
+          "position": [
+            320,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/wall-broken.png",
+              "sha256": "44d1f72647c617d689f312a20f63cee9e83fdb5a53f9f43113b955945304b84f",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15,
+                0,
+                0,
+                0.15,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                772
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-2",
+          "name": "Bastion 1",
+          "category": "Buildings",
+          "position": [
+            490,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/bastion.png",
+              "sha256": "8ee7464dd8aa064c839ebdf547646464b7259d2bc424cfc4e20f7ebe287f4874",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.16574585635359115,
+                0,
+                0,
+                0.16574585635359115,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1086,
+                970
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-3",
+          "name": "Stronghold Core 1",
+          "category": "Buildings",
+          "position": [
+            660,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/core.png",
+              "sha256": "728e699ad8ff18cedf0e6387c9e9d8d6efd629cb0acc1a185994d618efc09fda",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.125,
+                0,
+                0,
+                0.125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1440,
+                1440
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-4",
+          "name": "Brazier 1",
+          "category": "Props",
+          "position": [
+            830,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 14.999999999999998,
+          "pivot": [
+            3,
+            5
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/brazier.png",
+              "sha256": "ce0bba103743e9cfbfe279df9acd9532510326f7c1a982b2a3f783435019998e",
+              "anchor": [
+                0.5,
+                0.9
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15126050420168066,
+                0,
+                0,
+                0.15126050420168066,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                595,
+                893
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "f53b8fb4-4df8-4dd5-af74-f7f155f8f3c5",
+          "name": "Brazier 2",
+          "category": "Props",
+          "position": [
+            900,
+            168
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 14.999999999999998,
+          "pivot": [
+            3,
+            5
+          ],
+          "depth": 168,
+          "parts": [
+            {
+              "id": "b2b61623-b4df-4b62-a23d-fdbd2688b3d8",
+              "asset": "https://editor.arkodia.online/assets/brazier.png",
+              "sha256": "ce0bba103743e9cfbfe279df9acd9532510326f7c1a982b2a3f783435019998e",
+              "anchor": [
+                0.5,
+                0.9
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15126050420168066,
+                0,
+                0,
+                0.15126050420168066,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                595,
+                893
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-5",
+          "name": "Ancient Spruce 1",
+          "category": "Props",
+          "position": [
+            150,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/spruce-mature.png",
+              "sha256": "62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.19845644983461963,
+                0,
+                0,
+                0.19845644983461963,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                907,
+                1200
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-6",
+          "name": "Warm Paving 1",
+          "category": "Ground",
+          "position": [
+            320,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -9664,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+              "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.064453125,
+                0.0322265625,
+                -0.064453125,
+                0.03222656250000001,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1024,
+                1024
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-7",
+          "name": "Player Spawn 1",
+          "category": "Spawns",
+          "position": [
+            490,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -664,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/flame.png",
+              "sha256": "aa93948883ee9b1f33abda74a878b5ab15f860de24599fc364e7cdad096c0a2f",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.11702127659574468,
+                0.05851063829787234,
+                -0.11702127659574468,
+                0.058510638297872355,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                188,
+                188
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-8",
+          "name": "Forge 1",
+          "category": "Buildings",
+          "position": [
+            660,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/forge.png",
+              "sha256": "bd066d0cc3822b95307da730d381821227dae43cc1f118becec84a952e68b11e",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.28125,
+                0,
+                0,
+                0.28125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                640,
+                492
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-9",
+          "name": "Barracks 1",
+          "category": "Buildings",
+          "position": [
+            830,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/barracks.png",
+              "sha256": "2b32f626beb08663dd5f778084941ae2c3bd6ae767e3e9d378da7c2f3bb6ae68",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.28125,
+                0,
+                0,
+                0.28125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                640,
+                407
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-10",
+          "name": "Snow Cliff 1",
+          "category": "Cliffs",
+          "position": [
+            150,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 532,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/cliff-snow.png",
+              "sha256": "5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.26666666666666666,
+                0,
+                0,
+                0.26666666666666666,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                595
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-11",
+          "name": "Water Surface 1",
+          "category": "Water",
+          "position": [
+            320,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -9468,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+              "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.064453125,
+                0.0322265625,
+                -0.064453125,
+                0.03222656250000001,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1024,
+                1024
+              ],
+              "tint": 5739690
+            }
+          ]
+        },
+        {
+          "id": "parity-12",
+          "name": "Animated Gate 1",
+          "category": "Buildings",
+          "position": [
+            490,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 532,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/gate-sheet.png",
+              "sha256": "ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.3515625,
+                0,
+                0,
+                0.3515625,
+                0,
+                0
+              ],
+              "frame": [
+                1536,
+                0,
+                512,
+                256
+              ],
+              "tint": 16777215
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Persisted reload",
+      "time": 0,
+      "objectCount": 14,
+      "nodes": [
+        {
+          "id": "parity-0",
+          "name": "Stone Gateway 1",
+          "category": "Buildings",
+          "position": [
+            150,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/gateway-grand.png",
+              "sha256": "e9bc3e4dd91c285ca8e0492424381865bc5c50368e3dd9647dc8f99ada1217c5",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15,
+                0,
+                0,
+                0.15,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                749
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-1",
+          "name": "Broken Wall 1",
+          "category": "Buildings",
+          "position": [
+            320,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/wall-broken.png",
+              "sha256": "44d1f72647c617d689f312a20f63cee9e83fdb5a53f9f43113b955945304b84f",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15,
+                0,
+                0,
+                0.15,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                772
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-2",
+          "name": "Bastion 1",
+          "category": "Buildings",
+          "position": [
+            490,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/bastion.png",
+              "sha256": "8ee7464dd8aa064c839ebdf547646464b7259d2bc424cfc4e20f7ebe287f4874",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.16574585635359115,
+                0,
+                0,
+                0.16574585635359115,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1086,
+                970
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-3",
+          "name": "Stronghold Core 1",
+          "category": "Buildings",
+          "position": [
+            660,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/core.png",
+              "sha256": "728e699ad8ff18cedf0e6387c9e9d8d6efd629cb0acc1a185994d618efc09fda",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.125,
+                0,
+                0,
+                0.125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1440,
+                1440
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-4",
+          "name": "Brazier 1",
+          "category": "Props",
+          "position": [
+            830,
+            140
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 14.999999999999998,
+          "pivot": [
+            3,
+            5
+          ],
+          "depth": 140,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/brazier.png",
+              "sha256": "ce0bba103743e9cfbfe279df9acd9532510326f7c1a982b2a3f783435019998e",
+              "anchor": [
+                0.5,
+                0.9
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15126050420168066,
+                0,
+                0,
+                0.15126050420168066,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                595,
+                893
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "f53b8fb4-4df8-4dd5-af74-f7f155f8f3c5",
+          "name": "Brazier 2",
+          "category": "Props",
+          "position": [
+            900,
+            168
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 14.999999999999998,
+          "pivot": [
+            3,
+            5
+          ],
+          "depth": 168,
+          "parts": [
+            {
+              "id": "b2b61623-b4df-4b62-a23d-fdbd2688b3d8",
+              "asset": "https://editor.arkodia.online/assets/brazier.png",
+              "sha256": "ce0bba103743e9cfbfe279df9acd9532510326f7c1a982b2a3f783435019998e",
+              "anchor": [
+                0.5,
+                0.9
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.15126050420168066,
+                0,
+                0,
+                0.15126050420168066,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                595,
+                893
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-5",
+          "name": "Ancient Spruce 1",
+          "category": "Props",
+          "position": [
+            150,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/spruce-mature.png",
+              "sha256": "62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.19845644983461963,
+                0,
+                0,
+                0.19845644983461963,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                907,
+                1200
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-6",
+          "name": "Warm Paving 1",
+          "category": "Ground",
+          "position": [
+            320,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -9664,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+              "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.064453125,
+                0.0322265625,
+                -0.064453125,
+                0.03222656250000001,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1024,
+                1024
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-7",
+          "name": "Player Spawn 1",
+          "category": "Spawns",
+          "position": [
+            490,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -664,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/flame.png",
+              "sha256": "aa93948883ee9b1f33abda74a878b5ab15f860de24599fc364e7cdad096c0a2f",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.11702127659574468,
+                0.05851063829787234,
+                -0.11702127659574468,
+                0.058510638297872355,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                188,
+                188
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-8",
+          "name": "Forge 1",
+          "category": "Buildings",
+          "position": [
+            660,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/forge.png",
+              "sha256": "bd066d0cc3822b95307da730d381821227dae43cc1f118becec84a952e68b11e",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.28125,
+                0,
+                0,
+                0.28125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                640,
+                492
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-9",
+          "name": "Barracks 1",
+          "category": "Buildings",
+          "position": [
+            830,
+            336
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 336,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/barracks.png",
+              "sha256": "2b32f626beb08663dd5f778084941ae2c3bd6ae767e3e9d378da7c2f3bb6ae68",
+              "anchor": [
+                0.5,
+                0.8
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.28125,
+                0,
+                0,
+                0.28125,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                640,
+                407
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-10",
+          "name": "Snow Cliff 1",
+          "category": "Cliffs",
+          "position": [
+            150,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 532,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/cliff-snow.png",
+              "sha256": "5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.26666666666666666,
+                0,
+                0,
+                0.26666666666666666,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1200,
+                595
+              ],
+              "tint": 16777215
+            }
+          ]
+        },
+        {
+          "id": "parity-11",
+          "name": "Water Surface 1",
+          "category": "Water",
+          "position": [
+            320,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": -9468,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+              "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4",
+              "anchor": [
+                0.5,
+                0.5
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.064453125,
+                0.0322265625,
+                -0.064453125,
+                0.03222656250000001,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                1024,
+                1024
+              ],
+              "tint": 5739690
+            }
+          ]
+        },
+        {
+          "id": "parity-12",
+          "name": "Animated Gate 1",
+          "category": "Buildings",
+          "position": [
+            490,
+            532
+          ],
+          "scale": [
+            0.8,
+            0.8
+          ],
+          "rotation": 0,
+          "pivot": [
+            0,
+            0
+          ],
+          "depth": 532,
+          "parts": [
+            {
+              "id": "base",
+              "asset": "https://editor.arkodia.online/assets/gate-sheet.png",
+              "sha256": "ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a",
+              "anchor": [
+                0.5,
+                0.97
+              ],
+              "pivot": [
+                0,
+                0
+              ],
+              "matrix": [
+                0.3515625,
+                0,
+                0,
+                0.3515625,
+                0,
+                0
+              ],
+              "frame": [
+                0,
+                0,
+                512,
+                256
+              ],
+              "tint": 16777215
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "complete": true,
+  "network_mode": "Local production builds; editor-origin asset requests to game routed to the exact local asset bytes and verified by SHA-256. Production hosting is verified separately."
+}

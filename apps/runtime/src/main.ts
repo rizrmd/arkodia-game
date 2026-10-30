@@ -1,4 +1,14 @@
 import "pixi.js/unsafe-eval";
+const sceneUrl = new URLSearchParams(location.search).get("scene");
+const inlineScene = new URLSearchParams(location.hash.slice(1)).get("scene");
+if (sceneUrl || inlineScene) {
+  const { Application } = await import("pixi.js");
+  const { loadAuthoredScene } = await import("./authored-scene/load");
+  const app = new Application();
+  await app.init({resizeTo:window,background:0x202c2b,preference:"webgl",antialias:true});
+  document.body.appendChild(app.canvas);app.canvas.setAttribute("aria-busy","true");
+  await loadAuthoredScene(app,sceneUrl ?? "",inlineScene ?? undefined);
+} else {
 const buildingCatalog = new URLSearchParams(location.search).get("buildingCatalog");
 if (buildingCatalog) {
   const { Application } = await import("pixi.js");
@@ -12,3 +22,5 @@ if (buildingCatalog) {
 if (new URLSearchParams(location.search).get("channel") === "runtime-demo")
   await import("./demo");
 else await import("./stronghold-main");
+
+}

@@ -1,0 +1,819 @@
+{
+  "schema": "arkodia.scene",
+  "version": 1,
+  "coordinateSystem": "percent-projected-world/pixel-local",
+  "world": {
+    "width": 1000,
+    "height": 700,
+    "rotation": 0,
+    "projection": "2:1"
+  },
+  "instances": [
+    {
+      "name": "Stone Gateway 1",
+      "asset": "gateway-grand.png",
+      "category": "Buildings",
+      "id": "parity-0",
+      "x": 15,
+      "y": 20,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "gateway-grand.png",
+        "name": "Stone Gateway",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/gateway-grand.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Buildings",
+            "presentation": {
+              "width": 180,
+              "anchorY": 0.8,
+              "footprint": [
+                5,
+                4
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "e9bc3e4dd91c285ca8e0492424381865bc5c50368e3dd9647dc8f99ada1217c5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Broken Wall 1",
+      "asset": "wall-broken.png",
+      "category": "Buildings",
+      "id": "parity-1",
+      "x": 32,
+      "y": 20,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "wall-broken.png",
+        "name": "Broken Wall",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/wall-broken.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Buildings",
+            "presentation": {
+              "width": 180,
+              "anchorY": 0.8,
+              "footprint": [
+                4,
+                1
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "44d1f72647c617d689f312a20f63cee9e83fdb5a53f9f43113b955945304b84f"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Bastion 1",
+      "asset": "bastion.png",
+      "category": "Buildings",
+      "id": "parity-2",
+      "x": 49,
+      "y": 20,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "bastion.png",
+        "name": "Bastion",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/bastion.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Buildings",
+            "presentation": {
+              "width": 180,
+              "anchorY": 0.8,
+              "footprint": [
+                2,
+                2
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "8ee7464dd8aa064c839ebdf547646464b7259d2bc424cfc4e20f7ebe287f4874"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Stronghold Core 1",
+      "asset": "core.png",
+      "category": "Buildings",
+      "id": "parity-3",
+      "x": 66,
+      "y": 20,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "core.png",
+        "name": "Stronghold Core",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/core.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Buildings",
+            "presentation": {
+              "width": 180,
+              "anchorY": 0.8,
+              "footprint": [
+                3,
+                3
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "728e699ad8ff18cedf0e6387c9e9d8d6efd629cb0acc1a185994d618efc09fda"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Brazier 1",
+      "asset": "brazier.png",
+      "category": "Props",
+      "id": "parity-4",
+      "x": 83,
+      "y": 20,
+      "scale": 0.8,
+      "rotation": 15,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 3,
+        "y": 5
+      },
+      "definition": {
+        "id": "parity-4",
+        "name": "Brazier 1",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Brazier 1",
+            "kind": "sprite",
+            "asset": "https://editor.arkodia.online/assets/brazier.png",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Props",
+            "presentation": {
+              "width": 90,
+              "anchorY": 0.9,
+              "footprint": [
+                4,
+                2
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "ce0bba103743e9cfbfe279df9acd9532510326f7c1a982b2a3f783435019998e"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Ancient Spruce 1",
+      "asset": "spruce-mature.png",
+      "category": "Props",
+      "id": "parity-5",
+      "x": 15,
+      "y": 48,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "parity-5",
+        "name": "Ancient Spruce 1",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Ancient Spruce 1",
+            "kind": "sprite",
+            "asset": "https://editor.arkodia.online/assets/spruce-mature.png",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Props",
+            "presentation": {
+              "width": 180,
+              "anchorY": 0.97,
+              "footprint": [
+                3,
+                2
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "62fa1afd990a9c8577ae1c59c0b2cff2792b68863a435c616a2e10aa32972ccf"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Warm Paving 1",
+      "asset": "paving-warm-texture.png",
+      "category": "Ground",
+      "id": "parity-6",
+      "x": 32,
+      "y": 48,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "parity-6",
+        "name": "Warm Paving 1",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Warm Paving 1",
+            "kind": "sprite",
+            "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Ground",
+            "presentation": {
+              "width": 132,
+              "anchorY": 0.5,
+              "footprint": [
+                6,
+                6
+              ],
+              "plane": true,
+              "layer": -10000
+            },
+            "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Player Spawn 1",
+      "asset": "flame.png",
+      "category": "Spawns",
+      "id": "parity-7",
+      "x": 49,
+      "y": 48,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "parity-7",
+        "name": "Player Spawn 1",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Player Spawn 1",
+            "kind": "sprite",
+            "asset": "https://editor.arkodia.online/assets/flame.png",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Spawns",
+            "presentation": {
+              "width": 44,
+              "anchorY": 0.5,
+              "footprint": [
+                2,
+                2
+              ],
+              "plane": true,
+              "layer": -1000
+            },
+            "sha256": "aa93948883ee9b1f33abda74a878b5ab15f860de24599fc364e7cdad096c0a2f"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Forge 1",
+      "asset": "forge.png",
+      "category": "Buildings",
+      "id": "parity-8",
+      "x": 66,
+      "y": 48,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "forge.png",
+        "name": "Forge",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/forge.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Buildings",
+            "presentation": {
+              "width": 180,
+              "anchorY": 0.8,
+              "footprint": [
+                3,
+                3
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "bd066d0cc3822b95307da730d381821227dae43cc1f118becec84a952e68b11e"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Barracks 1",
+      "asset": "barracks.png",
+      "category": "Buildings",
+      "id": "parity-9",
+      "x": 83,
+      "y": 48,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "barracks.png",
+        "name": "Barracks",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/barracks.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Buildings",
+            "presentation": {
+              "width": 180,
+              "anchorY": 0.8,
+              "footprint": [
+                4,
+                3
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "2b32f626beb08663dd5f778084941ae2c3bd6ae767e3e9d378da7c2f3bb6ae68"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Snow Cliff 1",
+      "asset": "cliff-snow.png",
+      "category": "Cliffs",
+      "id": "parity-10",
+      "x": 15,
+      "y": 76,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "parity-10",
+        "name": "Snow Cliff 1",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Snow Cliff 1",
+            "kind": "sprite",
+            "asset": "https://editor.arkodia.online/assets/cliff-snow.png",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Cliffs",
+            "presentation": {
+              "width": 320,
+              "anchorY": 0.97,
+              "footprint": [
+                6,
+                3
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "5d10641d7f27c9dbc53c0fb48000ea5a58a7e8fb29dd07e1ca8e36f83b471561"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Water Surface 1",
+      "asset": "paving-warm-texture.png",
+      "category": "Water",
+      "id": "parity-11",
+      "x": 32,
+      "y": 76,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "parity-11",
+        "name": "Water Surface 1",
+        "parts": [
+          {
+            "id": "base",
+            "name": "Water Surface 1",
+            "kind": "sprite",
+            "asset": "https://editor.arkodia.online/assets/paving-warm-texture.png",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#5794aa",
+            "category": "Water",
+            "presentation": {
+              "width": 132,
+              "anchorY": 0.5,
+              "footprint": [
+                6,
+                6
+              ],
+              "plane": true,
+              "layer": -10000
+            },
+            "sha256": "95774e2d60ca187fa2d835df0b384e2e403f01af58f4088d37e92e7ef40817f4"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Animated Gate 1",
+      "asset": "gate-sheet.png",
+      "category": "Buildings",
+      "animation": {
+        "fps": 24,
+        "loop": true,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 512,
+            "y": 0,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 1024,
+            "y": 0,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 1536,
+            "y": 0,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 0,
+            "y": 256,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 512,
+            "y": 256,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 1024,
+            "y": 256,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 1536,
+            "y": 256,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 0,
+            "y": 512,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 512,
+            "y": 512,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 1024,
+            "y": 512,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 1536,
+            "y": 512,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 0,
+            "y": 768,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 512,
+            "y": 768,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 1024,
+            "y": 768,
+            "width": 512,
+            "height": 256
+          },
+          {
+            "x": 1536,
+            "y": 768,
+            "width": 512,
+            "height": 256
+          }
+        ]
+      },
+      "id": "parity-12",
+      "x": 49,
+      "y": 76,
+      "scale": 0.8,
+      "rotation": 0,
+      "visible": true,
+      "locked": false,
+      "collision": true,
+      "pivot": {
+        "x": 0,
+        "y": 0
+      },
+      "definition": {
+        "id": "gate-sheet.png",
+        "name": "Animated Gate",
+        "parts": [
+          {
+            "animation": {
+              "fps": 24,
+              "loop": true,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 1536,
+                  "y": 0,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 0,
+                  "y": 256,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 512,
+                  "y": 256,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 1024,
+                  "y": 256,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 1536,
+                  "y": 256,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 1536,
+                  "y": 512,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 0,
+                  "y": 768,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 512,
+                  "y": 768,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 1024,
+                  "y": 768,
+                  "width": 512,
+                  "height": 256
+                },
+                {
+                  "x": 1536,
+                  "y": 768,
+                  "width": 512,
+                  "height": 256
+                }
+              ]
+            },
+            "id": "base",
+            "name": "Original artwork",
+            "asset": "https://editor.arkodia.online/assets/gate-sheet.png",
+            "kind": "sprite",
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "rotation": 0,
+            "color": "#ffffff",
+            "category": "Buildings",
+            "presentation": {
+              "width": 180,
+              "anchorY": 0.97,
+              "footprint": [
+                5,
+                2
+              ],
+              "plane": false,
+              "layer": 0
+            },
+            "sha256": "ab084ec3b7047047c49c0f76212d6216db0c34c4cb297fc0817a657a29be803a"
+          }
+        ]
+      }
+    }
+  ],
+  "playback": {
+    "playing": false,
+    "time": 0.125
+  }
+}

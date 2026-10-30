@@ -10,6 +10,7 @@ import {
 import type { Resources, Prop } from "./resources";
 import type { HeroId } from "./heroes";
 import { strongholdCollision, walkStep } from "./collision";
+import { applyNativeProp } from "../authored-scene/renderer";
 import { createAutoWalk } from "../navigation";
 export class StrongholdWorld {
   world = new Container();
@@ -182,13 +183,8 @@ export class StrongholdWorld {
     });
   }
   private prop(p: Prop) {
-    const t = this.resources.texture(p.file),
-      s = new Sprite(t),
-      scale = p.width / t.width;
-    s.anchor.set(0.5, p.foot);
-    s.setFromMatrix(
-      new Matrix(scale, scale * p.shear, 0, scale * p.vertical, p.x, p.y),
-    );
+    const s = new Sprite(this.resources.texture(p.file));
+    applyNativeProp(s,p);
     s.zIndex = p.layer === "ground" ? -10000 : p.depth;
     this.objects.addChild(s);
   }

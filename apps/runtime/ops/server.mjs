@@ -39,7 +39,7 @@ export const server = http.createServer(async (req, res) => {
         res.end();
         return;
       }
-      const r = await fetch("https://content.arkodia.online" + upstream, {
+      const r = await fetch("https://arkodia-content-api-arkodia.fural.space" + upstream, {
         signal: AbortSignal.timeout(20000),
         redirect: "error",
       });

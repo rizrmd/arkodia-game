@@ -55,3 +55,10 @@ After committing/pushing, run `fural-agent repos ship RP3eb264b054cb2f6cb1e1e0bf
 ## Subsequent work
 
 No collisions/pathfinding, combat, multiplayer/server authority, inventory/economy, editor integration, chunk streaming, v2 adapters, full character state machine, VFX player, accessibility DOM bridge, legacy migration or production player saves are implemented. Keyboard and pointer interaction plus one animated scene are the acceptance slice. Headless audio checks prove decoding/context and toggle state; human listening remains useful for soundtrack quality.
+
+
+## Authored editor scene parity
+
+The active app accepts `?scene=ENCODED_JSON_URL` or `#scene=ENCODED_JSON` from the editor's Open scene in game runtime action. `authored-scene` validates and renders every Scene hierarchy category with the shared canonical renderer, texture SHA-256 checks, a fitted 1000×700 world, 2:1 ground projection, and spritesheet playback. The published Stronghold remains the default scene and uses the same native prop matrix kernel. See [concrete cross-runtime evidence](../../docs/runtime/SCENE-PARITY.md).
+
+The public-read gateway now uses the active platform Content API hostname `https://arkodia-content-api-arkodia.fural.space`; the previous content vanity hostname was returning404. Deployment uses checksummed immutable artifact activation through the supported Fural serve/exec workflow, with no dependency on the retired runtime sandbox ID.

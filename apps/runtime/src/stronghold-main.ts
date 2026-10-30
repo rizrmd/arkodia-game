@@ -233,7 +233,7 @@ async function enter(hero: HeroId) {
   input.keys.clear();
   world?.destroy();
   world = new StrongholdWorld(resources!, hero, heroRenderer);
-  stage.addChild(world.world);
+  stage.addChild(world.world, world.environment.biomeParallax.container);
   state = "ready";
   draw();
 }
@@ -442,6 +442,7 @@ Object.defineProperty(window, "__ARKODIA_RUNTIME__", {
     hero3d: world?.diagnostics(),
     gateFrame: world?.gateFrame,
     route: world?.walker.route(),
+    environment: world?.environment.metrics(),
     picker: picker?.targets(),
     highlights: picker?.highlights,
     sourceCommit: resources?.data.sourceCommit,

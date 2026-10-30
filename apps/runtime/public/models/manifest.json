@@ -1,0 +1,13 @@
+{
+  "source": "Existing approved hero GLBs; read from shared historical sandbox CSc638ec2a0373608800d3a680, no repository restore",
+  "models": {
+    "rift-runner": {
+      "sha256": "3276bc7887c1a0873e75db67e9653318e0f882ce19575f6873040eae1e173767",
+      "size": 2758228
+    },
+    "ember-warden": {
+      "sha256": "27314f388adb9fa94dc7db468f6ade4ceacedafc248af4b68745f28adb793e29",
+      "size": 3504812
+    }
+  }
+}

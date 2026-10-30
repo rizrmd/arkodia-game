@@ -799,7 +799,7 @@ export function buildFrontierProps(options?: {
     const h = meta.world[1] * scale;
     const [ax, ay] = meta.pivot;
     const lift = p.lift ?? 0;
-    const isCap = Boolean(p.on) || kitItem.layer === "cap" || lift > 0;
+    const isCap = Boolean(p.on) || kitItem.layer === "cap";
     const layer: FrontierLayerKind = isCap ? "cap" : kitItem.layer;
     const band =
       kitItem.band === "under" ? -1 : kitItem.band === "over" ? 1 : 0;

@@ -4,6 +4,7 @@ import type {
 } from "../../../../packages/content-contracts/legacy-types";
 import {
   DEFAULT_RELIEF_FEATURES,
+  FRONTIER_TERRAIN_FEATURES,
   cliff as reliefCliff,
   environmentBlocked as checkEnvironmentBlocked,
   heightAt as reliefHeightAt,
@@ -35,8 +36,9 @@ export function strongholdCollision(
     R = 9;
   const reliefFeatures = normalizeReliefFeatures(
     extra?.reliefFeatures ??
-      map?.terrain?.features ??
-      DEFAULT_RELIEF_FEATURES,
+      (map?.terrain?.features
+        ? [...map.terrain.features, ...FRONTIER_TERRAIN_FEATURES]
+        : DEFAULT_RELIEF_FEATURES),
   );
   const envCols = extra?.environmentColumns ?? [];
 

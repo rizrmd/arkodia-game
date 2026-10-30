@@ -1,11 +1,11 @@
 import {Application,Container,Text} from 'pixi.js';
 import {parseScene,type Scene} from './scene';
-import {createSceneNode,resizeScene,sceneGround,type SceneNode} from './renderer';
+import {createSceneNode,resizeScene,sceneEnvironmentMetrics,sceneGround,type SceneNode} from './renderer';
 /** Read the exported scene unchanged. A viewport resize fits the canonical world, never rewrites coordinates. */
 export async function loadAuthoredScene(app:Application,url:string,inline?:string){
  const status=new Text({text:'Loading scene…',style:{fill:0xffffff,fontSize:18}});status.position.set(24,24);app.stage.addChild(status);
  let scene:Scene|undefined;const nodes:SceneNode[]=[];let time=0,error='';const root=new Container();let view:unknown;
- Object.defineProperty(window,'__ARKODIA_AUTHORED_SCENE__',{configurable:true,get:()=>({state:error?'error':scene?'ready':'loading',error,scene,time,view,nodes:nodes.map(n=>n.sceneMetrics())})});
+ Object.defineProperty(window,'__ARKODIA_AUTHORED_SCENE__',{configurable:true,get:()=>({state:error?'error':scene?'ready':'loading',error,scene,time,view,nodes:nodes.map(n=>n.sceneMetrics()),environment:scene?sceneEnvironmentMetrics(root,scene,time):null})});
  try{
   let data=inline;
   if(data===undefined){

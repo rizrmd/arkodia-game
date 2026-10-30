@@ -700,17 +700,17 @@ export type StrongholdPropDef = {
 
 export function starterEnclosureProps(): StrongholdPropDef[] {
   const props: StrongholdPropDef[] = [];
-  const wallStep = { x: 120, y: 60 };
+  const wallStep = { x: 240, y: 120 };
   const wallTex = ["straight-ne-a", "straight-ne-b"];
   const seTex = ["straight-se-a", "straight-se-b"];
   const wallSize = { w: 300, h: 300, ax: 0.5, ay: 0.793 };
   const n = 4;
 
-  const topNE = { x: 653, y: -62 };
+  const topNE = { x: 705, y: -98 };
   for (let i = 0; i < n; i++) {
     props.push({
       id: `ne-${i}`,
-      tex: `/buildings/starter-boundary/${wallTex[i % 2]}.png`,
+      tex: `/buildings/starter-boundary/${seTex[i % 2]}.png`,
       x: Math.round(topNE.x + i * wallStep.x),
       y: Math.round(topNE.y + i * wallStep.y),
       ...wallSize,
@@ -721,7 +721,7 @@ export function starterEnclosureProps(): StrongholdPropDef[] {
     });
   }
 
-  const topNW = { x: 501, y: -62 };
+  const topNW = { x: 464, y: -101 };
   for (let i = 0; i < n; i++) {
     props.push({
       id: `nw-${i}`,
@@ -736,14 +736,13 @@ export function starterEnclosureProps(): StrongholdPropDef[] {
     });
   }
 
-  const swStart = { x: 96, y: 317 };
-  for (let i = 0; i < n; i++) {
-    if (i === n - 1) continue;
+  const swStart = { x: -271, y: 378 };
+  for (let i = 0; i < 3; i++) {
     props.push({
       id: `sw-${i}`,
       tex: `/buildings/starter-boundary/${seTex[i % 2]}.png`,
-      x: Math.round(swStart.x + i * wallStep.x),
-      y: Math.round(swStart.y + i * wallStep.y),
+      x: Math.round(swStart.x + i * 210),
+      y: Math.round(swStart.y + i * 113),
       ...wallSize,
       flip: true,
       trim: 0,
@@ -752,14 +751,13 @@ export function starterEnclosureProps(): StrongholdPropDef[] {
     });
   }
 
-  const seStart = { x: 1058, y: 317 };
-  for (let i = 0; i < n; i++) {
-    if (i === n - 1) continue;
+  const seStart = { x: 1438, y: 375 };
+  for (let i = 0; i < 3; i++) {
     props.push({
       id: `se-${i}`,
-      tex: `/buildings/starter-boundary/${seTex[i % 2]}.png`,
-      x: Math.round(seStart.x - i * wallStep.x),
-      y: Math.round(seStart.y + i * wallStep.y),
+      tex: `/buildings/starter-boundary/${wallTex[i % 2]}.png`,
+      x: Math.round(seStart.x - i * 210),
+      y: Math.round(seStart.y + i * 113),
       ...wallSize,
       flip: false,
       trim: 0,
@@ -768,20 +766,23 @@ export function starterEnclosureProps(): StrongholdPropDef[] {
     });
   }
 
-  const swWing = {
-    x: swStart.x + 2 * wallStep.x,
-    y: swStart.y + 2 * wallStep.y,
-  };
-  const seWing = {
-    x: seStart.x - 2 * wallStep.x,
-    y: seStart.y + 2 * wallStep.y,
-  };
-  const gateY = Math.round((swWing.y + seWing.y) / 2 + 2.33 * wallStep.y);
+  props.push({
+    id: "sw-gate-plug",
+    tex: "/buildings/starter-boundary/straight-se-a.png",
+    x: 359,
+    y: 718,
+    ...wallSize,
+    flip: true,
+    trim: 0,
+    zBoost: -60,
+    solid: true,
+  });
+
   props.push({
     id: "gate-south",
     tex: "/buildings/starter-boundary/gate-closed.png",
     x: COURT.x,
-    y: gateY,
+    y: 777,
     w: 580,
     h: 483,
     ax: 0.5,
@@ -789,29 +790,6 @@ export function starterEnclosureProps(): StrongholdPropDef[] {
     flip: false,
     trim: 0,
     zBoost: 0,
-    solid: true,
-  });
-
-  props.push({
-    id: "sw-gate-plug",
-    tex: "/buildings/starter-boundary/straight-se-a.png",
-    x: Math.round(swStart.x + 2.42 * wallStep.x),
-    y: Math.round(swStart.y + 2.42 * wallStep.y),
-    ...wallSize,
-    flip: true,
-    trim: 0,
-    zBoost: -60,
-    solid: true,
-  });
-  props.push({
-    id: "se-gate-plug",
-    tex: "/buildings/starter-boundary/straight-se-b.png",
-    x: Math.round(seStart.x - 2.42 * wallStep.x),
-    y: Math.round(seStart.y + 2.42 * wallStep.y),
-    ...wallSize,
-    flip: false,
-    trim: 0,
-    zBoost: -60,
     solid: true,
   });
 

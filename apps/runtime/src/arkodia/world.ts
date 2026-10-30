@@ -207,7 +207,11 @@ export class StrongholdWorld {
     this.gate.height = 135;
     this.gate.zIndex = 778;
     this.objects.addChild(this.gate);
-    this.heroTexture = Texture.from(heroRenderer.canvas);
+    this.heroTexture =
+      typeof HTMLCanvasElement !== "undefined" &&
+      heroRenderer.canvas instanceof HTMLCanvasElement
+        ? Texture.from(heroRenderer.canvas)
+        : Texture.WHITE;
     heroRenderer.render("idle", 0, 0, 0);
     this.player.texture = this.heroTexture;
     this.player.anchor.set(0.5, heroRenderer.pivotY);

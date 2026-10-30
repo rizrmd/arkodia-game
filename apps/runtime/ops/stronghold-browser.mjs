@@ -128,6 +128,8 @@ try {
   );
   assert.equal((await diag()).hero, "ember-warden");
   const desktop = await diag();
+  assert.equal(desktop.environment?.stage1?.sizeTiles, 936);
+  assert.equal(desktop.environment?.stage5?.torchCount, 16);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(origin + "/?hero=reset");
   await page.waitForFunction(

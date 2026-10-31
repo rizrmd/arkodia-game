@@ -1,3 +1,10 @@
+import {
+  pointInShape,
+  segmentIntersectsShape,
+  type CollisionGeometry,
+  type CollisionShape,
+  type CollisionPoint,
+} from "./object-collision";
 import { Container, Graphics, Rectangle, Sprite, Texture } from "pixi.js";
 import {
   DEFAULT_WORLD_MAP,
@@ -197,8 +204,25 @@ export function reliefBlockedTile(
 ): boolean {
   const p = mapToCourt(u, v);
   for (const f of features) {
-    if (f.type !== "hill" || f.collision === false) continue;
-    if (inside(f, u, v) && !onHillSurface(f, p.x, p.y, features)) return true;
+    if (f.collision === false) continue;
+    if (f.collisionGeometry) {
+      const local = terrainLocalPoint(f, u, v);
+      if (
+        f.collisionGeometry.shapes.some(
+          (s) =>
+            s.enabled &&
+            (s.terrainRole === "solid" || !s.terrainRole) &&
+            pointInShape(s, local.x, local.y),
+        )
+      )
+        return true;
+    }
+    if (
+      f.type === "hill" &&
+      insideTerrainCollision(f, u, v) &&
+      !collisionSurface(f, u, v, features)
+    )
+      return true;
   }
   return false;
 }
@@ -220,6 +244,21 @@ export function cliffTile(
   features: readonly ReliefFeature[] = DEFAULT_RELIEF_FEATURES,
 ): boolean {
   const collisionFeatures = features.filter((f) => f.collision !== false);
+  for (const f of collisionFeatures)
+    if (f.collisionGeometry) {
+      const a = terrainLocalPoint(f, u0, v0),
+        b = terrainLocalPoint(f, u1, v1);
+      if (
+        f.collisionGeometry.shapes.some(
+          (s) =>
+            s.enabled &&
+            (s.terrainRole === "solid" || !s.terrainRole) &&
+            segmentIntersectsShape(s, a.x, a.y, b.x, b.y),
+        )
+      )
+        return true;
+    }
+
   const dist = Math.hypot(u1 - u0, v1 - v0);
   const steps = Math.max(1, Math.ceil(dist / 0.08));
   let au = u0;
@@ -230,15 +269,16 @@ export function cliffTile(
     const bv = v0 + (v1 - v0) * t;
     if (reliefBlockedTile(bu, bv, collisionFeatures)) return true;
     const nearby = collisionFeatures.filter(
-      (f) => inside(f, au, av) || inside(f, bu, bv),
+      (f) =>
+        insideTerrainCollision(f, au, av) || insideTerrainCollision(f, bu, bv),
     );
     const maxStep = nearby.length
       ? Math.min(...nearby.map((f) => f.maxStepM ?? MAX_STEP_M))
       : MAX_STEP_M;
     if (
       Math.abs(
-        heightAtTile(bu, bv, collisionFeatures) -
-          heightAtTile(au, av, collisionFeatures),
+        collisionHeightAtTile(bu, bv, collisionFeatures) -
+          collisionHeightAtTile(au, av, collisionFeatures),
       ) > maxStep
     ) {
       return true;
@@ -437,4 +477,161 @@ export function createReliefLayer(
     nodes,
     features: [...features],
   };
+}
+
+/** Collision editing stays on the ground plane; elevation itself is unchanged. */
+export function terrainCollisionAnchor(f: ReliefFeature) {
+  return mapToCourt((f.u0 + f.u1) / 2, (f.v0 + f.v1) / 2);
+}
+function terrainLocalPoint(f: ReliefFeature, u: number, v: number) {
+  const a = terrainCollisionAnchor(f),
+    p = mapToCourt(u, v);
+  return { x: p.x - a.x, y: p.y - a.y };
+}
+export function insideTerrainCollision(
+  f: ReliefFeature,
+  u: number,
+  v: number,
+): boolean {
+  if (!f.collisionGeometry) return inside(f, u, v);
+  const p = terrainLocalPoint(f, u, v);
+  return f.collisionGeometry.shapes.some(
+    (s) =>
+      s.enabled &&
+      s.terrainRole === "height-region" &&
+      (s.nativeTerrain ? inside(f, u, v) : pointInShape(s, p.x, p.y)),
+  );
+}
+function collisionSurface(
+  f: ReliefFeature,
+  u: number,
+  v: number,
+  features: readonly ReliefFeature[],
+) {
+  const p = mapToCourt(u, v);
+  if (!f.collisionGeometry) return onHillSurface(f, p.x, p.y, features);
+  const local = terrainLocalPoint(f, u, v);
+  return f.collisionGeometry.shapes.some(
+    (s) =>
+      s.enabled &&
+      s.terrainRole === "walkable-surface" &&
+      (s.nativeTerrain
+        ? onHillSurface(f, p.x, p.y, features)
+        : pointInShape(s, local.x, local.y)),
+  );
+}
+export function collisionHeightAtTile(
+  u: number,
+  v: number,
+  features: readonly ReliefFeature[],
+) {
+  let h = 0;
+  for (const f of features)
+    if (f.collision !== false && insideTerrainCollision(f, u, v))
+      h = Math.max(h, featureHeight(f, u, v));
+  return h;
+}
+/** Sample the exact native surface query for a selectable display contour. The
+ * nativeTerrain flag retains the exact query until that contour is edited. */
+export function nativeTerrainCollision(f: ReliefFeature): CollisionGeometry {
+  const anchor = terrainCollisionAnchor(f);
+  const local = (u: number, v: number): CollisionPoint => {
+    const p = mapToCourt(u, v);
+    return [p.x - anchor.x, p.y - anchor.y];
+  };
+  const boundary = (
+    f.outline?.length
+      ? f.outline
+      : [
+          [f.u0, f.v0],
+          [f.u1, f.v0],
+          [f.u1, f.v1],
+          [f.u0, f.v1],
+        ]
+  ) as readonly (readonly [number, number])[];
+  const shapes: CollisionShape[] = [
+    {
+      id: "terrain-boundary",
+      name: "Terrain boundary",
+      kind: "polygon",
+      enabled: true,
+      x: 0,
+      y: 0,
+      width: 1,
+      height: 1,
+      points: boundary.map(([u, v]) => local(u, v)),
+      terrainRole: "height-region",
+      nativeTerrain: true,
+    },
+  ];
+  if (f.type === "hill") {
+    const n = 64,
+      mask = Array.from({ length: n }, (_, y) =>
+        Array.from({ length: n }, (_, x) => {
+          const u = f.u0 + ((x + 0.5) / n) * (f.u1 - f.u0),
+            v = f.v0 + ((y + 0.5) / n) * (f.v1 - f.v0),
+            p = mapToCourt(u, v);
+          return inside(f, u, v) && onHillSurface(f, p.x, p.y, [f]);
+        }),
+      );
+    const filled = (x: number, y: number) =>
+      x >= 0 && y >= 0 && x < n && y < n && mask[y][x];
+    const edges = new Map<string, [number, number][]>();
+    const add = (x: number, y: number, bx: number, by: number) => {
+      const key = `${x},${y}`;
+      edges.set(key, [...(edges.get(key) ?? []), [bx, by]]);
+    };
+    for (let y = 0; y < n; y++)
+      for (let x = 0; x < n; x++)
+        if (filled(x, y)) {
+          if (!filled(x, y - 1)) add(x, y, x + 1, y);
+          if (!filled(x + 1, y)) add(x + 1, y, x + 1, y + 1);
+          if (!filled(x, y + 1)) add(x + 1, y + 1, x, y + 1);
+          if (!filled(x - 1, y)) add(x, y + 1, x, y);
+        }
+    const loops: CollisionPoint[][] = [];
+    while (edges.size) {
+      const key = edges.keys().next().value!;
+      let at = key;
+      const loop: CollisionPoint[] = [];
+      do {
+        const [x, y] = at.split(",").map(Number);
+        loop.push([x, y]);
+        const next = edges.get(at)?.pop();
+        if (!edges.get(at)?.length) edges.delete(at);
+        if (!next) break;
+        at = next.join(",");
+      } while (at !== key && loop.length < 10000);
+      if (at === key && loop.length >= 3) loops.push(loop);
+    }
+    loops.sort((a, b) => b.length - a.length);
+    const loop = loops[0];
+    if (loop) {
+      const reduced = loop.filter((p, i) => {
+        const a = loop[(i + loop.length - 1) % loop.length],
+          b = loop[(i + 1) % loop.length];
+        return (p[0] - a[0]) * (b[1] - p[1]) !== (p[1] - a[1]) * (b[0] - p[0]);
+      });
+      const stride = Math.max(1, Math.ceil(reduced.length / 240));
+      const points = reduced
+        .filter((_, i) => i % stride === 0)
+        .map(([x, y]) =>
+          local(f.u0 + (x / n) * (f.u1 - f.u0), f.v0 + (y / n) * (f.v1 - f.v0)),
+        );
+      shapes.push({
+        id: "terrain-surface",
+        name: "Walkable surface",
+        kind: "polygon",
+        enabled: true,
+        x: 0,
+        y: 0,
+        width: 1,
+        height: 1,
+        points,
+        terrainRole: "walkable-surface",
+        nativeTerrain: true,
+      });
+    }
+  }
+  return { version: 1, shapes };
 }

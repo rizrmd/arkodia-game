@@ -1,3 +1,4 @@
+import type { CollisionGeometry } from "./object-collision";
 import {
   BlurFilter,
   Container,
@@ -31,6 +32,7 @@ export type ReliefFeature = {
   u1: number;
   v1: number;
   collision?: boolean;
+  collisionGeometry?: CollisionGeometry;
   maxStepM?: number;
   heightM?: number;
   baseM?: number;

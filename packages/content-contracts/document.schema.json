@@ -2723,6 +2723,633 @@
           }
         }
       ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "name",
+        "assets",
+        "data"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 3
+        },
+        "kind": {
+          "const": "authoring-project"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "assets": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizationId",
+            "projectId",
+            "domains"
+          ],
+          "properties": {
+            "organizationId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+            },
+            "projectId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+            },
+            "domains": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "objects",
+                "environments",
+                "bases",
+                "characters",
+                "animations",
+                "audio",
+                "vfx",
+                "catalog"
+              ],
+              "properties": {
+                "objects": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "data",
+                      "assets",
+                      "references"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "data": {
+                        "type": "object"
+                      },
+                      "assets": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "references": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "domain",
+                            "id"
+                          ],
+                          "properties": {
+                            "domain": {
+                              "enum": [
+                                "objects",
+                                "environments",
+                                "bases",
+                                "characters",
+                                "animations",
+                                "audio",
+                                "vfx",
+                                "catalog"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "environments": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "data",
+                      "assets",
+                      "references"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "data": {
+                        "type": "object"
+                      },
+                      "assets": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "references": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "domain",
+                            "id"
+                          ],
+                          "properties": {
+                            "domain": {
+                              "enum": [
+                                "objects",
+                                "environments",
+                                "bases",
+                                "characters",
+                                "animations",
+                                "audio",
+                                "vfx",
+                                "catalog"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "bases": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "data",
+                      "assets",
+                      "references"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "data": {
+                        "type": "object"
+                      },
+                      "assets": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "references": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "domain",
+                            "id"
+                          ],
+                          "properties": {
+                            "domain": {
+                              "enum": [
+                                "objects",
+                                "environments",
+                                "bases",
+                                "characters",
+                                "animations",
+                                "audio",
+                                "vfx",
+                                "catalog"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "characters": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "data",
+                      "assets",
+                      "references"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "data": {
+                        "type": "object"
+                      },
+                      "assets": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "references": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "domain",
+                            "id"
+                          ],
+                          "properties": {
+                            "domain": {
+                              "enum": [
+                                "objects",
+                                "environments",
+                                "bases",
+                                "characters",
+                                "animations",
+                                "audio",
+                                "vfx",
+                                "catalog"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "animations": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "data",
+                      "assets",
+                      "references"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "data": {
+                        "type": "object"
+                      },
+                      "assets": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "references": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "domain",
+                            "id"
+                          ],
+                          "properties": {
+                            "domain": {
+                              "enum": [
+                                "objects",
+                                "environments",
+                                "bases",
+                                "characters",
+                                "animations",
+                                "audio",
+                                "vfx",
+                                "catalog"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "audio": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "data",
+                      "assets",
+                      "references"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "data": {
+                        "type": "object"
+                      },
+                      "assets": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "references": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "domain",
+                            "id"
+                          ],
+                          "properties": {
+                            "domain": {
+                              "enum": [
+                                "objects",
+                                "environments",
+                                "bases",
+                                "characters",
+                                "animations",
+                                "audio",
+                                "vfx",
+                                "catalog"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "vfx": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "data",
+                      "assets",
+                      "references"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "data": {
+                        "type": "object"
+                      },
+                      "assets": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "references": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "domain",
+                            "id"
+                          ],
+                          "properties": {
+                            "domain": {
+                              "enum": [
+                                "objects",
+                                "environments",
+                                "bases",
+                                "characters",
+                                "animations",
+                                "audio",
+                                "vfx",
+                                "catalog"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "catalog": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "data",
+                      "assets",
+                      "references"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "data": {
+                        "type": "object"
+                      },
+                      "assets": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "references": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "domain",
+                            "id"
+                          ],
+                          "properties": {
+                            "domain": {
+                              "enum": [
+                                "objects",
+                                "environments",
+                                "bases",
+                                "characters",
+                                "animations",
+                                "audio",
+                                "vfx",
+                                "catalog"
+                              ]
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z0-9_-]{1,100}$"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }

@@ -156,6 +156,8 @@ func (a *API) handler() http.Handler {
 	m.HandleFunc("GET /v1/drafts/{id}", a.auth(a.getDraft))
 	m.HandleFunc("PUT /v1/drafts/{id}", a.auth(a.saveDraft))
 	m.HandleFunc("DELETE /v1/drafts/{id}", a.auth(a.deleteDraft))
+	m.HandleFunc("POST /v1/drafts/{id}/transactions", a.auth(a.authoringTransaction))
+	m.HandleFunc("GET /v1/drafts/{id}/history", a.auth(a.authoringHistory))
 	m.HandleFunc("POST /v1/assets", a.auth(a.upload))
 	m.HandleFunc("GET /v1/assets/{sha}", a.auth(a.previewAsset))
 	m.HandleFunc("PUT /v1/channels/{channel}", a.authorize("publisher", a.rollbackChannel))
@@ -232,6 +234,9 @@ func (a *API) validate(ctx context.Context, raw json.RawMessage) (Document, erro
 	if err := a.Schema.Validate(value); err != nil {
 		return d, errors.New("schema_validation_failed")
 	}
+	if err := contracts.ValidateAuthoring(value.(map[string]any)); err != nil {
+		return d, err
+	}
 	if err := contracts.ValidateV2(value.(map[string]any)); err != nil {
 		return d, err
 	}
@@ -290,6 +295,10 @@ func (a *API) saveDraft(w http.ResponseWriter, r *http.Request) {
 		fail(w, 422, err.Error())
 		return
 	}
+	if doc.SchemaVersion == 3 && in.Revision != 0 {
+		fail(w, 409, "authoring_transaction_required")
+		return
+	}
 	var rev int64
 	if in.Revision == 0 {
 		err = a.query(r.Context()).QueryRow(r.Context(), "INSERT INTO content_drafts(id,kind,revision,document) VALUES($1,$2,1,$3) ON CONFLICT DO NOTHING RETURNING revision", id, doc.Kind, []byte(in.Document)).Scan(&rev)
@@ -313,7 +322,7 @@ func (a *API) deleteDraft(w http.ResponseWriter, r *http.Request) {
 		fail(w, 428, "quoted_revision_if_match_required")
 		return
 	}
-	tag, err := a.query(r.Context()).Exec(r.Context(), "DELETE FROM content_drafts WHERE id=$1 AND revision=$2", r.PathValue("id"), rev)
+	tag, err := a.query(r.Context()).Exec(r.Context(), "DELETE FROM content_drafts WHERE id=$1 AND revision=$2 AND kind<>'authoring-project'", r.PathValue("id"), rev)
 	if err != nil {
 		fail(w, 500, "database_error")
 		return
@@ -420,6 +429,10 @@ func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 		var doc Document
 		if json.Unmarshal(d.Document, &doc) != nil {
 			fail(w, 500, "invalid_stored_document")
+			return
+		}
+		if doc.SchemaVersion == 3 {
+			fail(w, 422, "authoring_project_not_publishable")
 			return
 		}
 		selected[s.ID] = doc.Kind

@@ -1,12 +1,14 @@
 import type {LegacyDocument} from './legacy-types';
 export * from './legacy-types';
+export * from './authoring-types';
+import type {AuthoringProjectDocument, AuthoringTransaction, AuthoringHistory} from './authoring-types';
 /** Framework-independent contracts for future Pixi editors and game clients. */
 export type ContentKind = 'environment' | 'base' | 'character' | 'animation' | 'vfx';
 export type SceneData = { width: number; height: number; layers: { id: string; objects: Record<string, unknown>[]; [key: string]: unknown }[]; [key: string]: unknown };
 export type Frame = { asset: string; x: number; y: number; width: number; height: number };
 export type AnimationData = { fps: number; loop: boolean; frames: Frame[]; [key: string]: unknown };
 type Envelope<K extends ContentKind, D> = { schemaVersion: 1; kind: K; name: string; assets: string[]; data: D };
-export type ContentDocument = LegacyDocument | Envelope<'environment' | 'base', SceneData> | Envelope<'character', { animations: Record<string, string>; [key: string]: unknown }> | Envelope<'animation' | 'vfx', AnimationData>;
+export type ContentDocument = AuthoringProjectDocument | LegacyDocument | Envelope<'environment' | 'base', SceneData> | Envelope<'character', { animations: Record<string, string>; [key: string]: unknown }> | Envelope<'animation' | 'vfx', AnimationData>;
 export type Draft = { id: string; revision: number; document: ContentDocument };
 export type Asset = { sha256: string; size: number; mediaType: string; url: string };
 export type Selection = { id: string; revision: number };
@@ -25,6 +27,9 @@ export class ContentClient {
   if (!response.ok) { const body = await response.json().catch(() => ({error: 'request_failed'})); throw new ContentAPIError(response.status, body.error); }
   return response.status === 204 ? undefined as T : response.json();
  }
+ /** v3 authoring mutations are revision-checked and always require a durable idempotency key. */
+ authoringTransaction(id: string, input: AuthoringTransaction, idempotencyKey: string) { return this.request<Draft & {history?: AuthoringHistory; valid?: boolean}>(`/v1/drafts/${encodeURIComponent(id)}/transactions`, {method:'POST', body:JSON.stringify(input), headers:{'Idempotency-Key':idempotencyKey}}, true); }
+ authoringHistory(id: string) { return this.request<AuthoringHistory>(`/v1/drafts/${encodeURIComponent(id)}/history`, {}, true); }
  listDrafts() { return this.request<Draft[]>('/v1/drafts', {}, true); }
  loadDraft(id: string) { return this.request<Draft>(`/v1/drafts/${encodeURIComponent(id)}`, {}, true); }
  /** revision 0 creates; use the returned revision for subsequent saves. Never silently overwrite a 409. */

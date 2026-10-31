@@ -60,3 +60,18 @@ CREATE TABLE IF NOT EXISTS content_channel_events (
  release_id TEXT NOT NULL REFERENCES content_releases(id), action TEXT NOT NULL,
  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
+
+-- Authoring history shares the draft transaction and survives process restart.
+CREATE TABLE IF NOT EXISTS content_authoring_history (
+ document_id TEXT PRIMARY KEY REFERENCES content_drafts(id), body BLOB NOT NULL
+);
+CREATE TABLE IF NOT EXISTS content_authoring_events (
+ document_id TEXT NOT NULL REFERENCES content_drafts(id), request_id TEXT NOT NULL,
+ revision INTEGER NOT NULL, action TEXT NOT NULL, actor BLOB NOT NULL, label TEXT NOT NULL,
+ created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+ PRIMARY KEY(document_id,request_id), UNIQUE(document_id,revision)
+);
+
+-- Environment multiplayer state and durable replay/audit share the draft database.
+CREATE TABLE IF NOT EXISTS content_collaboration (document_id TEXT PRIMARY KEY REFERENCES content_drafts(id), body BLOB NOT NULL);
+CREATE TABLE IF NOT EXISTS content_collaboration_events (document_id TEXT NOT NULL REFERENCES content_drafts(id), sequence INTEGER NOT NULL, body BLOB NOT NULL, PRIMARY KEY(document_id,sequence));

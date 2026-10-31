@@ -59,3 +59,13 @@ Persistent paths:
 - `$HOME/app`: replaceable executable and boot scripts.
 
 Operator backup: `sh "$HOME/app/backup.sh"` inside the Content API sandbox captures an atomic online SQLite backup (`sqlite3.connect.backup`), immutable objects, and role configuration in a private mode-0600 bundle, verifies objects, and compares live and restored row/digest counts.
+
+## v3 authoring projects
+
+`schemaVersion: 3`, `kind: authoring-project` adds one editor-only aggregate per project with domain maps for objects, environments, bases, characters, animations, audio, VFX and catalog. The registry advertises v3 and `/contracts/v3/document.schema.json`. Entity data is extensible native JSON; explicit references and asset declarations are validated. Native gameplay/renderer semantics are not implied by acceptance of arbitrary entity data.
+
+Create with revision 0 through the existing draft PUT. Subsequent changes use authenticated `POST /v1/drafts/{id}/transactions` with `{revision,groupId,label,actor:{userId,jobId?},action,unit?,operations?}` and a required Idempotency-Key. Actions are commit, validate, undo and redo; units are group (default) and operation. Commit/validate accept 1–256 meaningful `entity.put` or `entity.remove` operations. A put carries the complete `{id,name,data,assets,references}` entity. Final graph validation permits forward references within the same batch. Validate does not write the draft. The author role asserts actor identity; the authenticated editor backend must enforce human/project authorization.
+
+`GET /v1/drafts/{id}/history` returns group labels, actors, operation labels, applied counts and Undo/Redo availability. Draft/history/audit/idempotent response are committed atomically in SQLite. History retains 50 groups. Step Undo must leave a valid graph. New edits discard redo; revision and group-ID checks prevent lost updates and duplicate operations. Generic PUT after creation, deletion, and release publication cannot bypass v3 authoring history. v1/v2 behavior remains available.
+
+See the editor repository `docs/AUTHORING-BACKEND.md` for the backend tool registry, SDK, scoped asset access, native snapshot adapter and recoverable AI job lifecycle. No editor UI or production migration is included.

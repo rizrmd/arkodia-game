@@ -33,10 +33,10 @@ try {
   await tap(w-244+70,30);
   await page.waitForFunction(()=>window.__arkodiaMusic.playing);
   await tap(w-244+214,30);
-  assert.equal((await page.evaluate(()=>window.__arkodiaMusic)).volume,0.45);
+  assert.equal((await page.evaluate(()=>window.__arkodiaMusic)).volume,0.85);
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>window.__arkodiaMusic?.loaded);
-  assert.equal((await page.evaluate(()=>window.__arkodiaMusic)).volume,0.45);
+  assert.equal((await page.evaluate(()=>window.__arkodiaMusic)).volume,0.85);
   await tap(80,80);
   await page.waitForFunction(()=>window.__arkodiaMusic.playing);
   // Browser lifecycle events pause/resume the same voice.

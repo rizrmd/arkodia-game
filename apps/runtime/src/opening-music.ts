@@ -4,15 +4,18 @@ export class OpeningMusic {
   private readonly gestures = ["pointerdown", "pointerup", "touchend", "click", "keydown"];
   private disposed = false;
   private muted = false;
-  private volume = 0.35;
+  private volume = 0.75;
+  private blocked = false;
   constructor() {
     try {
       const saved = JSON.parse(localStorage.getItem('arkodia.music') || 'null');
       if (saved && typeof saved.muted === 'boolean') this.muted = saved.muted;
       if (saved && typeof saved.volume === 'number' && Number.isFinite(saved.volume))
-        this.volume = Math.max(0, Math.min(1, saved.volume));
+        this.volume = saved.version !== 2 && saved.volume === 0.35
+          ? 0.75 : Math.max(0, Math.min(1, saved.volume));
     } catch { /* Storage is optional. */ }
     this.audio.loop = true;
+    this.audio.autoplay = true;
     this.audio.preload = 'auto';
     this.apply();
     for (const event of this.gestures) window.addEventListener(event, this.unlock, true);
@@ -29,7 +32,12 @@ export class OpeningMusic {
   private play() {
     if (this.disposed || this.muted || !this.volume || document.hidden) return;
     // Repeated gestures use the same element and never reset its playhead.
-    if (this.audio.paused) void this.audio.play().catch(() => { /* Retry on the next gesture. */ });
+    if (this.audio.paused) void this.audio.play().then(() => {
+      this.blocked = false;
+      if (this.disposed || this.muted || !this.volume || document.hidden) this.audio.pause();
+    }).catch((error: unknown) => {
+      this.blocked = error instanceof Error && error.name === 'NotAllowedError';
+    });
   }
   private apply() {
     this.audio.volume = this.volume;
@@ -38,14 +46,14 @@ export class OpeningMusic {
     else this.play();
   }
   private save() {
-    try { localStorage.setItem('arkodia.music', JSON.stringify({ muted: this.muted, volume: this.volume })); } catch { /* Storage is optional. */ }
+    try { localStorage.setItem('arkodia.music', JSON.stringify({ version: 2, muted: this.muted, volume: this.volume })); } catch { /* Storage is optional. */ }
     this.apply();
   }
   toggle() { this.muted = !this.muted; this.save(); }
   adjust(delta: number) { this.volume = Math.round(Math.max(0, Math.min(1, this.volume + delta)) * 100) / 100; this.save(); }
   get status() {
     return { loaded: this.audio.readyState >= 2, playing: !this.audio.paused, voices: this.audio.paused ? 0 : 1,
-      position: this.audio.currentTime, volume: this.volume, muted: this.muted, error: this.audio.error?.message || null, loop: this.audio.loop };
+      autoplayBlocked: this.blocked, position: this.audio.currentTime, volume: this.volume, muted: this.muted, error: this.audio.error?.message || null, loop: this.audio.loop };
   }
   destroy() {
     this.disposed = true;

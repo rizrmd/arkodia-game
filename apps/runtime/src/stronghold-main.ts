@@ -264,6 +264,8 @@ async function enter(hero: HeroId) {
   world?.destroy();
   world = new StrongholdWorld(resources!, hero, heroRenderer);
   stage.addChild(world.world, world.environment.biomeParallax.container);
+  music.destroy();
+  musicUI.visible = false;
   state = "ready";
   draw();
 }

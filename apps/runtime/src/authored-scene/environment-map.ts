@@ -30,6 +30,8 @@ export type ReliefFeature = {
   v0: number;
   u1: number;
   v1: number;
+  collision?: boolean;
+  maxStepM?: number;
   heightM?: number;
   baseM?: number;
   topM?: number;
@@ -428,7 +430,10 @@ export const GATEWAY_APRON_BOUNDS = {
   slope: 0.35,
 } as const;
 
-export function gatewayApronAlphaAt(wx: number, wy: number): {
+export function gatewayApronAlphaAt(
+  wx: number,
+  wy: number,
+): {
   alpha: number;
   shade: number;
   rgb: [number, number, number];
@@ -445,8 +450,7 @@ export function gatewayApronAlphaAt(wx: number, wy: number): {
   }
   const edge = edgeY - Math.abs(wx - COURT.x) * slope;
   const noise =
-    Math.sin(wx * 0.37 + wy * 0.23) * 5 +
-    Math.sin(wx * 0.91 - wy * 0.71) * 2.5;
+    Math.sin(wx * 0.37 + wy * 0.23) * 5 + Math.sin(wx * 0.91 - wy * 0.71) * 2.5;
   const d = wy - edge + noise;
   if (d <= -20) {
     return { alpha: 0, shade: 0, rgb: [0, 0, 0] };
@@ -512,7 +516,14 @@ function buildGatewaySnowApronView(snowTexture?: Texture): Container {
         if (pat && typeof DOMMatrix !== "undefined") {
           const s = (SNOW_DENSITY * 1024) / Math.max(1, snowTexture.width);
           pat.setTransform(
-            new DOMMatrix([s, s * 0.5, -s, s * 0.5, COURT.x - x0, COURT.y - y0]),
+            new DOMMatrix([
+              s,
+              s * 0.5,
+              -s,
+              s * 0.5,
+              COURT.x - x0,
+              COURT.y - y0,
+            ]),
           );
           ctx.fillStyle = pat;
           ctx.fillRect(0, 0, w, h);
@@ -610,16 +621,7 @@ export function createCourtSurface(
   const contactShadow = new Graphics();
   contactShadow.zIndex = 0;
   contactShadow
-    .poly([
-      top.x,
-      top.y,
-      right.x,
-      right.y,
-      bottom.x,
-      bottom.y,
-      left.x,
-      left.y,
-    ])
+    .poly([top.x, top.y, right.x, right.y, bottom.x, bottom.y, left.x, left.y])
     .stroke({ color: 0x29392d, width: 30, alpha: 0.16, join: "round" });
   try {
     contactShadow.filters = [new BlurFilter({ strength: 10, quality: 2 })];
@@ -655,16 +657,7 @@ export function createCourtSurface(
   const pavingMask = new Graphics();
   pavingMask.zIndex = 1;
   pavingMask
-    .poly([
-      top.x,
-      top.y,
-      right.x,
-      right.y,
-      bottom.x,
-      bottom.y,
-      left.x,
-      left.y,
-    ])
+    .poly([top.x, top.y, right.x, right.y, bottom.x, bottom.y, left.x, left.y])
     .fill(0xffffff);
   paving.mask = pavingMask;
   container.addChild(paving, pavingMask);
@@ -715,7 +708,12 @@ export function createPropFoundation(
   const face = new Container();
   face.zIndex = 10.6;
 
-  const isWall = prop.id.includes("ne") || prop.id.includes("nw") || prop.id.includes("se") || prop.id.includes("sw") || prop.id.includes("rampart");
+  const isWall =
+    prop.id.includes("ne") ||
+    prop.id.includes("nw") ||
+    prop.id.includes("se") ||
+    prop.id.includes("sw") ||
+    prop.id.includes("rampart");
   const isCampfire = prop.id === "campfire";
   if (!isWall && !isCampfire) {
     return { under, face };
@@ -725,12 +723,14 @@ export function createPropFoundation(
   const mossTex = textures?.["/foundation-transitions/moss.png"];
   const driftTex = textures?.["/modular-stronghold/v2/snowdrift-edge.png"];
 
-  const slope = prop.shear !== undefined ? prop.shear : prop.id.includes("se") ? 0.2 : -0.2;
+  const slope =
+    prop.shear !== undefined ? prop.shear : prop.id.includes("se") ? 0.2 : -0.2;
 
   if (soilTex && soilTex !== Texture.WHITE) {
     const soil = new Sprite(soilTex);
     soil.anchor.set(0.5, 0.52);
-    const sx = (prop.w * (isCampfire ? 0.56 : 0.72)) / Math.max(1, soilTex.width);
+    const sx =
+      (prop.w * (isCampfire ? 0.56 : 0.72)) / Math.max(1, soilTex.width);
     const sy = (isCampfire ? 42 : 28) / Math.max(1, soilTex.height);
     soil.setFromMatrix(
       new Matrix(sx, (isCampfire ? 0 : slope) * sx, 0, sy, prop.x, prop.y + 4),
@@ -741,7 +741,10 @@ export function createPropFoundation(
     const g = new Graphics();
     const rx = Math.max(24, prop.w * 0.28);
     const ry = Math.max(8, prop.h * 0.05);
-    g.ellipse(prop.x, prop.y + 2, rx, ry).fill({ color: 0x221c17, alpha: 0.16 });
+    g.ellipse(prop.x, prop.y + 2, rx, ry).fill({
+      color: 0x221c17,
+      alpha: 0.16,
+    });
     under.addChild(g);
   }
 
@@ -750,9 +753,7 @@ export function createPropFoundation(
     drift.anchor.set(0.5, 0.58);
     const sx = (prop.w * 0.46) / Math.max(1, driftTex.width);
     const sy = (prop.w * 0.22) / Math.max(1, driftTex.height);
-    drift.setFromMatrix(
-      new Matrix(sx, slope * sx, 0, sy, prop.x, prop.y + 6),
-    );
+    drift.setFromMatrix(new Matrix(sx, slope * sx, 0, sy, prop.x, prop.y + 6));
     drift.alpha = 0.28;
     under.addChild(drift);
   }
@@ -760,7 +761,8 @@ export function createPropFoundation(
   if (mossTex && mossTex !== Texture.WHITE) {
     const moss = new Sprite(mossTex);
     moss.anchor.set(0.5, 0.72);
-    const sx = (prop.w * (isCampfire ? 0.44 : 0.62)) / Math.max(1, mossTex.width);
+    const sx =
+      (prop.w * (isCampfire ? 0.44 : 0.62)) / Math.max(1, mossTex.width);
     const sy = (isCampfire ? 24 : 18) / Math.max(1, mossTex.height);
     moss.setFromMatrix(
       new Matrix(sx, (isCampfire ? 0 : slope) * sx, 0, sy, prop.x, prop.y + 2),
@@ -787,63 +789,694 @@ export type NativeStrongholdProp = {
 };
 
 export const STRONGHOLD_NATIVE_PROPS: NativeStrongholdProp[] = [
-  { id: "fir-young", file: "/modular-stronghold/v2/fir-young.png", x: 193, y: -160, width: 135, foot: 0.97, vertical: 1, shear: 0, depth: -160, layer: "world" },
-  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 65, y: -96, width: 154, foot: 0.97, vertical: 1, shear: 0, depth: -96, layer: "world" },
-  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: -191, y: 32, width: 173, foot: 0.97, vertical: 1, shear: 0, depth: 32, layer: "world" },
-  { id: "fir-young", file: "/modular-stronghold/v2/fir-young.png", x: 897, y: -192, width: 192, foot: 0.97, vertical: 1, shear: 0, depth: -192, layer: "world" },
-  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 1089, y: -96, width: 135, foot: 0.97, vertical: 1, shear: 0, depth: -96, layer: "world" },
-  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 1345, y: 32, width: 154, foot: 0.97, vertical: 1, shear: 0, depth: 32, layer: "world" },
-  { id: "fir-young", file: "/modular-stronghold/v2/fir-young.png", x: 1601, y: 160, width: 173, foot: 0.97, vertical: 1, shear: 0, depth: 160, layer: "world" },
-  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 1601, y: 608, width: 192, foot: 0.97, vertical: 1, shear: 0, depth: 608, layer: "world" },
-  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: 1217, y: 800, width: 135, foot: 0.97, vertical: 1, shear: 0, depth: 800, layer: "world" },
-  { id: "fir-young", file: "/modular-stronghold/v2/fir-young.png", x: -447, y: 608, width: 154, foot: 0.97, vertical: 1, shear: 0, depth: 608, layer: "world" },
-  { id: "spruce-mature", file: "/modular-stronghold/v2/spruce-mature.png", x: -63, y: 800, width: 173, foot: 0.97, vertical: 1, shear: 0, depth: 800, layer: "world" },
-  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: 77.8, y: -153.6, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: -153.6, layer: "world" },
-  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: 1076.2, y: -153.6, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: -153.6, layer: "world" },
-  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: 1524.2, y: 70.4, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: 70.4, layer: "world" },
-  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: 1377, y: 688, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: 688, layer: "world" },
-  { id: "cliff-snow", file: "/modular-stronghold/v2/cliff-snow.png", x: -223, y: 688, width: 320, foot: 0.97, vertical: 1, shear: 0, depth: 688, layer: "world" },
-  { id: "boulders-snow", file: "/modular-stronghold/v2/boulders-snow.png", x: -319, y: 96, width: 185, foot: 0.97, vertical: 1, shear: 0, depth: 96, layer: "world" },
-  { id: "boulders-snow", file: "/modular-stronghold/v2/boulders-snow.png", x: 1473, y: 96, width: 185, foot: 0.97, vertical: 1, shear: 0, depth: 96, layer: "world" },
-  { id: "boulders-snow", file: "/modular-stronghold/v2/boulders-snow.png", x: 1025, y: 768, width: 185, foot: 0.97, vertical: 1, shear: 0, depth: 768, layer: "world" },
-  { id: "boulders-snow", file: "/modular-stronghold/v2/boulders-snow.png", x: 129, y: 768, width: 185, foot: 0.97, vertical: 1, shear: 0, depth: 768, layer: "world" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 385, y: 0, width: 195, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 129, y: 128, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: -127, y: 256, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 769, y: 0, width: 195, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 1025, y: 128, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 1281, y: 256, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 1153, y: 448, width: 195, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 897, y: 576, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 1, y: 448, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 257, y: 576, width: 195, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "weeds-edge", file: "/modular-stronghold/v2/weeds-edge.png", x: 513, y: 640, width: 125, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: -95, y: -48, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 1249, y: -48, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 1229.8, y: 550.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 845.8, y: 742.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: -75.8, y: 550.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "snowdrift-edge", file: "/modular-stronghold/v2/snowdrift-edge.png", x: 308.2, y: 742.4, width: 200, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground" },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 321, y: 416, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground", opacity: 0.7 },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 833, y: 480, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground", opacity: 0.7 },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 385, y: 576, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground", opacity: 0.7 },
-  { id: "paving-worn", file: "/modular-stronghold/v2/paving-worn.png", x: 705, y: 352, width: 160, foot: 0.97, vertical: 1, shear: 0, depth: 1, layer: "ground", opacity: 0.7 },
-  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 464.15, y: -101.43, width: 330.6, foot: 0.5723, vertical: 0.75, shear: -0.1995, depth: -100, layer: "world" },
-  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-b.png", x: 213.05, y: 20.81, width: 303.16, foot: 0.5859, vertical: 0.75, shear: -0.2039, depth: 20, layer: "world" },
-  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: -15.85, y: 138.57, width: 330.6, foot: 0.5723, vertical: 0.75, shear: -0.1995, depth: 140, layer: "world" },
-  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: -255.85, y: 258.57, width: 330.6, foot: 0.5723, vertical: 0.75, shear: -0.1995, depth: 260, layer: "world" },
-  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 704.89, y: -98.43, width: 328.42, foot: 0.582, vertical: 0.75, shear: 0.199, depth: -100, layer: "world" },
-  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-b.png", x: 935.41, y: 19.69, width: 305.17, foot: 0.5938, vertical: 0.75, shear: 0.197, depth: 20, layer: "world" },
-  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 1184.89, y: 141.57, width: 328.42, foot: 0.582, vertical: 0.75, shear: 0.199, depth: 140, layer: "world" },
-  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 1424.89, y: 261.57, width: 328.42, foot: 0.582, vertical: 0.75, shear: 0.199, depth: 260, layer: "world" },
-  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: -271.09, y: 378.27, width: 287.37, foot: 0.582, vertical: 0.75, shear: 0.2383, depth: 376.63, layer: "world" },
-  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-b.png", x: -69.39, y: 489.55, width: 267.02, foot: 0.5938, vertical: 0.75, shear: 0.2363, depth: 489.88, layer: "world" },
-  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 148.91, y: 604.77, width: 287.37, foot: 0.582, vertical: 0.75, shear: 0.2383, depth: 603.13, layer: "world" },
-  { id: "rampart-se", file: "/buildings/starter-boundary/straight-se-a.png", x: 358.91, y: 718.02, width: 287.37, foot: 0.582, vertical: 0.75, shear: 0.2383, depth: 716.38, layer: "world" },
-  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 1438.26, y: 375.13, width: 289.27, foot: 0.5723, vertical: 0.75, shear: -0.2388, depth: 376.63, layer: "world" },
-  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-b.png", x: 1218.55, y: 490.72, width: 265.26, foot: 0.5859, vertical: 0.75, shear: -0.2432, depth: 489.88, layer: "world" },
-  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 1018.26, y: 601.63, width: 289.27, foot: 0.5723, vertical: 0.75, shear: -0.2388, depth: 603.13, layer: "world" },
-  { id: "rampart-ne", file: "/buildings/starter-boundary/straight-ne-a.png", x: 808.26, y: 714.88, width: 289.27, foot: 0.5723, vertical: 0.75, shear: -0.2388, depth: 716.38, layer: "world" },
+  {
+    id: "fir-young",
+    file: "/modular-stronghold/v2/fir-young.png",
+    x: 193,
+    y: -160,
+    width: 135,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: -160,
+    layer: "world",
+  },
+  {
+    id: "spruce-mature",
+    file: "/modular-stronghold/v2/spruce-mature.png",
+    x: 65,
+    y: -96,
+    width: 154,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: -96,
+    layer: "world",
+  },
+  {
+    id: "spruce-mature",
+    file: "/modular-stronghold/v2/spruce-mature.png",
+    x: -191,
+    y: 32,
+    width: 173,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 32,
+    layer: "world",
+  },
+  {
+    id: "fir-young",
+    file: "/modular-stronghold/v2/fir-young.png",
+    x: 897,
+    y: -192,
+    width: 192,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: -192,
+    layer: "world",
+  },
+  {
+    id: "spruce-mature",
+    file: "/modular-stronghold/v2/spruce-mature.png",
+    x: 1089,
+    y: -96,
+    width: 135,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: -96,
+    layer: "world",
+  },
+  {
+    id: "spruce-mature",
+    file: "/modular-stronghold/v2/spruce-mature.png",
+    x: 1345,
+    y: 32,
+    width: 154,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 32,
+    layer: "world",
+  },
+  {
+    id: "fir-young",
+    file: "/modular-stronghold/v2/fir-young.png",
+    x: 1601,
+    y: 160,
+    width: 173,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 160,
+    layer: "world",
+  },
+  {
+    id: "spruce-mature",
+    file: "/modular-stronghold/v2/spruce-mature.png",
+    x: 1601,
+    y: 608,
+    width: 192,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 608,
+    layer: "world",
+  },
+  {
+    id: "spruce-mature",
+    file: "/modular-stronghold/v2/spruce-mature.png",
+    x: 1217,
+    y: 800,
+    width: 135,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 800,
+    layer: "world",
+  },
+  {
+    id: "fir-young",
+    file: "/modular-stronghold/v2/fir-young.png",
+    x: -447,
+    y: 608,
+    width: 154,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 608,
+    layer: "world",
+  },
+  {
+    id: "spruce-mature",
+    file: "/modular-stronghold/v2/spruce-mature.png",
+    x: -63,
+    y: 800,
+    width: 173,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 800,
+    layer: "world",
+  },
+  {
+    id: "cliff-snow",
+    file: "/modular-stronghold/v2/cliff-snow.png",
+    x: 77.8,
+    y: -153.6,
+    width: 320,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: -153.6,
+    layer: "world",
+  },
+  {
+    id: "cliff-snow",
+    file: "/modular-stronghold/v2/cliff-snow.png",
+    x: 1076.2,
+    y: -153.6,
+    width: 320,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: -153.6,
+    layer: "world",
+  },
+  {
+    id: "cliff-snow",
+    file: "/modular-stronghold/v2/cliff-snow.png",
+    x: 1524.2,
+    y: 70.4,
+    width: 320,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 70.4,
+    layer: "world",
+  },
+  {
+    id: "cliff-snow",
+    file: "/modular-stronghold/v2/cliff-snow.png",
+    x: 1377,
+    y: 688,
+    width: 320,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 688,
+    layer: "world",
+  },
+  {
+    id: "cliff-snow",
+    file: "/modular-stronghold/v2/cliff-snow.png",
+    x: -223,
+    y: 688,
+    width: 320,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 688,
+    layer: "world",
+  },
+  {
+    id: "boulders-snow",
+    file: "/modular-stronghold/v2/boulders-snow.png",
+    x: -319,
+    y: 96,
+    width: 185,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 96,
+    layer: "world",
+  },
+  {
+    id: "boulders-snow",
+    file: "/modular-stronghold/v2/boulders-snow.png",
+    x: 1473,
+    y: 96,
+    width: 185,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 96,
+    layer: "world",
+  },
+  {
+    id: "boulders-snow",
+    file: "/modular-stronghold/v2/boulders-snow.png",
+    x: 1025,
+    y: 768,
+    width: 185,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 768,
+    layer: "world",
+  },
+  {
+    id: "boulders-snow",
+    file: "/modular-stronghold/v2/boulders-snow.png",
+    x: 129,
+    y: 768,
+    width: 185,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 768,
+    layer: "world",
+  },
+  {
+    id: "paving-worn",
+    file: "/modular-stronghold/v2/paving-worn.png",
+    x: 385,
+    y: 0,
+    width: 195,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "weeds-edge",
+    file: "/modular-stronghold/v2/weeds-edge.png",
+    x: 129,
+    y: 128,
+    width: 125,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "weeds-edge",
+    file: "/modular-stronghold/v2/weeds-edge.png",
+    x: -127,
+    y: 256,
+    width: 125,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "paving-worn",
+    file: "/modular-stronghold/v2/paving-worn.png",
+    x: 769,
+    y: 0,
+    width: 195,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "weeds-edge",
+    file: "/modular-stronghold/v2/weeds-edge.png",
+    x: 1025,
+    y: 128,
+    width: 125,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "weeds-edge",
+    file: "/modular-stronghold/v2/weeds-edge.png",
+    x: 1281,
+    y: 256,
+    width: 125,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "paving-worn",
+    file: "/modular-stronghold/v2/paving-worn.png",
+    x: 1153,
+    y: 448,
+    width: 195,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "weeds-edge",
+    file: "/modular-stronghold/v2/weeds-edge.png",
+    x: 897,
+    y: 576,
+    width: 125,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "weeds-edge",
+    file: "/modular-stronghold/v2/weeds-edge.png",
+    x: 1,
+    y: 448,
+    width: 125,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "paving-worn",
+    file: "/modular-stronghold/v2/paving-worn.png",
+    x: 257,
+    y: 576,
+    width: 195,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "weeds-edge",
+    file: "/modular-stronghold/v2/weeds-edge.png",
+    x: 513,
+    y: 640,
+    width: 125,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "snowdrift-edge",
+    file: "/modular-stronghold/v2/snowdrift-edge.png",
+    x: -95,
+    y: -48,
+    width: 200,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "snowdrift-edge",
+    file: "/modular-stronghold/v2/snowdrift-edge.png",
+    x: 1249,
+    y: -48,
+    width: 200,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "snowdrift-edge",
+    file: "/modular-stronghold/v2/snowdrift-edge.png",
+    x: 1229.8,
+    y: 550.4,
+    width: 200,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "snowdrift-edge",
+    file: "/modular-stronghold/v2/snowdrift-edge.png",
+    x: 845.8,
+    y: 742.4,
+    width: 200,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "snowdrift-edge",
+    file: "/modular-stronghold/v2/snowdrift-edge.png",
+    x: -75.8,
+    y: 550.4,
+    width: 200,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "snowdrift-edge",
+    file: "/modular-stronghold/v2/snowdrift-edge.png",
+    x: 308.2,
+    y: 742.4,
+    width: 200,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+  },
+  {
+    id: "paving-worn",
+    file: "/modular-stronghold/v2/paving-worn.png",
+    x: 321,
+    y: 416,
+    width: 160,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+    opacity: 0.7,
+  },
+  {
+    id: "paving-worn",
+    file: "/modular-stronghold/v2/paving-worn.png",
+    x: 833,
+    y: 480,
+    width: 160,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+    opacity: 0.7,
+  },
+  {
+    id: "paving-worn",
+    file: "/modular-stronghold/v2/paving-worn.png",
+    x: 385,
+    y: 576,
+    width: 160,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+    opacity: 0.7,
+  },
+  {
+    id: "paving-worn",
+    file: "/modular-stronghold/v2/paving-worn.png",
+    x: 705,
+    y: 352,
+    width: 160,
+    foot: 0.97,
+    vertical: 1,
+    shear: 0,
+    depth: 1,
+    layer: "ground",
+    opacity: 0.7,
+  },
+  {
+    id: "rampart-ne",
+    file: "/buildings/starter-boundary/straight-ne-a.png",
+    x: 464.15,
+    y: -101.43,
+    width: 330.6,
+    foot: 0.5723,
+    vertical: 0.75,
+    shear: -0.1995,
+    depth: -100,
+    layer: "world",
+  },
+  {
+    id: "rampart-ne",
+    file: "/buildings/starter-boundary/straight-ne-b.png",
+    x: 213.05,
+    y: 20.81,
+    width: 303.16,
+    foot: 0.5859,
+    vertical: 0.75,
+    shear: -0.2039,
+    depth: 20,
+    layer: "world",
+  },
+  {
+    id: "rampart-ne",
+    file: "/buildings/starter-boundary/straight-ne-a.png",
+    x: -15.85,
+    y: 138.57,
+    width: 330.6,
+    foot: 0.5723,
+    vertical: 0.75,
+    shear: -0.1995,
+    depth: 140,
+    layer: "world",
+  },
+  {
+    id: "rampart-ne",
+    file: "/buildings/starter-boundary/straight-ne-a.png",
+    x: -255.85,
+    y: 258.57,
+    width: 330.6,
+    foot: 0.5723,
+    vertical: 0.75,
+    shear: -0.1995,
+    depth: 260,
+    layer: "world",
+  },
+  {
+    id: "rampart-se",
+    file: "/buildings/starter-boundary/straight-se-a.png",
+    x: 704.89,
+    y: -98.43,
+    width: 328.42,
+    foot: 0.582,
+    vertical: 0.75,
+    shear: 0.199,
+    depth: -100,
+    layer: "world",
+  },
+  {
+    id: "rampart-se",
+    file: "/buildings/starter-boundary/straight-se-b.png",
+    x: 935.41,
+    y: 19.69,
+    width: 305.17,
+    foot: 0.5938,
+    vertical: 0.75,
+    shear: 0.197,
+    depth: 20,
+    layer: "world",
+  },
+  {
+    id: "rampart-se",
+    file: "/buildings/starter-boundary/straight-se-a.png",
+    x: 1184.89,
+    y: 141.57,
+    width: 328.42,
+    foot: 0.582,
+    vertical: 0.75,
+    shear: 0.199,
+    depth: 140,
+    layer: "world",
+  },
+  {
+    id: "rampart-se",
+    file: "/buildings/starter-boundary/straight-se-a.png",
+    x: 1424.89,
+    y: 261.57,
+    width: 328.42,
+    foot: 0.582,
+    vertical: 0.75,
+    shear: 0.199,
+    depth: 260,
+    layer: "world",
+  },
+  {
+    id: "rampart-se",
+    file: "/buildings/starter-boundary/straight-se-a.png",
+    x: -271.09,
+    y: 378.27,
+    width: 287.37,
+    foot: 0.582,
+    vertical: 0.75,
+    shear: 0.2383,
+    depth: 376.63,
+    layer: "world",
+  },
+  {
+    id: "rampart-se",
+    file: "/buildings/starter-boundary/straight-se-b.png",
+    x: -69.39,
+    y: 489.55,
+    width: 267.02,
+    foot: 0.5938,
+    vertical: 0.75,
+    shear: 0.2363,
+    depth: 489.88,
+    layer: "world",
+  },
+  {
+    id: "rampart-se",
+    file: "/buildings/starter-boundary/straight-se-a.png",
+    x: 148.91,
+    y: 604.77,
+    width: 287.37,
+    foot: 0.582,
+    vertical: 0.75,
+    shear: 0.2383,
+    depth: 603.13,
+    layer: "world",
+  },
+  {
+    id: "rampart-se",
+    file: "/buildings/starter-boundary/straight-se-a.png",
+    x: 358.91,
+    y: 718.02,
+    width: 287.37,
+    foot: 0.582,
+    vertical: 0.75,
+    shear: 0.2383,
+    depth: 716.38,
+    layer: "world",
+  },
+  {
+    id: "rampart-ne",
+    file: "/buildings/starter-boundary/straight-ne-a.png",
+    x: 1438.26,
+    y: 375.13,
+    width: 289.27,
+    foot: 0.5723,
+    vertical: 0.75,
+    shear: -0.2388,
+    depth: 376.63,
+    layer: "world",
+  },
+  {
+    id: "rampart-ne",
+    file: "/buildings/starter-boundary/straight-ne-b.png",
+    x: 1218.55,
+    y: 490.72,
+    width: 265.26,
+    foot: 0.5859,
+    vertical: 0.75,
+    shear: -0.2432,
+    depth: 489.88,
+    layer: "world",
+  },
+  {
+    id: "rampart-ne",
+    file: "/buildings/starter-boundary/straight-ne-a.png",
+    x: 1018.26,
+    y: 601.63,
+    width: 289.27,
+    foot: 0.5723,
+    vertical: 0.75,
+    shear: -0.2388,
+    depth: 603.13,
+    layer: "world",
+  },
+  {
+    id: "rampart-ne",
+    file: "/buildings/starter-boundary/straight-ne-a.png",
+    x: 808.26,
+    y: 714.88,
+    width: 289.27,
+    foot: 0.5723,
+    vertical: 0.75,
+    shear: -0.2388,
+    depth: 716.38,
+    layer: "world",
+  },
 ];
 
 export const CAMPFIRE_NATIVE_PROP: NativeStrongholdProp = {
@@ -880,7 +1513,9 @@ export type StrongholdPropDef = {
   depth?: number;
 };
 
-export function allStrongholdProps(includeCampfire = true): StrongholdPropDef[] {
+export function allStrongholdProps(
+  includeCampfire = true,
+): StrongholdPropDef[] {
   const list: StrongholdPropDef[] = STRONGHOLD_NATIVE_PROPS.map((p, idx) => {
     const isWall = p.id.startsWith("rampart-");
     const aspect = isWall ? 256 / 416 : p.layer === "ground" ? 0.55 : 1.15;
@@ -1003,7 +1638,11 @@ export function palisadeColumns(prop: StrongholdPropDef): FootprintColumn[] {
   for (let dx = -hw; dx <= hw; dx += 4) {
     if (isGate && Math.abs(dx) < gateOpen) continue;
     const cy = prop.y + s * dx;
-    cols.push([Math.round(prop.x + dx), Math.round(cy - t), Math.round(cy + t)]);
+    cols.push([
+      Math.round(prop.x + dx),
+      Math.round(cy - t),
+      Math.round(cy + t),
+    ]);
   }
   return cols;
 }
@@ -1085,7 +1724,5 @@ export function applyIsometricShear(
 ): void {
   const sx = (flip ? -1 : 1) * sprite.scale.x;
   const sy = sprite.scale.y;
-  sprite.setFromMatrix(
-    new Matrix(sx, shear * sx, 0, sy, sprite.x, sprite.y),
-  );
+  sprite.setFromMatrix(new Matrix(sx, shear * sx, 0, sy, sprite.x, sprite.y));
 }

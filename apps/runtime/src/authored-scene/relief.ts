@@ -197,7 +197,7 @@ export function reliefBlockedTile(
 ): boolean {
   const p = mapToCourt(u, v);
   for (const f of features) {
-    if (f.type !== "hill") continue;
+    if (f.type !== "hill" || f.collision === false) continue;
     if (inside(f, u, v) && !onHillSurface(f, p.x, p.y, features)) return true;
   }
   return false;
@@ -219,6 +219,7 @@ export function cliffTile(
   v1: number,
   features: readonly ReliefFeature[] = DEFAULT_RELIEF_FEATURES,
 ): boolean {
+  const collisionFeatures = features.filter((f) => f.collision !== false);
   const dist = Math.hypot(u1 - u0, v1 - v0);
   const steps = Math.max(1, Math.ceil(dist / 0.08));
   let au = u0;
@@ -227,11 +228,18 @@ export function cliffTile(
     const t = i / steps;
     const bu = u0 + (u1 - u0) * t;
     const bv = v0 + (v1 - v0) * t;
-    if (reliefBlockedTile(bu, bv, features)) return true;
+    if (reliefBlockedTile(bu, bv, collisionFeatures)) return true;
+    const nearby = collisionFeatures.filter(
+      (f) => inside(f, au, av) || inside(f, bu, bv),
+    );
+    const maxStep = nearby.length
+      ? Math.min(...nearby.map((f) => f.maxStepM ?? MAX_STEP_M))
+      : MAX_STEP_M;
     if (
       Math.abs(
-        heightAtTile(bu, bv, features) - heightAtTile(au, av, features),
-      ) > MAX_STEP_M
+        heightAtTile(bu, bv, collisionFeatures) -
+          heightAtTile(au, av, collisionFeatures),
+      ) > maxStep
     ) {
       return true;
     }
@@ -298,7 +306,8 @@ export type ReliefLayerResult = {
 };
 
 /** Generated replacement: crisp cliff silhouette, soft ground-level ramp entrance. */
-export const HILL_ATLAS_PATH = "/terrain-height/natural/snow-cliff-crisp-v3.png";
+export const HILL_ATLAS_PATH =
+  "/terrain-height/natural/snow-cliff-crisp-v3.png";
 export const HILL_BASE_ATLAS = { x: 0, y: 0, w: 1774, h: 887 };
 
 export function buildNaturalHillSprite(

@@ -1,3 +1,8 @@
+import {
+  validStateAnimation,
+  namedObjectStates,
+  type StateAnimation,
+} from "./object-states";
 // Canonical authored-scene presentation contract, shared by game and editor.
 export type Animation = {
   fps: number;
@@ -39,7 +44,9 @@ export type Instance = {
   rotation: number;
   visible: boolean;
   pivot?: { x: number; y: number };
-  definition: { id: string; name: string; parts: Part[] };
+  stateValues?: Record<string, string>;
+  objectState?: string;
+  definition: { id: string; name: string; parts: Part[] } & StateAnimation;
 };
 export type Scene = {
   schema: "arkodia.scene";
@@ -239,6 +246,19 @@ export function parseScene(input: unknown): Scene {
         o.definition.parts.length <= 200,
       "Invalid scene components",
     );
+    requireValue(validStateAnimation(o.definition), "Invalid object states");
+    if (o.stateValues !== undefined)
+      requireValue(
+        o.stateValues &&
+          typeof o.stateValues === "object" &&
+          !Array.isArray(o.stateValues) &&
+          Object.entries(o.stateValues).every(([id, value]) =>
+            namedObjectStates(o.definition).some(
+              (s) => s.id === id && s.values.some((v) => v.id === value),
+            ),
+          ),
+        "Invalid current state values",
+      );
     const parts = new Set<string>();
     for (const p of o.definition.parts) {
       requireValue(

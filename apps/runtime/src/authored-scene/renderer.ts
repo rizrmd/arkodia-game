@@ -1,3 +1,4 @@
+import { ObjectStateController, stateFrameForPart } from "./object-states";
 import {
   Assets,
   Container,
@@ -79,11 +80,18 @@ async function texture(p: Part) {
 export type SceneNode = Container & {
   sceneTick: (time: number) => void;
   sceneMetrics: () => unknown;
+  states: ObjectStateController;
 };
 export async function createSceneNode(o: Instance): Promise<SceneNode> {
   const node = new Container() as SceneNode;
   node.label = o.id;
+  node.states = new ObjectStateController(
+    o.definition,
+    o.stateValues,
+    o.objectState,
+  );
   const animations: {
+    partId: string;
     sprite: Sprite;
     frames: Texture[];
     clip: NonNullable<Part["animation"]>;
@@ -132,7 +140,7 @@ export async function createSceneNode(o: Instance): Promise<SceneNode> {
       s.tint = p.color;
       visual = s;
       if (p.animation && frames)
-        animations.push({ sprite: s, frames, clip: p.animation });
+        animations.push({ partId: p.id, sprite: s, frames, clip: p.animation });
     }
     visual.position.set(p.x, p.y);
     visual.scale.set(visual.scale.x * p.scale, visual.scale.y * p.scale);
@@ -147,8 +155,16 @@ export async function createSceneNode(o: Instance): Promise<SceneNode> {
   if (o.pivot) node.pivot.set(o.pivot.x, o.pivot.y);
   node.zIndex = placementProfile(o).layer + o.y * 7;
   node.sceneTick = (time) => {
-    for (const a of animations)
-      a.sprite.texture = a.frames[frameAt(time, a.clip)];
+    const frames = node.states.frames(time);
+    for (const a of animations) {
+      const frame = stateFrameForPart(o.definition, frames, a.partId);
+      a.sprite.texture =
+        a.frames[
+          frame === undefined
+            ? frameAt(time, a.clip)
+            : Math.min(a.frames.length - 1, Math.max(0, Math.round(frame)))
+        ];
+    }
   };
   node.sceneMetrics = () => {
     for (const { visual } of visuals) visual.updateLocalTransform();
@@ -156,6 +172,7 @@ export async function createSceneNode(o: Instance): Promise<SceneNode> {
       id: o.id,
       name: o.name,
       category: o.category,
+      states: node.states.current,
       position: [node.x, node.y],
       scale: [node.scale.x, node.scale.y],
       rotation: node.angle,
@@ -275,30 +292,128 @@ const ENV_TEXTURE_SPECS: readonly {
   wave: 1 | 2;
   useSnowFallback?: boolean;
 }[] = [
-  { key: "/modular-stronghold/v2/snow-soft-texture.png", path: "modular-stronghold/v2/snow-soft-texture.png", wave: 1, useSnowFallback: true },
-  { key: "/modular-stronghold/v2/paving-warm-texture.png", path: "modular-stronghold/v2/paving-warm-texture.png", wave: 1 },
-  { key: "/buildings/starter-boundary/straight-ne-a.png", path: "buildings/starter-boundary/straight-ne-a.png", wave: 1 },
-  { key: "/buildings/starter-boundary/straight-ne-b.png", path: "buildings/starter-boundary/straight-ne-b.png", wave: 1 },
-  { key: "/buildings/starter-boundary/straight-se-a.png", path: "buildings/starter-boundary/straight-se-a.png", wave: 1 },
-  { key: "/buildings/starter-boundary/straight-se-b.png", path: "buildings/starter-boundary/straight-se-b.png", wave: 1 },
-  { key: "/buildings/starter-boundary/gate-closed.png", path: "buildings/starter-boundary/gate-closed.png", wave: 1 },
-  { key: "/buildings/starter-boundary/gate-sheet.png", path: "buildings/starter-boundary/gate-sheet.png", wave: 1 },
-  { key: "/buildings/starting-campfire/campfire-v1.png", path: "buildings/starting-campfire/campfire-v1.png", wave: 1 },
-  { key: "/frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp", path: "frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp", wave: 1 },
-  { key: "/terrain-height/natural/snow-cliff-crisp-v3.png", path: "terrain-height/natural/snow-cliff-crisp-v3.png", wave: 1 },
-  { key: "/realistic-torch/frame-0.webp", path: "realistic-torch/frame-0.webp", wave: 1 },
-  { key: "/realistic-torch/frame-1.webp", path: "realistic-torch/frame-1.webp", wave: 1 },
-  { key: "/realistic-torch/frame-2.webp", path: "realistic-torch/frame-2.webp", wave: 1 },
-  { key: "/realistic-torch/frame-3.webp", path: "realistic-torch/frame-3.webp", wave: 1 },
-  { key: "/modular-stronghold/v2/paving-worn.png", path: "modular-stronghold/v2/paving-worn.png", wave: 1 },
-  { key: "/modular-stronghold/v2/snowdrift-edge.png", path: "modular-stronghold/v2/snowdrift-edge.png", wave: 1, useSnowFallback: true },
-  { key: "/modular-stronghold/v2/weeds-edge.png", path: "modular-stronghold/v2/weeds-edge.png", wave: 1 },
-  { key: "/modular-stronghold/v2/fir-young.png", path: "modular-stronghold/v2/fir-young.png", wave: 1 },
-  { key: "/modular-stronghold/v2/spruce-mature.png", path: "modular-stronghold/v2/spruce-mature.png", wave: 1 },
-  { key: "/modular-stronghold/v2/boulders-snow.png", path: "modular-stronghold/v2/boulders-snow.png", wave: 1 },
-  { key: "/modular-stronghold/v2/cliff-snow.png", path: "modular-stronghold/v2/cliff-snow.png", wave: 1 },
-  { key: "/foundation-transitions/soil-moss.png", path: "foundation-transitions/soil-moss.png", wave: 2 },
-  { key: "/foundation-transitions/moss.png", path: "foundation-transitions/moss.png", wave: 2 },
+  {
+    key: "/modular-stronghold/v2/snow-soft-texture.png",
+    path: "modular-stronghold/v2/snow-soft-texture.png",
+    wave: 1,
+    useSnowFallback: true,
+  },
+  {
+    key: "/modular-stronghold/v2/paving-warm-texture.png",
+    path: "modular-stronghold/v2/paving-warm-texture.png",
+    wave: 1,
+  },
+  {
+    key: "/buildings/starter-boundary/straight-ne-a.png",
+    path: "buildings/starter-boundary/straight-ne-a.png",
+    wave: 1,
+  },
+  {
+    key: "/buildings/starter-boundary/straight-ne-b.png",
+    path: "buildings/starter-boundary/straight-ne-b.png",
+    wave: 1,
+  },
+  {
+    key: "/buildings/starter-boundary/straight-se-a.png",
+    path: "buildings/starter-boundary/straight-se-a.png",
+    wave: 1,
+  },
+  {
+    key: "/buildings/starter-boundary/straight-se-b.png",
+    path: "buildings/starter-boundary/straight-se-b.png",
+    wave: 1,
+  },
+  {
+    key: "/buildings/starter-boundary/gate-closed.png",
+    path: "buildings/starter-boundary/gate-closed.png",
+    wave: 1,
+  },
+  {
+    key: "/buildings/starter-boundary/gate-sheet.png",
+    path: "buildings/starter-boundary/gate-sheet.png",
+    wave: 1,
+  },
+  {
+    key: "/buildings/starting-campfire/campfire-v1.png",
+    path: "buildings/starting-campfire/campfire-v1.png",
+    wave: 1,
+  },
+  {
+    key: "/frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp",
+    path: "frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp",
+    wave: 1,
+  },
+  {
+    key: "/terrain-height/natural/snow-cliff-crisp-v3.png",
+    path: "terrain-height/natural/snow-cliff-crisp-v3.png",
+    wave: 1,
+  },
+  {
+    key: "/realistic-torch/frame-0.webp",
+    path: "realistic-torch/frame-0.webp",
+    wave: 1,
+  },
+  {
+    key: "/realistic-torch/frame-1.webp",
+    path: "realistic-torch/frame-1.webp",
+    wave: 1,
+  },
+  {
+    key: "/realistic-torch/frame-2.webp",
+    path: "realistic-torch/frame-2.webp",
+    wave: 1,
+  },
+  {
+    key: "/realistic-torch/frame-3.webp",
+    path: "realistic-torch/frame-3.webp",
+    wave: 1,
+  },
+  {
+    key: "/modular-stronghold/v2/paving-worn.png",
+    path: "modular-stronghold/v2/paving-worn.png",
+    wave: 1,
+  },
+  {
+    key: "/modular-stronghold/v2/snowdrift-edge.png",
+    path: "modular-stronghold/v2/snowdrift-edge.png",
+    wave: 1,
+    useSnowFallback: true,
+  },
+  {
+    key: "/modular-stronghold/v2/weeds-edge.png",
+    path: "modular-stronghold/v2/weeds-edge.png",
+    wave: 1,
+  },
+  {
+    key: "/modular-stronghold/v2/fir-young.png",
+    path: "modular-stronghold/v2/fir-young.png",
+    wave: 1,
+  },
+  {
+    key: "/modular-stronghold/v2/spruce-mature.png",
+    path: "modular-stronghold/v2/spruce-mature.png",
+    wave: 1,
+  },
+  {
+    key: "/modular-stronghold/v2/boulders-snow.png",
+    path: "modular-stronghold/v2/boulders-snow.png",
+    wave: 1,
+  },
+  {
+    key: "/modular-stronghold/v2/cliff-snow.png",
+    path: "modular-stronghold/v2/cliff-snow.png",
+    wave: 1,
+  },
+  {
+    key: "/foundation-transitions/soil-moss.png",
+    path: "foundation-transitions/soil-moss.png",
+    wave: 2,
+  },
+  {
+    key: "/foundation-transitions/moss.png",
+    path: "foundation-transitions/moss.png",
+    wave: 2,
+  },
   { key: "/vfx/textures/flame.png", path: "vfx/textures/flame.png", wave: 2 },
   { key: "/buildings/bastion/bastion-v1.png", path: "bastion.png", wave: 2 },
 ];

@@ -218,14 +218,26 @@ export type SceneGroundOptions = {
 
 let envTexturesPromise: Promise<Record<string, Texture>> | null = null;
 const loadedEnvTextures: Record<string, Texture> = {};
-const envProgressListeners = new Set<(textures: Record<string, Texture>) => void>();
+let fallbackEnvironmentSnow: Texture | undefined;
+const envProgressListeners = new Set<
+  (textures: Record<string, Texture>) => void
+>();
 
 export function getLoadedEnvironmentRuntimeTextures(): Record<string, Texture> {
-  const valid: Record<string, Texture> = {};
+  // Unavailable artwork must never become opaque white geometry. Placeholders
+  // are presentation only; they are not successful entries in the load cache.
+  const valid: Record<string, Texture> = Object.fromEntries(
+    ENV_TEXTURE_SPECS.map((spec) => [spec.key, Texture.EMPTY]),
+  );
   for (const [k, v] of Object.entries(loadedEnvTextures)) {
     if (v && !v.destroyed && v.source && !v.source.destroyed) {
       valid[k] = v;
     }
+  }
+  const snowKey = "/modular-stronghold/v2/snow-soft-texture.png";
+  if (valid[snowKey] === Texture.EMPTY) {
+    fallbackEnvironmentSnow ??= createProceduralSnowTexture();
+    valid[snowKey] = fallbackEnvironmentSnow;
   }
   return valid;
 }
@@ -299,7 +311,12 @@ export function loadEnvironmentRuntimeTextures(
     envProgressListeners.add(onProgress);
   }
   const existing = getLoadedEnvironmentRuntimeTextures();
-  if (Object.keys(existing).length === ENV_TEXTURE_SPECS.length) {
+  if (
+    ENV_TEXTURE_SPECS.every((spec) => {
+      const tex = loadedEnvTextures[spec.key];
+      return tex && !tex.destroyed && tex.source && !tex.source.destroyed;
+    })
+  ) {
     if (onProgress) {
       envProgressListeners.delete(onProgress);
       onProgress(existing);
@@ -313,26 +330,35 @@ export function loadEnvironmentRuntimeTextures(
   }
   const resolveAsset = (name: string) =>
     baseUrl ? new URL(`/assets/${name}`, baseUrl).href : `/assets/${name}`;
-  const loadTex = async (path: string, fallback?: Texture): Promise<Texture> => {
+  const loadTex = async (path: string): Promise<Texture | undefined> => {
     const url = resolveAsset(path);
-    try {
-      if (typeof fetch === "function" && typeof createImageBitmap === "function") {
-        const res = await fetch(url, {
-          credentials: "omit",
-          signal:
-            typeof AbortSignal !== "undefined" && "timeout" in AbortSignal
-              ? AbortSignal.timeout(12000)
-              : undefined,
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const blob = await res.blob();
-        const bitmap = await createImageBitmap(blob);
-        return Texture.from(bitmap);
+    // The asset proxy can spend 20 seconds on each of two upstream origins.
+    // Limit concurrent downloads and allow that cold-cache request to finish.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        if (
+          typeof fetch === "function" &&
+          typeof createImageBitmap === "function"
+        ) {
+          const res = await fetch(url, {
+            credentials: "omit",
+            signal:
+              typeof AbortSignal !== "undefined" && "timeout" in AbortSignal
+                ? AbortSignal.timeout(45000)
+                : undefined,
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const blob = await res.blob();
+          const bitmap = await createImageBitmap(blob);
+          return Texture.from(bitmap);
+        }
+        return await Assets.load<Texture>(url);
+      } catch (error) {
+        if (attempt === 2)
+          console.warn(`Environment texture unavailable: ${url}`, error);
       }
-      return await Assets.load<Texture>(url);
-    } catch {
-      return fallback ?? Texture.WHITE;
     }
+    return undefined;
   };
   const notifyProgress = () => {
     const snap = getLoadedEnvironmentRuntimeTextures();
@@ -345,23 +371,25 @@ export function loadEnvironmentRuntimeTextures(
     }
   };
   envTexturesPromise = (async () => {
-    const fallbackSnow = createProceduralSnowTexture();
     const loadWave = async (wave: 1 | 2) => {
-      const specs = ENV_TEXTURE_SPECS.filter((s) => s.wave === wave);
-      await Promise.all(
-        specs.map(async (spec) => {
+      const pending = ENV_TEXTURE_SPECS.filter((s) => s.wave === wave);
+      const worker = async () => {
+        for (let spec = pending.shift(); spec; spec = pending.shift()) {
           const cached = loadedEnvTextures[spec.key];
-          if (cached && !cached.destroyed && cached.source && !cached.source.destroyed) {
-            return;
-          }
-          const tex = await loadTex(
-            spec.path,
-            spec.useSnowFallback ? fallbackSnow : undefined,
-          );
-          loadedEnvTextures[spec.key] = tex;
-        }),
-      );
-      notifyProgress();
+          if (
+            cached &&
+            !cached.destroyed &&
+            cached.source &&
+            !cached.source.destroyed
+          )
+            continue;
+          const tex = await loadTex(spec.path);
+          // Failed downloads stay retryable on the next load, never cached white.
+          if (tex) loadedEnvTextures[spec.key] = tex;
+          notifyProgress();
+        }
+      };
+      await Promise.all(Array.from({ length: 4 }, worker));
     };
     await loadWave(1);
     await loadWave(2);
@@ -415,9 +443,19 @@ function drawGateDoorGraphic(g: Graphics, open: boolean, progress: number) {
   g.clear();
   const gx = GATE_DOOR_CONFIG.x;
   const gy = GATE_DOOR_CONFIG.y;
-  g.ellipse(gx, gy, GATE_DOOR_CONFIG.closeRadius, GATE_DOOR_CONFIG.closeRadius * 0.5)
+  g.ellipse(
+    gx,
+    gy,
+    GATE_DOOR_CONFIG.closeRadius,
+    GATE_DOOR_CONFIG.closeRadius * 0.5,
+  )
     .stroke({ color: 0x6ea8d6, width: 1.5, alpha: 0.22 })
-    .ellipse(gx, gy, GATE_DOOR_CONFIG.openRadius, GATE_DOOR_CONFIG.openRadius * 0.5)
+    .ellipse(
+      gx,
+      gy,
+      GATE_DOOR_CONFIG.openRadius,
+      GATE_DOOR_CONFIG.openRadius * 0.5,
+    )
     .stroke({
       color: open ? 0x8be29b : 0xe9ac4c,
       width: 2,
@@ -642,11 +680,7 @@ export function sceneGround(
       }
     }
 
-    stage1.addChild(
-      strongholdGround,
-      strongholdUpright,
-      env.foundations.face,
-    );
+    stage1.addChild(strongholdGround, strongholdUpright, env.foundations.face);
   } else {
     const snowField = new Graphics()
       .roundRect(-620, -320, 2400, 1480, 64)
@@ -922,7 +956,11 @@ export function syncSceneEnvironment(
 
     if (mounted.hasTextures) {
       mounted.env.snow.sprite.tint = env.daylight.tintHex;
-      if (mounted.gateSprite && mounted.gateFrames && mounted.gateFrames.length > 0) {
+      if (
+        mounted.gateSprite &&
+        mounted.gateFrames &&
+        mounted.gateFrames.length > 0
+      ) {
         const p = gateOpen ? 1 : env.gateDoor.progress;
         const idx = Math.max(
           0,
@@ -938,7 +976,8 @@ export function syncSceneEnvironment(
           0.92 +
           0.08 * Math.sin(timeSec * 8.2) +
           0.05 * Math.cos(timeSec * 13.7);
-        mounted.campfireFlame.width = 68 * (0.95 + 0.05 * Math.sin(timeSec * 11.1));
+        mounted.campfireFlame.width =
+          68 * (0.95 + 0.05 * Math.sin(timeSec * 11.1));
         mounted.campfireFlame.height = 84 * flicker;
         mounted.campfireFlame.alpha = 0.84 * flicker;
       }

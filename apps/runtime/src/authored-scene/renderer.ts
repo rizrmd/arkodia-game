@@ -285,7 +285,7 @@ const ENV_TEXTURE_SPECS: readonly {
   { key: "/buildings/starter-boundary/gate-sheet.png", path: "buildings/starter-boundary/gate-sheet.png", wave: 1 },
   { key: "/buildings/starting-campfire/campfire-v1.png", path: "buildings/starting-campfire/campfire-v1.png", wave: 1 },
   { key: "/frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp", path: "frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp", wave: 1 },
-  { key: "/terrain-height/natural/cliff-strip-v2.webp", path: "terrain-height/natural/cliff-strip-v2.webp", wave: 1 },
+  { key: "/terrain-height/natural/snow-cliff-crisp-v3.png", path: "terrain-height/natural/snow-cliff-crisp-v3.png", wave: 1 },
   { key: "/realistic-torch/frame-0.webp", path: "realistic-torch/frame-0.webp", wave: 1 },
   { key: "/realistic-torch/frame-1.webp", path: "realistic-torch/frame-1.webp", wave: 1 },
   { key: "/realistic-torch/frame-2.webp", path: "realistic-torch/frame-2.webp", wave: 1 },

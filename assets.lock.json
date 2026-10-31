@@ -4,7 +4,7 @@
   "shards": [
     {
       "path": "asset-lock/part-000.json",
-      "sha256": "62f101a0b2538230914995e3dc69328616d79cf9294a5b7735c5ee39680f450e"
+      "sha256": "a1089351eddb8f0fbb3abbffbd655927219d27f84b5ce95a9c798c08741a7043"
     }
   ],
   "sourceCommit": "c497e6689bcde660d6ecf66ec6b69ce1a285ace3"

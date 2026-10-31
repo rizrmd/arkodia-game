@@ -1,6 +1,17 @@
 {
   "assets": [
     {
+      "path": "apps/runtime/public/assets/terrain-height/natural/snow-cliff-crisp-v3.png",
+      "role": "runtime",
+      "sha256": "d10cedc68a970c196b39a4504c36e536a602b59d2be21bc13c8e4b046397a2d0",
+      "size": 2369849,
+      "source": {
+        "origin": "https://content.arkodia.online",
+        "releaseId": "2d228b50387522520e0d2e70c77fd9ea",
+        "type": "content"
+      }
+    },
+    {
       "path": "apps/runtime/public/models/ember-warden.glb",
       "role": "runtime",
       "sha256": "27314f388adb9fa94dc7db468f6ade4ceacedafc248af4b68745f28adb793e29",

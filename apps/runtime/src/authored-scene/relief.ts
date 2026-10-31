@@ -297,9 +297,9 @@ export type ReliefLayerResult = {
   features: ReliefFeature[];
 };
 
-/** Native transparent frame in the existing 1536 × 2048 terrain spritesheet. */
-export const HILL_ATLAS_PATH = "/terrain-height/natural/cliff-strip-v2.webp";
-export const HILL_BASE_ATLAS = { x: 0, y: 1280, w: 1536, h: 768 };
+/** Generated replacement: crisp cliff silhouette, soft ground-level ramp entrance. */
+export const HILL_ATLAS_PATH = "/terrain-height/natural/snow-cliff-crisp-v3.png";
+export const HILL_BASE_ATLAS = { x: 0, y: 0, w: 1774, h: 887 };
 
 export function buildNaturalHillSprite(
   f: ReliefFeature,

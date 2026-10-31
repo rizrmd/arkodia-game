@@ -22,6 +22,11 @@ const mime = {
 let loadedManifestKey = "";
 const contentAssets = new Map();
 const ENV_RUNTIME_ASSETS = {
+  "/terrain-height/natural/snow-cliff-crisp-v3.png": {
+    sha256: "d10cedc68a970c196b39a4504c36e536a602b59d2be21bc13c8e4b046397a2d0",
+    size: 2369849,
+    releaseId: "2d228b50387522520e0d2e70c77fd9ea",
+  },
   "/frozen-frontier/game/atlas-5083a8ebd8c8bb4b.webp": {
     sha256: "5083a8ebd8c8bb4bb4fccc0dcaaa9f71deb9821af1648fbf053506c37617961c",
     size: 1221014,

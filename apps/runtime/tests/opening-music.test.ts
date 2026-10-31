@@ -21,7 +21,7 @@ test('opening autoplay attempts immediately, retries blocked gestures, and stops
     Object.assign(globalThis,{window,document,Audio:FakeAudio,localStorage:{getItem:()=>stored,setItem:(_key:string,value:string)=>{stored=value;}}});
     const music = new OpeningMusic();
     assert.equal((music.audio as unknown as FakeAudio).attempts,1);
-    await Promise.resolve();
+    await new Promise<void>(resolve => setImmediate(resolve));
     assert.equal(music.status.playing,false);
     assert.equal(music.status.autoplayBlocked,true);
     assert.equal(music.status.volume,0.75);

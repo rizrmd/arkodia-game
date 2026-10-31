@@ -9,6 +9,8 @@ const root = resolve(
   process.env.RUNTIME_DIR || fileURLToPath(new URL("./dist", import.meta.url)),
 );
 const mime = {
+  ".mp3": "audio/mpeg",
+  ".ogg": "audio/ogg",
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json",

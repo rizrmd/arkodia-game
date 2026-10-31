@@ -1,7 +1,7 @@
-/** One reusable music voice, unlocked by the first browser user gesture. */
+/** Try opening music immediately; retry on any gesture when autoplay is blocked. */
 export class OpeningMusic {
   readonly audio = new Audio('/audio/bgm-opening.mp3');
-  private unlocked = false;
+  private readonly gestures = ["pointerdown", "pointerup", "touchend", "click", "keydown"];
   private disposed = false;
   private muted = false;
   private volume = 0.35;
@@ -15,20 +15,19 @@ export class OpeningMusic {
     this.audio.loop = true;
     this.audio.preload = 'auto';
     this.apply();
-    window.addEventListener('pointerdown', this.unlock, true);
-    window.addEventListener('keydown', this.unlock, true);
+    for (const event of this.gestures) window.addEventListener(event, this.unlock, true);
     document.addEventListener('visibilitychange', this.visibility);
     window.addEventListener('pagehide', this.hide);
     window.addEventListener('pageshow', this.visibility);
   }
-  private unlock = () => { this.unlocked = true; this.play(); };
+  private unlock = () => { this.play(); };
   private hide = () => { this.audio.pause(); };
   private visibility = () => {
     if (document.hidden) this.audio.pause();
     else this.play();
   };
   private play() {
-    if (this.disposed || !this.unlocked || this.muted || !this.volume || document.hidden) return;
+    if (this.disposed || this.muted || !this.volume || document.hidden) return;
     // Repeated gestures use the same element and never reset its playhead.
     if (this.audio.paused) void this.audio.play().catch(() => { /* Retry on the next gesture. */ });
   }
@@ -42,8 +41,8 @@ export class OpeningMusic {
     try { localStorage.setItem('arkodia.music', JSON.stringify({ muted: this.muted, volume: this.volume })); } catch { /* Storage is optional. */ }
     this.apply();
   }
-  toggle() { this.unlocked = true; this.muted = !this.muted; this.save(); }
-  adjust(delta: number) { this.unlocked = true; this.volume = Math.round(Math.max(0, Math.min(1, this.volume + delta)) * 100) / 100; this.save(); }
+  toggle() { this.muted = !this.muted; this.save(); }
+  adjust(delta: number) { this.volume = Math.round(Math.max(0, Math.min(1, this.volume + delta)) * 100) / 100; this.save(); }
   get status() {
     return { loaded: this.audio.readyState >= 2, playing: !this.audio.paused, voices: this.audio.paused ? 0 : 1,
       position: this.audio.currentTime, volume: this.volume, muted: this.muted, error: this.audio.error?.message || null, loop: this.audio.loop };
@@ -53,8 +52,7 @@ export class OpeningMusic {
     this.audio.pause();
     this.audio.removeAttribute('src');
     this.audio.load();
-    window.removeEventListener('pointerdown', this.unlock, true);
-    window.removeEventListener('keydown', this.unlock, true);
+    for (const event of this.gestures) window.removeEventListener(event, this.unlock, true);
     document.removeEventListener('visibilitychange', this.visibility);
     window.removeEventListener('pagehide', this.hide);
     window.removeEventListener('pageshow', this.visibility);

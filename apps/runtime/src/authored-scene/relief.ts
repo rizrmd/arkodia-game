@@ -177,9 +177,14 @@ export function hillArtBounds(f: ReliefFeature): {
   return { left, top, w, h, flip: f.ascend === "-u" };
 }
 
-export function onHillSurface(f: ReliefFeature, x: number, y: number): boolean {
+export function onHillSurface(
+  f: ReliefFeature,
+  x: number,
+  y: number,
+  features: readonly ReliefFeature[] = DEFAULT_RELIEF_FEATURES,
+): boolean {
   const b = hillArtBounds(f);
-  const lift = liftAt(x, y);
+  const lift = liftAt(x, y, features);
   const nx = (x - b.left) / b.w;
   const ny = (y - lift - b.top) / b.h;
   return pointInPolygon(b.flip ? 1 - nx : nx, ny, HILL_SURFACE);
@@ -193,7 +198,7 @@ export function reliefBlockedTile(
   const p = mapToCourt(u, v);
   for (const f of features) {
     if (f.type !== "hill") continue;
-    if (inside(f, u, v) && !onHillSurface(f, p.x, p.y)) return true;
+    if (inside(f, u, v) && !onHillSurface(f, p.x, p.y, features)) return true;
   }
   return false;
 }

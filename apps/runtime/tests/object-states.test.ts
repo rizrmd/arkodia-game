@@ -132,7 +132,7 @@ test("state validation rejects ambiguous layer ownership and invalid values or t
   duplicate.stateDefinitions[1].name = "Position";
   assert.equal(validStateAnimation(duplicate), false);
   const bad = structuredClone(def);
-  bad.stateDefinitions[0].transitions[0].to = "missing";
+  bad.stateDefinitions[0].transitions![0].to = "missing";
   assert.equal(validStateAnimation(bad), false);
   for (const invalid of [
     null,

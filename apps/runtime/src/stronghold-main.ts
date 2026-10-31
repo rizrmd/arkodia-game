@@ -40,8 +40,12 @@ const music = new OpeningMusic();
 const musicUI = new Container();
 app.stage.addChild(musicUI);
 function drawMusic() {
-  musicUI.removeChildren().forEach(c => c.destroy({ children: true }));
   musicUI.position.set(Math.max(8, app.screen.width - 244), 8);
+  const label = music.status.muted ? "Music: Off" : `Music: ${Math.round(music.status.volume * 100)}%`;
+  if (musicUI.children.length) {
+    ((musicUI.children[0] as Container).children[1] as Text).text = label;
+    return;
+  }
   const button = (label: string, x: number, width: number, action: () => void) => {
     const c = new Container();
     c.position.set(x, 0);
@@ -53,7 +57,7 @@ function drawMusic() {
     c.on("pointertap", e => { e.stopPropagation(); action(); drawMusic(); });
     musicUI.addChild(c);
   };
-  button(music.status.muted ? "Music: Off" : `Music: ${Math.round(music.status.volume * 100)}%`, 0, 140, () => music.toggle());
+  button(label, 0, 140, () => music.toggle());
   button("−", 144, 44, () => music.adjust(-0.1));
   button("+", 192, 44, () => music.adjust(0.1));
 }

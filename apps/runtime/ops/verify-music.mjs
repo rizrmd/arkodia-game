@@ -16,10 +16,12 @@ try {
   await page.waitForFunction(()=>window.__arkodiaMusic?.loaded,{},{timeout:60000});
   await tap(80,80);
   await page.waitForFunction(()=>window.__arkodiaMusic.playing,{},{timeout:15000});
+  const position = (await page.evaluate(()=>window.__arkodiaMusic)).position;
   await page.waitForTimeout(600);
   // Check decoded playback progresses, rather than only trusting paused=false.
   const metrics = await page.evaluate(() => window.__arkodiaMusic);
   assert.equal(metrics.playing, true);
+  assert.ok(metrics.position > position);
   const initial=await page.evaluate(()=>window.__arkodiaMusic);
   assert.equal(initial.voices,1);assert.equal(initial.loop,true);assert.equal(initial.error,null);
   for(let i=0;i<5;i++)await tap(80,80);

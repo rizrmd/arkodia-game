@@ -46,7 +46,7 @@ export class OpeningMusic {
   adjust(delta: number) { this.unlocked = true; this.volume = Math.round(Math.max(0, Math.min(1, this.volume + delta)) * 100) / 100; this.save(); }
   get status() {
     return { loaded: this.audio.readyState >= 2, playing: !this.audio.paused, voices: this.audio.paused ? 0 : 1,
-      volume: this.volume, muted: this.muted, error: this.audio.error?.message || null, loop: this.audio.loop };
+      position: this.audio.currentTime, volume: this.volume, muted: this.muted, error: this.audio.error?.message || null, loop: this.audio.loop };
   }
   destroy() {
     this.disposed = true;

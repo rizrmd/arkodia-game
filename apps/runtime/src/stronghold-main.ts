@@ -1,3 +1,4 @@
+import { OpeningMusic } from "./opening-music";
 import { createHeroRenderer } from "./hero-renderer";
 import {
   Application,
@@ -35,6 +36,31 @@ installMsdfFx(app.renderer);
 const stage = new Container(),
   ui = new Container();
 app.stage.addChild(stage, ui);
+const music = new OpeningMusic();
+const musicUI = new Container();
+app.stage.addChild(musicUI);
+function drawMusic() {
+  musicUI.removeChildren().forEach(c => c.destroy({ children: true }));
+  musicUI.position.set(Math.max(8, app.screen.width - 244), 8);
+  const button = (label: string, x: number, width: number, action: () => void) => {
+    const c = new Container();
+    c.position.set(x, 0);
+    c.addChild(new Graphics().roundRect(0, 0, width, 44, 6).fill({ color: 0x14171b, alpha: 0.9 }).stroke({color: 0xd0b37b, width: 1}));
+    const t = new Text({text: label, style: {fontFamily: "Arial", fontSize: 13, fill: 0xf3e6c6}});
+    t.anchor.set(0.5); t.position.set(width / 2, 22); c.addChild(t);
+    c.eventMode = "static"; c.cursor = "pointer";
+    c.on("pointerdown", e => e.stopPropagation());
+    c.on("pointertap", e => { e.stopPropagation(); action(); drawMusic(); });
+    musicUI.addChild(c);
+  };
+  button(music.status.muted ? "Music: Off" : `Music: ${Math.round(music.status.volume * 100)}%`, 0, 140, () => music.toggle());
+  button("−", 144, 44, () => music.adjust(-0.1));
+  button("+", 192, 44, () => music.adjust(0.1));
+}
+drawMusic();
+window.addEventListener("resize", drawMusic);
+Object.defineProperty(window, "__arkodiaMusic", { configurable: true, get: () => music.status });
+
 let resources: Resources | undefined,
   world: StrongholdWorld | undefined,
   picker: ChooseHero | undefined;

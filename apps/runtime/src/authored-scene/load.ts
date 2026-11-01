@@ -5,6 +5,8 @@ import {
   resizeScene,
   sceneEnvironmentMetrics,
   sceneGround,
+  syncSceneEnvironment,
+  sceneLightingDiagnostics,
   type SceneNode,
 } from "./renderer";
 /** Read the exported scene unchanged. A viewport resize fits the canonical world, never rewrites coordinates. */
@@ -43,6 +45,7 @@ export async function loadAuthoredScene(
       view,
       nodes: nodes.map((n) => n.sceneMetrics()),
       environment: scene ? sceneEnvironmentMetrics(root, scene, time) : null,
+      lighting: sceneLightingDiagnostics(root),
     }),
   });
   try {
@@ -60,7 +63,11 @@ export async function loadAuthoredScene(
     }
     if (data.length > 10 * 1024 * 1024) throw Error("Scene exceeds budget");
     const parsed = parseScene(JSON.parse(data));
-    sceneGround(root, parsed);
+    sceneGround(root, parsed, {
+      lightingTarget: root,
+      screenWidth: app.screen.width,
+      screenHeight: app.screen.height,
+    });
     for (const o of parsed.instances.filter((o) => o.visible)) {
       const node = await createSceneNode(o);
       nodes.push(node);
@@ -78,6 +85,11 @@ export async function loadAuthoredScene(
       if (parsed.playback?.playing ?? true)
         time += Math.min(t.deltaMS / 1000, 0.05);
       for (const n of nodes) n.sceneTick(time);
+      syncSceneEnvironment(root, time, {
+        screenWidth: app.screen.width,
+        screenHeight: app.screen.height,
+        deltaSec: Math.min(t.deltaMS / 1000, 0.05),
+      });
     });
     scene = parsed;
     status.destroy();

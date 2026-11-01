@@ -1,3 +1,8 @@
+import {
+  createWorldLighting,
+  setLightingGeometry,
+  type WorldLighting,
+} from "../authored-scene/world-lighting";
 import { createHeroRenderer } from "../hero-renderer";
 import {
   Container,
@@ -29,6 +34,7 @@ export class StrongholdWorld {
   clip = "idle-SE";
   environment: EnvironmentRuntime;
   playerLift = 0;
+  lighting: WorldLighting;
 
   private facing = 1;
   private back = false;
@@ -206,6 +212,7 @@ export class StrongholdWorld {
     this.gate.width = 270;
     this.gate.height = 135;
     this.gate.zIndex = 778;
+    setLightingGeometry(this.gate, { dynamic: true });
     this.objects.addChild(this.gate);
     this.heroTexture =
       typeof HTMLCanvasElement !== "undefined" &&
@@ -240,6 +247,41 @@ export class StrongholdWorld {
     } catch {}
     this.shadow.ellipse(0, 0, 12, 5).fill({ color: 0x182126, alpha: 0.22 });
     this.objects.addChild(this.shadow, this.player, this.playerSilhouette);
+    setLightingGeometry(this.player, {
+      replaceChildren: true,
+      parentSpace: true,
+      dynamic: true,
+      triangles: () =>
+        this.heroRenderer.shadowTriangles(
+          this.player.x,
+          this.player.y,
+          0.165,
+          this.playerLift,
+        ),
+    });
+    this.shadow.visible = false;
+    this.environment.shadows.container.visible = false;
+    this.environment.frontier.shade.visible = false;
+    this.lighting = createWorldLighting(this.world, {
+      ground: [
+        snowTile,
+        paving,
+        this.environment.frontier.ground,
+        this.environment.authored.authoredGround,
+        this.environment.foundations.under,
+        this.environment.courtSurface.snowApron,
+      ],
+      emissions: [
+        this.environment.torches.lightingContainer,
+        ...this.environment.torches.nodes.flatMap((n) => [n.flame, n.glow]),
+      ],
+      exclude: [
+        this.shadow,
+        this.playerSilhouette,
+        this.environment.shadows.container,
+        this.environment.frontier.shade,
+      ],
+    });
     this.cx = this.player.x;
     this.cy = this.player.y - 40;
     this.walker = createAutoWalk({
@@ -253,6 +295,10 @@ export class StrongholdWorld {
     const s = new Sprite(this.resources.texture(p.file));
     applyNativeProp(s, p);
     s.zIndex = p.layer === "ground" ? -10000 : p.depth;
+    setLightingGeometry(s, {
+      ground: p.layer === "ground",
+      cast: p.layer !== "ground",
+    });
     this.objects.addChild(s);
   }
   tick(dt: number, w: number, h: number, input: { x: number; y: number }) {
@@ -277,7 +323,8 @@ export class StrongholdWorld {
       p.y,
       d,
       dt,
-      (x, y) => this.collision.blocked(x, y, this.gateFrame / 15 >= G.passableAt),
+      (x, y) =>
+        this.collision.blocked(x, y, this.gateFrame / 15 >= G.passableAt),
       this.collision.cliff,
     );
     p.position.set(next.x, next.y);
@@ -352,6 +399,7 @@ export class StrongholdWorld {
     const viewX = this.cx + this.pan.x - viewWidth / 2;
     const viewY = this.cy + this.pan.y - viewHeight / 2;
     this.environment.step(dt, {
+      nowMs: Date.now(),
       actor: { x: p.x, y: p.y, lift: this.playerLift },
       camera: {
         viewX,
@@ -363,6 +411,12 @@ export class StrongholdWorld {
         screenWidth: w,
         screenHeight: h,
       },
+    });
+    this.lighting.tick({
+      nowMs: Date.now(),
+      width: w,
+      height: h,
+      lights: this.environment.worldLights(),
     });
     applyActorSilhouetteCutout(
       this.playerSilhouette,
@@ -378,6 +432,7 @@ export class StrongholdWorld {
   diagnostics() {
     return {
       renderer: "skinned-glb",
+      lighting: this.lighting.diagnostics(),
       bones: this.heroRenderer.bones.length,
       clip: this.heroRenderer.canvas.dataset.clip,
       yaw: this.yaw,
@@ -400,6 +455,7 @@ export class StrongholdWorld {
   }
   destroy() {
     this.save();
+    this.lighting.destroy();
     this.world.destroy({ children: true });
     this.heroRenderer.destroy();
     this.heroTexture.destroy(true);

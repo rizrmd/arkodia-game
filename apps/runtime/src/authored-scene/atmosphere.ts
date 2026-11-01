@@ -13,220 +13,24 @@ import {
 import {
   COURT_CENTER,
   type ReliefFeature,
-   type StrongholdPropDef,
+  type StrongholdPropDef,
 } from "./environment-map";
 import type { FrontierProp } from "./frontier";
 import { DEFAULT_RELIEF_FEATURES, reliefHides } from "./relief";
 
-export const DAY_MS = 600_000;
-export const MIN_AMBIENT_LUMA = 0.22;
-export const MAX_SHADOW = 1.7;
+import {
+  DAY_MS,
+  MIN_AMBIENT_LUMA,
+  MAX_SHADOW,
+  daylightAt,
+  sunAt,
+  rgbToHex,
+  type DaylightState,
+  type SunVector,
+} from "./daylight";
+export * from "./daylight";
 export const OCCLUSION_CUTOUT_ALPHA = 0.68;
 export const RESIDUAL_SILHOUETTE_ALPHA = 1 - OCCLUSION_CUTOUT_ALPHA;
-
-export type DaylightKeyframe = {
-  t: number;
-  label: string;
-  ambient: readonly [r: number, g: number, b: number];
-  lightScale: number;
-  sunStrength: number;
-  sunAngle: number;
-  sunLength: number;
-};
-
-export const DAYLIGHT_KEYFRAMES: readonly DaylightKeyframe[] = [
-  {
-    t: 0.0,
-    label: "dawn",
-    ambient: [0.68, 0.64, 0.76],
-    lightScale: 0.72,
-    sunStrength: 0.45,
-    sunAngle: -0.85,
-    sunLength: 1.35,
-  },
-  {
-    t: 0.15,
-    label: "morning",
-    ambient: [0.92, 0.9, 0.94],
-    lightScale: 0.28,
-    sunStrength: 0.82,
-    sunAngle: -0.45,
-    sunLength: 0.95,
-  },
-  {
-    t: 0.35,
-    label: "noon",
-    ambient: [1.0, 0.99, 1.0],
-    lightScale: 0.14,
-    sunStrength: 1.0,
-    sunAngle: 0.05,
-    sunLength: 0.58,
-  },
-  {
-    t: 0.55,
-    label: "afternoon",
-    ambient: [0.96, 0.91, 0.86],
-    lightScale: 0.32,
-    sunStrength: 0.86,
-    sunAngle: 0.52,
-    sunLength: 0.92,
-  },
-  {
-    t: 0.7,
-    label: "dusk",
-    ambient: [0.74, 0.6, 0.72],
-    lightScale: 0.78,
-    sunStrength: 0.42,
-    sunAngle: 0.88,
-    sunLength: 1.42,
-  },
-  {
-    t: 0.8,
-    label: "twilight",
-    ambient: [0.46, 0.5, 0.68],
-    lightScale: 0.95,
-    sunStrength: 0.16,
-    sunAngle: 1.1,
-    sunLength: 1.65,
-  },
-  {
-    t: 0.9,
-    label: "night",
-    ambient: [0.34, 0.4, 0.58],
-    lightScale: 1.0,
-    sunStrength: 0.08,
-    sunAngle: -1.2,
-    sunLength: 1.7,
-  },
-  {
-    t: 1.0,
-    label: "dawn",
-    ambient: [0.68, 0.64, 0.76],
-    lightScale: 0.72,
-    sunStrength: 0.45,
-    sunAngle: -0.85,
-    sunLength: 1.35,
-  },
-];
-
-export function srgbToLinear(c: number): number {
-  const v = Math.max(0, Math.min(1, c));
-  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-}
-
-export function linearToSrgb(c: number): number {
-  const v = Math.max(0, Math.min(1, c));
-  return v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055;
-}
-
-export function enforceLumaFloor(
-  rgb: readonly [number, number, number],
-  minLuma = MIN_AMBIENT_LUMA,
-): [number, number, number] {
-  let [r, g, b] = rgb;
-  const luma = 0.299 * r + 0.587 * g + 0.114 * b;
-  if (luma < minLuma && luma > 0.0001) {
-    const scale = minLuma / luma;
-    r = Math.min(1, r * scale);
-    g = Math.min(1, g * scale);
-    b = Math.min(1, b * scale);
-  } else if (luma <= 0.0001) {
-    r = minLuma;
-    g = minLuma;
-    b = minLuma;
-  }
-  return [r, g, b];
-}
-
-export function rgbToHex([r, g, b]: readonly [number, number, number]): number {
-  const ri = Math.max(0, Math.min(255, Math.round(r * 255)));
-  const gi = Math.max(0, Math.min(255, Math.round(g * 255)));
-  const bi = Math.max(0, Math.min(255, Math.round(b * 255)));
-  return (ri << 16) | (gi << 8) | bi;
-}
-
-export type DaylightState = {
-  phase: number;
-  label: string;
-  ambient: [number, number, number];
-  tintHex: number;
-  lightScale: number;
-  sunStrength: number;
-};
-
-export type SunVector = {
-  dx: number;
-  dy: number;
-  strength: number;
-  maxShadow: number;
-};
-
-function interpolateKeyframes(nowMs: number): {
-  a: DaylightKeyframe;
-  b: DaylightKeyframe;
-  alpha: number;
-  phase: number;
-} {
-  const phase = (((nowMs % DAY_MS) + DAY_MS) % DAY_MS) / DAY_MS;
-  for (let i = 0; i < DAYLIGHT_KEYFRAMES.length - 1; i++) {
-    const a = DAYLIGHT_KEYFRAMES[i]!;
-    const b = DAYLIGHT_KEYFRAMES[i + 1]!;
-    if (phase >= a.t && phase <= b.t) {
-      const span = Math.max(0.0001, b.t - a.t);
-      const raw = (phase - a.t) / span;
-      const alpha = raw * raw * (3 - 2 * raw);
-      return { a, b, alpha, phase };
-    }
-  }
-  const last = DAYLIGHT_KEYFRAMES[0]!;
-  return { a: last, b: last, alpha: 0, phase };
-}
-
-export function daylightAt(nowMs: number): DaylightState {
-  const { a, b, alpha, phase } = interpolateKeyframes(nowMs);
-  const linR =
-    srgbToLinear(a.ambient[0]) * (1 - alpha) +
-    srgbToLinear(b.ambient[0]) * alpha;
-  const linG =
-    srgbToLinear(a.ambient[1]) * (1 - alpha) +
-    srgbToLinear(b.ambient[1]) * alpha;
-  const linB =
-    srgbToLinear(a.ambient[2]) * (1 - alpha) +
-    srgbToLinear(b.ambient[2]) * alpha;
-
-  const srgb = enforceLumaFloor([
-    linearToSrgb(linR),
-    linearToSrgb(linG),
-    linearToSrgb(linB),
-  ]);
-  const lightScale = a.lightScale * (1 - alpha) + b.lightScale * alpha;
-  const sunStrength = a.sunStrength * (1 - alpha) + b.sunStrength * alpha;
-
-  return {
-    phase,
-    label: alpha < 0.5 ? a.label : b.label,
-    ambient: srgb,
-    tintHex: rgbToHex(srgb),
-    lightScale,
-    sunStrength,
-  };
-}
-
-export function sunAt(nowMs: number): SunVector {
-  const { a, b, alpha } = interpolateKeyframes(nowMs);
-  const angle = a.sunAngle * (1 - alpha) + b.sunAngle * alpha;
-  const len = Math.min(
-    MAX_SHADOW,
-    a.sunLength * (1 - alpha) + b.sunLength * alpha,
-  );
-  const strength = a.sunStrength * (1 - alpha) + b.sunStrength * alpha;
-  return {
-    dx: Math.sin(angle) * len,
-    dy: -Math.cos(angle) * len * 0.45,
-    strength,
-    maxShadow: MAX_SHADOW,
-  };
-}
 
 export type TorchLightSpec = {
   x: number;
@@ -407,7 +211,7 @@ function buildPostGroundTexture(
   g.translate(36, 19);
   let seed = 917 + index * 431;
   const random = () =>
-    ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+    (seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296;
   const shade = g.createRadialGradient(0, 0, 1, 0, 0, 29);
   shade.addColorStop(0, "#343b2480");
   shade.addColorStop(1, "#40472b00");
@@ -438,7 +242,15 @@ function buildPostGroundTexture(
     g.globalAlpha = 0.35 + random() * 0.45;
     g.fillStyle = ["#555d35", "#687043", "#7b7d4c", "#464d2e"][i % 4]!;
     g.beginPath();
-    g.ellipse(x, y, 1 + random() * 3, 0.4 + random() * 1.1, -0.35, 0, Math.PI * 2);
+    g.ellipse(
+      x,
+      y,
+      1 + random() * 3,
+      0.4 + random() * 1.1,
+      -0.35,
+      0,
+      Math.PI * 2,
+    );
     g.fill();
   }
   g.globalAlpha = 0.85;
@@ -473,11 +285,11 @@ export function createTorchLayer(
 
   const hasRealisticTorch = Boolean(
     f0 &&
-      f1 &&
-      f2 &&
-      f3 &&
-      f3.width >= REALISTIC_TORCH.srcW &&
-      f3.height >= REALISTIC_TORCH.srcH,
+    f1 &&
+    f2 &&
+    f3 &&
+    f3.width >= REALISTIC_TORCH.srcW &&
+    f3.height >= REALISTIC_TORCH.srcH,
   );
 
   const bodyFrame = hasRealisticTorch
@@ -497,14 +309,21 @@ export function createTorchLayer(
         (t) =>
           new Texture({
             source: t.source,
-            frame: new Rectangle(0, 0, REALISTIC_TORCH.srcW, REALISTIC_TORCH.topH),
+            frame: new Rectangle(
+              0,
+              0,
+              REALISTIC_TORCH.srcW,
+              REALISTIC_TORCH.topH,
+            ),
           }),
       )
     : [];
 
   const rawSheetFlame = textures["/vfx/textures/flame.png"];
   const croppedSheetFlame =
-    rawSheetFlame && rawSheetFlame !== Texture.WHITE && rawSheetFlame.width >= 64
+    rawSheetFlame &&
+    rawSheetFlame !== Texture.WHITE &&
+    rawSheetFlame.width >= 64
       ? new Texture({
           source: rawSheetFlame.source,
           frame: new Rectangle(
@@ -650,11 +469,9 @@ export function createTorchLayer(
   }
 
   const step = (timeSec: number, daylight: DaylightState) => {
-    const lightScale = Math.max(0.18, daylight.lightScale);
+    const lightScale = Math.max(0, daylight.lightScale);
     const campFlicker =
-      0.94 +
-      0.04 * Math.sin(timeSec * 7.3) +
-      0.02 * Math.cos(timeSec * 13.1);
+      0.94 + 0.04 * Math.sin(timeSec * 7.3) + 0.02 * Math.cos(timeSec * 13.1);
     campHalo.alpha = 0.18 * lightScale * campFlicker;
     campHalo.width = 210 * campFlicker;
     campHalo.height = 115 * campFlicker;
@@ -675,6 +492,7 @@ export function createTorchLayer(
         node.flame.width = 18 * (0.94 + 0.06 * w2);
         node.flame.alpha = Math.min(1, (0.65 + 0.35 * lightScale) * flicker);
       }
+      node.flame.visible = lightScale > 0.01;
       node.glow.alpha = 0.22 * lightScale * flicker;
       halo.alpha = 0.12 * lightScale * flicker;
     }
@@ -739,10 +557,26 @@ export function createProjectedShadowLayer(
   try {
     const tint = new ColorMatrixFilter();
     tint.matrix = [
-      0, 0, 0, 0, 18 / 255,
-      0, 0, 0, 0, 26 / 255,
-      0, 0, 0, 0, 40 / 255,
-      0, 0, 0, 1, 0,
+      0,
+      0,
+      0,
+      0,
+      18 / 255,
+      0,
+      0,
+      0,
+      0,
+      26 / 255,
+      0,
+      0,
+      0,
+      0,
+      40 / 255,
+      0,
+      0,
+      0,
+      1,
+      0,
     ];
     container.filters = [tint, new BlurFilter({ strength: 4, quality: 2 })];
   } catch {
@@ -774,16 +608,11 @@ export function createProjectedShadowLayer(
   }
 
   const sync = (sun: SunVector) => {
-    const alpha = Math.max(0.05, Math.min(0.28, 0.25 * sun.strength));
+    const alpha = Math.min(0.4, 0.4 * sun.strength);
     for (const entry of entries) {
       entry.sprite.alpha = alpha;
       entry.sprite.setFromMatrix(
-        projectShadowMatrix(
-          entry.prop,
-          entry.tex.width,
-          entry.tex.height,
-          sun,
-        ),
+        projectShadowMatrix(entry.prop, entry.tex.width, entry.tex.height, sun),
       );
     }
   };

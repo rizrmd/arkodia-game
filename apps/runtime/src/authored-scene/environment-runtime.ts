@@ -177,6 +177,12 @@ export type EnvironmentRuntime = {
       };
     },
   ) => void;
+  worldLights: () => {
+    x: number;
+    y: number;
+    radius: number;
+    intensity: number;
+  }[];
   metrics: () => EnvironmentRuntimeMetrics;
 };
 
@@ -261,8 +267,7 @@ export function createEnvironmentRuntime(
 
   const shadowProps = strongholdProps.filter(
     (p) =>
-      p.layer !== "ground" &&
-      p.tex !== "/modular-stronghold/v2/weeds-edge.png",
+      p.layer !== "ground" && p.tex !== "/modular-stronghold/v2/weeds-edge.png",
   );
   const shadows = createProjectedShadowLayer(shadowProps, textures);
 
@@ -284,7 +289,7 @@ export function createEnvironmentRuntime(
     frontierProps,
   );
 
-  let elapsedMs = options.initialTimeMs ?? DAY_MS * 0.22;
+  let elapsedMs = options.initialTimeMs ?? Date.now();
   let elapsedSec = 0;
   let daylight = daylightAt(elapsedMs);
   let sun = sunAt(elapsedMs);
@@ -301,6 +306,15 @@ export function createEnvironmentRuntime(
   shadows.sync(sun);
 
   const runtime: EnvironmentRuntime = {
+    worldLights: () => [
+      { x: COURT_CENTER.x, y: COURT_CENTER.y, radius: 340, intensity: 0.72 },
+      ...torchSpecs.map((t) => ({
+        x: t.x,
+        y: t.y,
+        radius: t.radius ?? 172,
+        intensity: t.intensity ?? 0.85,
+      })),
+    ],
     worldMap,
     snow,
     frontier,
@@ -356,17 +370,13 @@ export function createEnvironmentRuntime(
       torches.step(elapsedSec, daylight);
 
       if (state?.actor) {
-        gateDoor = stepGateDoor(
-          gateDoor,
-          state.actor.x,
-          state.actor.y,
-          dtSec,
-        );
+        gateDoor = stepGateDoor(gateDoor, state.actor.x, state.actor.y, dtSec);
         actorOcclusion = computeActorOcclusion(
           {
             x: state.actor.x,
             y: state.actor.y,
-            lift: state.actor.lift ?? reliefLiftFn(state.actor.x, state.actor.y),
+            lift:
+              state.actor.lift ?? reliefLiftFn(state.actor.x, state.actor.y),
             heightPx: state.actor.heightPx,
           },
           occluders,

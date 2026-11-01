@@ -168,7 +168,12 @@ export function shapeActive(
 ): boolean {
   const rule = shape.activeFrames;
   const frame = rule ? (frames[rule.partId] ?? 0) : 0;
-  return shape.enabled && (!rule || (frame >= rule.from && frame <= rule.to));
+  // Object collision exists to block movement; deletion removes the obstacle.
+  // Terrain regions retain their own enable switch (including walkable areas).
+  return (
+    (!shape.terrainRole || shape.enabled) &&
+    (!rule || (frame >= rule.from && frame <= rule.to))
+  );
 }
 export function shapePoints(shape: CollisionShape): CollisionPoint[] {
   if (shape.kind === "polygon")

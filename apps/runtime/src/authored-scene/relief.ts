@@ -1,3 +1,4 @@
+import { setLightingGeometry } from "./world-lighting";
 import {
   pointInShape,
   segmentIntersectsShape,
@@ -466,6 +467,62 @@ export function createReliefLayer(
       wrap.addChild(g);
     }
 
+    // The shadow field consumes physical terrain, independent of its artwork load time.
+    const shadowBase = structuredClone(f);
+    setLightingGeometry(wrap, {
+      replaceChildren: true,
+      revision: () => JSON.stringify(f),
+      triangles: () => {
+        const data: number[] = [];
+        const localFeature = {
+          ...f,
+          u0: shadowBase.u0,
+          u1: shadowBase.u1,
+          v0: shadowBase.v0,
+          v1: shadowBase.v1,
+          outline: shadowBase.outline,
+        };
+        const localFeatures = features.map((entry) =>
+          entry === f ? localFeature : entry,
+        );
+        const nu = Math.max(1, Math.ceil((shadowBase.u1 - shadowBase.u0) * 2)),
+          nv = Math.max(1, Math.ceil((shadowBase.v1 - shadowBase.v0) * 2));
+        const point = (u: number, v: number) => {
+          const p = mapToCourt(u, v),
+            z = heightAt(p.x, p.y, localFeatures) * PX_PER_METER;
+          return [p.x, p.y - z, z];
+        };
+        for (let v = 0; v < nv; v++)
+          for (let u = 0; u < nu; u++) {
+            const u0 =
+                shadowBase.u0 + ((shadowBase.u1 - shadowBase.u0) * u) / nu,
+              u1 =
+                shadowBase.u0 +
+                ((shadowBase.u1 - shadowBase.u0) * (u + 1)) / nu;
+            const v0 =
+                shadowBase.v0 + ((shadowBase.v1 - shadowBase.v0) * v) / nv,
+              v1 =
+                shadowBase.v0 +
+                ((shadowBase.v1 - shadowBase.v0) * (v + 1)) / nv;
+            const a = point(u0, v0),
+              b = point(u1, v0),
+              c = point(u1, v1),
+              d = point(u0, v1);
+            data.push(...a, ...b, ...c, ...a, ...c, ...d);
+            const face = (p: number[], q: number[]) => {
+              if (p[2] <= 0 && q[2] <= 0) return;
+              const pb = [p[0], p[1] + p[2], 0],
+                qb = [q[0], q[1] + q[2], 0];
+              data.push(...p, ...q, ...qb, ...p, ...qb, ...pb);
+            };
+            if (v === 0) face(a, b);
+            if (v === nv - 1) face(c, d);
+            if (u === 0) face(d, a);
+            if (u === nu - 1) face(b, c);
+          }
+        return new Float32Array(data);
+      },
+    });
     nodes.push({
       feature: f,
       container: wrap,

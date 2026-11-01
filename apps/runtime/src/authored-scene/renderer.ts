@@ -1,3 +1,15 @@
+import { resolveDaylightMs } from "./daylight";
+import {
+  createWorldLighting,
+  setLightingGeometry,
+  type WorldLighting,
+} from "./world-lighting";
+export * from "./world-lighting";
+import {
+  syncGroundSurfaces,
+  syncTerrainAreas,
+  type TerrainAreaRenderOptions,
+} from "./ground-surfaces";
 import { ObjectStateController, stateFrameForPart } from "./object-states";
 import {
   Assets,
@@ -137,11 +149,35 @@ export async function createSceneNode(o: Instance): Promise<SceneNode> {
           sy = profile.width / (2 * t.height);
         s.setFromMatrix(new Matrix(sx, sx * 0.5, -sy, sy * 0.5, 0, 0));
       } else s.scale.set(profile.width / t.width);
+      setLightingGeometry(s, {
+        ground: profile.plane,
+        cast: !profile.plane,
+        dynamic: Boolean(p.animation),
+      });
       s.tint = p.color;
       visual = s;
       if (p.animation && frames)
         animations.push({ partId: p.id, sprite: s, frames, clip: p.animation });
     }
+    if (p.kind === "pillar")
+      setLightingGeometry(visual, {
+        replaceChildren: true,
+        triangles: () => {
+          const points: number[] = [];
+          for (const [x, y, w, h] of [
+            [-9, -65, 18, 60],
+            [-14, -72, 28, 9],
+            [-14, -8, 28, 8],
+          ]) {
+            const a = [x, y, -y],
+              b = [x + w, y, -y],
+              c = [x + w, y + h, -y - h],
+              d = [x, y + h, -y - h];
+            points.push(...a, ...b, ...c, ...a, ...c, ...d);
+          }
+          return new Float32Array(points);
+        },
+      });
     visual.position.set(p.x, p.y);
     visual.scale.set(visual.scale.x * p.scale, visual.scale.y * p.scale);
     visual.rotation += (p.rotation * Math.PI) / 180;
@@ -221,13 +257,23 @@ export function resizeScene(
   root.scale.set(b.scale);
   return b;
 }
-export type SceneGroundOptions = {
+export type SceneGroundOptions = TerrainAreaRenderOptions & {
+  outsideSurface?: string;
+  courtyardSurface?: string;
+  groundScale?: number;
   stage1?: boolean;
   stage2?: boolean;
   stage3?: boolean;
   stage4?: boolean;
   stage5?: boolean;
   daylightPhase?: string;
+  daylightTimeMs?: number;
+  lighting?: boolean;
+  shadows?: boolean;
+  screenWidth?: number;
+  screenHeight?: number;
+  deltaSec?: number;
+  lightingTarget?: Container;
   gateOpen?: boolean;
   actorPreview?: boolean;
   textures?: Record<string, Texture | undefined>;
@@ -522,6 +568,8 @@ export function loadEnvironmentRuntimeTextures(
 }
 
 type MountedEnvState = {
+  lighting?: WorldLighting;
+  lightingTarget?: Container;
   env: EnvironmentRuntime;
   envStage: Container;
   hasTextures: boolean;
@@ -541,18 +589,6 @@ type MountedEnvState = {
 
 const rootEnvironments = new WeakMap<Container, EnvironmentRuntime>();
 const mountedEnvStates = new WeakMap<Container, MountedEnvState>();
-
-function resolveDaylightMs(phase: string | undefined, timeSec: number): number {
-  const key = (phase ?? "").toLowerCase();
-  if (key === "dawn") return DAY_MS * 0.02;
-  if (key === "morning") return DAY_MS * 0.16;
-  if (key === "noon") return DAY_MS * 0.35;
-  if (key === "afternoon") return DAY_MS * 0.55;
-  if (key === "dusk") return DAY_MS * 0.7;
-  if (key === "twilight") return DAY_MS * 0.8;
-  if (key === "night") return DAY_MS * 0.9;
-  return DAY_MS * 0.32 + timeSec * 1000;
-}
 
 function drawGateDoorGraphic(g: Graphics, open: boolean, progress: number) {
   g.clear();
@@ -759,6 +795,7 @@ export function sceneGround(
         gs.zIndex = prop.y;
         strongholdUpright.addChild(gs);
         gateSprite = gs;
+        setLightingGeometry(gs, { dynamic: true });
         continue;
       }
 
@@ -785,6 +822,10 @@ export function sceneGround(
         const sy = prop.h / Math.max(1, tex.height);
         s.scale.set(prop.flip ? -sx : sx, sy);
       }
+      setLightingGeometry(s, {
+        ground: prop.layer === "ground",
+        cast: prop.layer !== "ground",
+      });
       if (prop.alpha !== undefined) s.alpha = prop.alpha;
 
       if (prop.layer === "ground") {
@@ -997,6 +1038,7 @@ export function sceneGround(
   root.addChild(envStage);
 
   const mounted: MountedEnvState = {
+    lightingTarget: options.lightingTarget,
     env,
     envStage,
     hasTextures,
@@ -1052,12 +1094,15 @@ export function syncSceneEnvironment(
 ): EnvironmentRuntimeMetrics {
   const mounted = findMountedState(root);
   const env = mounted?.env ?? getSceneEnvironment(root);
-  const nowMs = resolveDaylightMs(options.daylightPhase, timeSec);
+  if (options.terrainAreas) syncTerrainAreas(env, loadedEnvTextures, options);
+  else syncGroundSurfaces(env, loadedEnvTextures, options);
+  const nowMs =
+    options.daylightTimeMs ?? resolveDaylightMs(options.daylightPhase);
   const gateOpen = Boolean(options.gateOpen);
   const actorX = GATE_DOOR_CONFIG.x;
   const actorY = gateOpen ? GATE_DOOR_CONFIG.y : 740;
 
-  env.step(0.05, {
+  env.step(options.deltaSec ?? 0, {
     nowMs,
     actor: { x: actorX, y: actorY, lift: 0, heightPx: 88 },
   });
@@ -1070,7 +1115,6 @@ export function syncSceneEnvironment(
     mounted.stage5.visible = options.stage5 !== false;
 
     if (mounted.hasTextures) {
-      mounted.env.snow.sprite.tint = env.daylight.tintHex;
       if (
         mounted.gateSprite &&
         mounted.gateFrames &&
@@ -1110,16 +1154,54 @@ export function syncSceneEnvironment(
       );
 
       mounted.ambientGraphic.clear();
-      const darkness = Math.max(0, (env.daylight.lightScale - 0.18) * 0.42);
-      if (darkness > 0.01) {
-        mounted.ambientGraphic
-          .roundRect(-620, -320, 2400, 1480, 64)
-          .fill({ color: env.daylight.tintHex, alpha: darkness });
-      }
     }
   }
 
+  if (mounted && typeof document !== "undefined") {
+    if (!mounted.lighting) {
+      const target = mounted.lightingTarget ?? mounted.envStage;
+      mounted.lighting = createWorldLighting(target, {
+        ground: [
+          env.snow.sprite,
+          env.courtSurface.container,
+          env.frontier.ground,
+          env.foundations.under,
+          env.authored.authoredGround,
+        ],
+        emissions: [
+          env.torches.lightingContainer,
+          ...env.torches.nodes.flatMap((n) => [n.flame, n.glow]),
+          ...(mounted.campfireFlame ? [mounted.campfireFlame] : []),
+        ],
+        exclude: [
+          env.shadows.container,
+          env.frontier.shade,
+          mounted.shadowGraphic,
+          mounted.ambientGraphic,
+          mounted.occlusionGraphic,
+        ],
+      });
+      // Retired shadow families must never overlap the shared cast/receive field.
+      env.shadows.container.visible = false;
+      env.frontier.shade.visible = false;
+      mounted.shadowGraphic.visible = false;
+      const lighting = mounted.lighting;
+      mounted.envStage.once("destroyed", () => lighting.destroy());
+    }
+    mounted.lighting.tick({
+      nowMs,
+      lighting: options.lighting,
+      shadows: options.shadows,
+      width: options.screenWidth ?? globalThis.innerWidth ?? 1000,
+      height: options.screenHeight ?? globalThis.innerHeight ?? 700,
+      lights: env.worldLights(),
+    });
+  }
   return env.metrics();
+}
+
+export function sceneLightingDiagnostics(root: Container) {
+  return findMountedState(root)?.lighting?.diagnostics();
 }
 
 export function getSceneEnvironment(
@@ -1144,13 +1226,5 @@ export function sceneEnvironmentMetrics(
   timeSec?: number,
   options?: SceneGroundOptions,
 ): EnvironmentRuntimeMetrics {
-  const mounted = findMountedState(root);
-  if (mounted) {
-    return syncSceneEnvironment(root, timeSec ?? 0, options);
-  }
-  const env = getSceneEnvironment(root, scene);
-  if (typeof timeSec === "number") {
-    env.step(0, { nowMs: resolveDaylightMs(options?.daylightPhase, timeSec) });
-  }
-  return env.metrics();
+  return getSceneEnvironment(root, scene).metrics();
 }

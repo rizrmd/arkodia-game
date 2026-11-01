@@ -1,3 +1,4 @@
+import { setLightingGeometry } from "./world-lighting";
 import {
   BlurFilter,
   ColorMatrixFilter,
@@ -1007,6 +1008,7 @@ export function createFrontierLayer(
     );
     const sprite = new Sprite(tex);
     const terrainLift = liftAt(prop.x, prop.y);
+    setLightingGeometry(sprite, {ground:prop.layer !== "upright",cast:prop.layer === "upright",lift:terrainLift+prop.lift,baseline:[...meta.ground]});
     const drawY = prop.y - terrainLift - prop.lift;
     const frameW = Math.max(1, tex.width || meta.frame[2]);
     const frameH = Math.max(1, tex.height || meta.frame[3]);

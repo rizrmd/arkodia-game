@@ -75,3 +75,10 @@ CREATE TABLE IF NOT EXISTS content_authoring_events (
 -- Environment multiplayer state and durable replay/audit share the draft database.
 CREATE TABLE IF NOT EXISTS content_collaboration (document_id TEXT PRIMARY KEY REFERENCES content_drafts(id), body BLOB NOT NULL);
 CREATE TABLE IF NOT EXISTS content_collaboration_events (document_id TEXT NOT NULL REFERENCES content_drafts(id), sequence INTEGER NOT NULL, body BLOB NOT NULL, PRIMARY KEY(document_id,sequence));
+
+-- Derived representations are separate from checksum-addressed originals.
+CREATE TABLE IF NOT EXISTS content_image_cache (
+ source_sha256 TEXT NOT NULL REFERENCES content_assets(sha256),
+ codec TEXT NOT NULL, data BLOB NOT NULL,
+ PRIMARY KEY(source_sha256, codec)
+);

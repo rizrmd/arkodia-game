@@ -69,3 +69,22 @@ Create with revision 0 through the existing draft PUT. Subsequent changes use au
 `GET /v1/drafts/{id}/history` returns group labels, actors, operation labels, applied counts and Undo/Redo availability. Draft/history/audit/idempotent response are committed atomically in SQLite. History retains 50 groups. Step Undo must leave a valid graph. New edits discard redo; revision and group-ID checks prevent lost updates and duplicate operations. Generic PUT after creation, deletion, and release publication cannot bypass v3 authoring history. v1/v2 behavior remains available.
 
 See the editor repository `docs/AUTHORING-BACKEND.md` for the backend tool registry, SDK, scoped asset access, native snapshot adapter and recoverable AI job lifecycle. No editor UI or production migration is included.
+
+### Automatic WebP delivery
+
+Image reads automatically return WebP encoded at quality **90** when `Accept`
+explicitly includes `image/webp`. This applies to authenticated previews and
+published release assets, including images uploaded before this feature. Use
+`?format=webp` to request the representation explicitly, or `?format=original`
+for original bytes. Clients that verify manifest SHA-256/size must request the
+original representation (the default when WebP is not explicitly accepted).
+
+Converted bytes are persisted in SQLite `content_image_cache`, keyed by source
+SHA-256 and codec version (`webp-q90-v1`), and survive restarts. Conversion is
+serialized to bound memory use. Public variants have one-year immutable HTTP
+caching, representation-specific ETags, conditional GET and HEAD support, and
+`Vary: Accept`. Authenticated previews retain `no-store` for privacy while using
+the server-side conversion cache. Originals and release manifests never change.
+Audio/video/binary data, animated GIF/WebP and images exceeding 32 million pixels
+or the WebP dimension limit retain their original representation. These limits
+prevent animation loss and excessive decoder memory use.

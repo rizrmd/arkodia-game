@@ -5,12 +5,14 @@ go 1.26.0
 require github.com/minio/minio-go/v7 v7.0.95
 
 require (
+	github.com/gen2brain/webp v0.6.4
 	github.com/ncruces/go-sqlite3 v0.36.0
 	golang.org/x/image v0.28.0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/ebitengine/purego v0.10.1 // indirect
 	github.com/ncruces/go-sqlite3-wasm/v6 v6.4.35401 // indirect
 	github.com/ncruces/julianday v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

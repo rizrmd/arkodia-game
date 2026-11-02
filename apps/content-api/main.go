@@ -383,13 +383,31 @@ func (a *API) serveAsset(w http.ResponseWriter, r *http.Request, key string, pub
 		fail(w, 503, "asset_integrity_error")
 		return
 	}
+	w.Header().Add("Vary", "Accept")
+	etag := key
+	if wantsWebP(r) && strings.HasPrefix(mime, "image/") {
+		converted, e := a.cachedWebP(r.Context(), key, b, mime)
+		if e != nil {
+			fail(w, 503, "image_conversion_error")
+			return
+		}
+		if converted != nil {
+			b, mime, etag = converted, "image/webp", hash(converted)
+		}
+	}
 	w.Header().Set("Content-Type", mime)
 	w.Header().Set("Content-Length", fmt.Sprint(len(b)))
 	if public {
 		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
 	}
-	w.Header().Set("ETag", `"`+key+`"`)
-	w.Write(b)
+	w.Header().Set("ETag", `"`+etag+`"`)
+	if r.Header.Get("If-None-Match") == `"`+etag+`"` || r.Header.Get("If-None-Match") == "*" {
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+	if r.Method != http.MethodHead {
+		w.Write(b)
+	}
 }
 func (a *API) publish(w http.ResponseWriter, r *http.Request) {
 	var in ReleaseRequest

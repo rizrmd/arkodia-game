@@ -72,24 +72,22 @@ See the editor repository `docs/AUTHORING-BACKEND.md` for the backend tool regis
 
 ### Automatic WebP delivery
 
-Image reads automatically return WebP encoded at quality **90** when `Accept`
-explicitly includes `image/webp`. This applies to authenticated previews and
-published release assets, including images uploaded before this feature. Use
-`?format=webp` to request the representation explicitly, or `?format=original`
-for original bytes. Clients that verify manifest SHA-256/size must request the
-original representation (the default when WebP is not explicitly accepted).
+Image reads return **lossless WebP by default**, including backend requests with
+`Accept: */*`. Authenticated previews and published release assets use the same
+conversion path, including previously uploaded PNG/JPEG/GIF files. Animated GIF
+is converted to animated WebP with frame delays and disposal; animated WebP is
+preserved. Audio/video/binary data retains its original media type.
 
-Converted bytes are persisted in SQLite `content_image_cache`, keyed by source
-SHA-256 and codec version (`webp-q90-resize-v2`), and survive restarts. Conversion is
-serialized to bound memory use. Public variants have one-year immutable HTTP
-caching, representation-specific ETags, conditional GET and HEAD support, and
-`Vary: Accept`. Authenticated previews retain `no-store` for privacy while using
-the server-side conversion cache. Originals and release manifests never change.
-Images exceeding 32 million pixels or 16,383 pixels on either side are resized
-proportionally to fit both limits before quality-90 encoding and caching. Smaller
-images retain their dimensions. Resizing preserves transparency; original bytes
-remain available via `?format=original`. Consumers using pixel-based atlas/frame
-coordinates should request originals. Source decoding still requires memory for
-the full input raster; codec work is serialized.
-Audio/video/binary data and animated GIF/WebP retain their original representation
-to preserve animation.
+`?format=original` is reserved for byte-integrity checks, immutable asset mirroring,
+and original downloads. Source SHA-256, sizes, manifests and stored originals do
+not change. Integrity readers must explicitly request this representation.
+`?format=webp` explicitly requests the normal delivery representation.
+
+Converted bytes persist in SQLite `content_image_cache`, keyed by source SHA-256
+and codec version (`webp-lossless-delivery-v3`), and survive restarts. Conversion
+is serialized. Raster dimensions and transparency are preserved within WebP's
+16,383-pixel dimension limit; oversized rasters are proportionally fitted to that
+hard limit. The former 32-million-pixel resize is removed so ordinary sprite
+sheets keep their pixel coordinates. Conversion errors fail instead of silently
+returning PNG. Public variants have immutable caching, representation-specific
+ETags, conditional GET/HEAD, and `Vary: Accept`. Private previews remain no-store.

@@ -315,7 +315,7 @@ def publish(args):
         release = json.load(r)
     def verify_one(sha):
         _, e = unique[sha]
-        with http(origin, '/v1/releases/' + release['id'] + '/assets/' + sha) as stream:
+        with http(origin, '/v1/releases/' + release['id'] + '/assets/' + sha + '?format=original') as stream:
             with tempfile.TemporaryDirectory() as td:
                 copy_verified(stream, Path(td) / sha, e)
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
@@ -370,7 +370,7 @@ def pull(args):
                 else:
                     s = e['source']
                     try:
-                        with http(s['origin'], '/v1/releases/' + s['releaseId'] + '/assets/' + e['sha256']) as stream:
+                        with http(s['origin'], '/v1/releases/' + s['releaseId'] + '/assets/' + e['sha256'] + '?format=original') as stream:
                             copy_verified(stream, cached, e)
                     except (OSError, urllib.error.URLError) as error:
                         raise AssetError('Asset unavailable; retry assets pull after restoring Content API: ' + e['path']) from error

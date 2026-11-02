@@ -290,7 +290,7 @@ export async function loadContent(
   for (const [i, a] of manifest.assets.entries()) {
     onProgress(`Loading verified assets ${i + 1}/${manifest.assets.length}`);
     const b = await bytes(
-      `/v1/releases/${id}/assets/${a.sha256}`,
+      `/v1/releases/${id}/assets/${a.sha256}?format=original`,
       16 * 1024 * 1024,
     );
     check(

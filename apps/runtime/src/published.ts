@@ -152,7 +152,7 @@ export async function loadPublished(
       while (cursor < m.assets.length) {
         const a = m.assets[cursor++];
         const b = await bytes(
-          `/v1/releases/${id}/assets/${a.sha256}`,
+          `/v1/releases/${id}/assets/${a.sha256}?format=original`,
           16 * 1024 * 1024,
         );
         check(

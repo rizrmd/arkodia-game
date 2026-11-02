@@ -3,8 +3,10 @@ package main
 import (
 	"bytes"
 	"context"
+	"github.com/gen2brain/webp"
 	"image"
 	"image/color"
+	"image/gif"
 	"image/png"
 	"net/http/httptest"
 	"path/filepath"
@@ -38,11 +40,11 @@ func TestWebPDeliveryAndPersistentCache(t *testing.T) {
 		a.serveAsset(w, r, key, true)
 		return w
 	}
-	w := serve("", "", "", "GET")
+	w := serve("", "?format=original", "", "GET")
 	if !bytes.Equal(w.Body.Bytes(), original) {
 		t.Fatal("original checksum contract changed")
 	}
-	w = serve("image/webp", "", "", "GET")
+	w = serve("", "", "", "GET")
 	if w.Code != 200 || w.Header().Get("Content-Type") != "image/webp" {
 		t.Fatalf("conversion: %d %s", w.Code, w.Body.String())
 	}
@@ -69,8 +71,8 @@ func TestWebPDeliveryAndPersistentCache(t *testing.T) {
 	if serve("image/webp", "", "", "HEAD").Body.Len() != 0 {
 		t.Fatal("HEAD body")
 	}
-	if !bytes.Equal(serve("image/webp;q=0", "", "", "GET").Body.Bytes(), original) {
-		t.Fatal("q=0 ignored")
+	if serve("*/*", "", "", "GET").Header().Get("Content-Type") != "image/webp" {
+		t.Fatal("backend request did not default to WebP")
 	}
 	if !bytes.Equal(serve("image/webp", "?format=original", "", "GET").Body.Bytes(), original) {
 		t.Fatal("original override")
@@ -89,7 +91,7 @@ func TestWebPDeliveryAndPersistentCache(t *testing.T) {
 
 func TestOversizedWebPResizeAndCache(t *testing.T) {
 	for _, size := range [][4]int{
-		{6400, 6400, 5656, 5656},
+		{6400, 6400, 6400, 6400},
 		{20000, 2, 16383, 1},
 		{2, 20000, 1, 16383},
 		{64, 32, 64, 32},
@@ -137,5 +139,47 @@ func TestOversizedWebPResizeAndCache(t *testing.T) {
 	cached, err := a.cachedWebP(ctx, key, []byte("invalid source"), "image/png")
 	if err != nil || !bytes.Equal(cached, converted) {
 		t.Fatalf("resized cache miss: %v", err)
+	}
+}
+
+func TestAnimatedGIFDefaultsToAnimatedWebP(t *testing.T) {
+	ctx := context.Background()
+	a, err := openAPI(ctx, filepath.Join(t.TempDir(), "animated.db"), "test-token-at-least-32-characters-long", "https://example.com", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer a.DB.Close()
+	palette := color.Palette{color.Transparent, color.NRGBA{R: 255, A: 255}, color.NRGBA{B: 255, A: 255}}
+	first := image.NewPaletted(image.Rect(0, 0, 2, 2), palette)
+	first.SetColorIndex(0, 0, 1)
+	second := image.NewPaletted(image.Rect(0, 0, 2, 2), palette)
+	second.SetColorIndex(1, 1, 2)
+	var source bytes.Buffer
+	if err := gif.EncodeAll(&source, &gif.GIF{Image: []*image.Paletted{first, second}, Delay: []int{10, 20}, LoopCount: 0, Disposal: []byte{gif.DisposalBackground, gif.DisposalNone}}); err != nil {
+		t.Fatal(err)
+	}
+	key := hash(source.Bytes())
+	if err := a.Objects.Put(ctx, key, source.Bytes()); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := a.DB.ExecContext(ctx, "INSERT INTO content_assets(sha256,size,media_type) VALUES(?,?,?)", key, source.Len(), "image/gif"); err != nil {
+		t.Fatal(err)
+	}
+	r := httptest.NewRequest("GET", "/v1/assets/"+key, nil)
+	w := httptest.NewRecorder()
+	a.serveAsset(w, r, key, true)
+	if w.Code != 200 || w.Header().Get("Content-Type") != "image/webp" {
+		t.Fatalf("%d %s", w.Code, w.Body.String())
+	}
+	anim, err := webp.DecodeAll(bytes.NewReader(w.Body.Bytes()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(anim.Image) != 2 || anim.Delay[0] != 100 || anim.Delay[1] != 200 {
+		t.Fatalf("animation changed: %+v", anim)
+	}
+	_, _, _, alpha := anim.Image[1].At(0, 0).RGBA()
+	if alpha != 0 {
+		t.Fatal("GIF disposal lost")
 	}
 }

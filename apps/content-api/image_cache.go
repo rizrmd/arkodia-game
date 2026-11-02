@@ -19,7 +19,7 @@ import (
 // Serialize expensive codecs, bounding peak memory and coalescing cache misses.
 var imageEncoder = make(chan struct{}, 1)
 
-const imageCodec = "webp-lossless-delivery-v3"
+const imageCodec = "webp-lossy-q85-delivery-v4"
 
 // Fit WebP dimensions and the output raster budget without changing aspect ratio.
 func webPDimensions(w, h int) (int, int) {
@@ -91,7 +91,7 @@ func (a *API) cachedWebP(ctx context.Context, key string, original []byte, media
 				}
 			}
 			var out bytes.Buffer
-			if err := webp.EncodeAll(&out, frames, webp.Options{Lossless: true, Exact: true, Method: 4}); err != nil {
+			if err := webp.EncodeAll(&out, frames, webp.Options{Quality: 85, Exact: true, Method: 4}); err != nil {
 				return nil, err
 			}
 			b := out.Bytes()
@@ -112,7 +112,7 @@ func (a *API) cachedWebP(ctx context.Context, key string, original []byte, media
 		img = resized
 	}
 	var out bytes.Buffer
-	if err = webp.Encode(&out, img, webp.Options{Lossless: true, Exact: true, Method: 4}); err != nil {
+	if err = webp.Encode(&out, img, webp.Options{Quality: 85, Exact: true, Method: 4}); err != nil {
 		return nil, err
 	}
 	b := out.Bytes()

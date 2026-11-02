@@ -18,3 +18,5 @@ __pycache__/
 
 # Served from pinned Content API release in assets.lock.json.
 /apps/runtime/public/models/*.glb
+
+.deploy-content-api/

@@ -183,3 +183,56 @@ func TestAnimatedGIFDefaultsToAnimatedWebP(t *testing.T) {
 		t.Fatal("GIF disposal lost")
 	}
 }
+
+// A detailed translucent raster exercises lossy compression and exact alpha.
+func TestLossyWebPSizeAndAlpha(t *testing.T) {
+	ctx := context.Background()
+	a, err := openAPI(ctx, filepath.Join(t.TempDir(), "lossy.db"), "test-token-at-least-32-characters-long", "https://example.com", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer a.DB.Close()
+	img := image.NewNRGBA(image.Rect(0, 0, 256, 256))
+	var seed uint32 = 42
+	for y := 0; y < 256; y++ {
+		for x := 0; x < 256; x++ {
+			seed = seed*1664525 + 1013904223
+			img.SetNRGBA(x, y, color.NRGBA{R: byte(seed >> 24), G: byte(seed >> 16), B: byte(seed >> 8), A: byte(x)})
+		}
+	}
+	var raw, lossless bytes.Buffer
+	if err := png.Encode(&raw, img); err != nil {
+		t.Fatal(err)
+	}
+	if err := webp.Encode(&lossless, img, webp.Options{Lossless: true, Exact: true, Method: 4}); err != nil {
+		t.Fatal(err)
+	}
+	key := hash(raw.Bytes())
+	if _, err := a.DB.ExecContext(ctx, "INSERT INTO content_assets(sha256,size,media_type) VALUES(?,?,?)", key, raw.Len(), "image/png"); err != nil {
+		t.Fatal(err)
+	}
+	// An older conversion must not mask the new codec.
+	if _, err := a.DB.ExecContext(ctx, "INSERT INTO content_image_cache(source_sha256,codec,data) VALUES(?,?,?)", key, "webp-lossless-delivery-v3", lossless.Bytes()); err != nil {
+		t.Fatal(err)
+	}
+	converted, err := a.cachedWebP(ctx, key, raw.Bytes(), "image/png")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(converted) >= lossless.Len()/2 {
+		t.Fatalf("expected substantial reduction: lossy %d, lossless %d", len(converted), lossless.Len())
+	}
+	decoded, err := webp.Decode(bytes.NewReader(converted))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for y := 0; y < 256; y++ {
+		for x := 0; x < 256; x++ {
+			_, _, _, alpha := decoded.At(x, y).RGBA()
+			if alpha != uint32(x)*257 {
+				t.Fatalf("alpha changed at %d,%d: %d", x, y, alpha)
+			}
+		}
+	}
+	t.Logf("lossless=%d lossy=%d reduction=%.1f%%", lossless.Len(), len(converted), 100*(1-float64(len(converted))/float64(lossless.Len())))
+}

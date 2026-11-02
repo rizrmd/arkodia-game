@@ -565,7 +565,8 @@ func (a *API) collaborationWrite(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			legacy, ok := p["id"].(string)
-			if !ok || k != fmt.Sprintf("environments/override-%x", sha256.Sum256([]byte(legacy))) {
+			if !ok || (k != fmt.Sprintf("environments/override-%x", sha256.Sum256([]byte(legacy))) &&
+				!(instanceUUID.MatchString(legacy) && k == "environments/"+canonicalInstanceID(legacy))) {
 				fail(w, 400, "invalid_preview")
 				return
 			}

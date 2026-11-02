@@ -108,3 +108,36 @@ func TestCanonicalInstanceCommitAfterMigration(t *testing.T) {
 	f.command("u1", "s1", map[string]any{"action": "undo", "groupId": "uuid-edit"}, 200)
 	f.command("u1", "s1", map[string]any{"action": "redo", "groupId": "uuid-edit"}, 200)
 }
+
+func TestCanonicalInstancePreviewAfterMigration(t *testing.T) {
+	f := newMultiplayer(t)
+	if err := f.api.migrateInstanceIDs(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	id := canonicalInstanceID("a")
+	resource := "environments/" + id
+	lock := f.command("alice", "tab", map[string]any{"action": "acquire", "resources": []string{resource}}, 200)
+	lease := lock["leases"].(map[string]any)[resource].(map[string]any)
+	input := map[string]any{"action": "preview", "tokens": map[string]any{resource: lease["token"]}, "preview": map[string]any{resource: map[string]any{"id": id, "x": 12, "y": 14}}}
+	before := f.read("alice", "tab")["revision"]
+	f.command("alice", "tab", input, 200)
+	state := f.read("bob", "other")
+	if state["revision"] != before {
+		t.Fatal("preview changed authored content")
+	}
+	found := false
+	for _, item := range state["presence"].([]any) {
+		p := item.(map[string]any)
+		if p["session"] == "tab" {
+			preview := p["preview"].(map[string]any)[resource].(map[string]any)
+			found = preview["id"] == id && preview["x"] == float64(12)
+		}
+	}
+	if !found {
+		t.Fatal("UUID preview missing")
+	}
+	input["preview"] = map[string]any{resource: map[string]any{"id": canonicalInstanceID("b"), "x": 12, "y": 14}}
+	f.command("alice", "tab", input, 400)
+	input["preview"] = map[string]any{resource: map[string]any{"id": id, "x": 12, "y": 14}}
+	f.command("bob", "other", input, 423)
+}

@@ -9,7 +9,6 @@ import shlex
 import subprocess
 import threading
 import time
-import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SID = "CS4cff70216b6c6d7b499790b5"
@@ -79,8 +78,10 @@ cli("sandboxes", "boot", SID)
 deadline = time.monotonic() + 60
 while time.monotonic() < deadline:
     try:
-        with urllib.request.urlopen("https://content.arkodia.online/healthz", timeout=10) as response:
-            if response.status == 200:
+        result = subprocess.run(["curl", "--fail", "--silent", "--show-error", "--max-time", "10", "https://content.arkodia.online/healthz"], capture_output=True, text=True)
+        if result.returncode == 0:
+            health = json.loads(result.stdout)
+            if health.get("status") == "ok" and health.get("commit") == commit:
                 print(json.dumps({"status": "deployed", "commit": commit, "sha256": digest}), flush=True)
                 break
     except Exception:

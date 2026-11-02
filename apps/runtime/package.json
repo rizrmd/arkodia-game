@@ -7,7 +7,8 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
     "test": "tsx --test tests/*.test.ts",
-    "smoke": "tsx ops/smoke.ts"
+    "smoke": "tsx ops/smoke.ts",
+    "test:shadows:gpu": "python3 ops/check-shadow-contact.py"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",

@@ -80,6 +80,26 @@ uniform vec4 uAmbient;uniform vec4 uInverseA;uniform vec2 uInverseT;uniform vec4
 uniform vec4 uLights[32];uniform float uLightCount;
 vec3 cell(vec4 c){vec4 b=floor(c*255.+.5);return vec3(b.r*16.+floor(b.g/16.),mod(b.g,16.)*256.+b.b,c.a);}
 vec4 texAt(sampler2D tex,vec2 p,vec4 bounds){vec2 uv=(p-bounds.xy)/bounds.zw;if(any(lessThan(uv,vec2(0.)))||any(greaterThanEqual(uv,vec2(1.))))return vec4(0.);return texture(tex,uv);}
+// Compare each packed sample before filtering: depth and owner IDs stay exact.
+float contactAt(vec2 p){
+ vec4 ground=texAt(uGroundShade,p,uBounds);
+ vec4 dynamicGround=texAt(uDynamicGroundShade,p,uDynamicBounds);
+ if(ground.g==0.&&dynamicGround.g==0.)
+   return max(ground.r*uSun.z,dynamicGround.r*uDynamicSun.z);
+ vec3 receiver=cell(texAt(uReceiver,p,uBounds));
+ vec3 dynamicReceiver=cell(texAt(uDynamicReceiver,p,uDynamicBounds));
+ if(dynamicReceiver.z>0.&&dynamicReceiver.x>=receiver.x)receiver=dynamicReceiver;
+ float z=receiver.z>0.?receiver.x:0.;
+ vec2 lightPoint=p+vec2(uSun.x,1.+uSun.y)*z;
+ vec3 blocker=cell(texAt(uDepth,lightPoint,uLightBounds));
+ if(blocker.y==receiver.y&&receiver.y>0.)blocker=cell(texAt(uSecond,lightPoint,uLightBounds));
+ float shade=blocker.x>z+3.?blocker.z*uSun.z:0.;
+ vec2 dynamicPoint=p+vec2(uDynamicSun.x,1.+uDynamicSun.y)*z;
+ vec3 dynamicBlocker=cell(texAt(uDynamicDepth,dynamicPoint,uDynamicBounds));
+ if(dynamicBlocker.y==receiver.y&&receiver.y>0.)dynamicBlocker=cell(texAt(uDynamicSecond,dynamicPoint,uDynamicBounds));
+ if(dynamicBlocker.x>z+3.)shade=max(shade,dynamicBlocker.z*uDynamicSun.z);
+ return shade;
+}
 void main(){
  vec4 color=texture(uTexture,vTextureCoord);
  vec2 p=vec2(dot(uInverseA.xy,vScreen),dot(uInverseA.zw,vScreen))+uInverseT;
@@ -87,23 +107,22 @@ void main(){
  if(uSun.z>0.||uDynamicSun.z>0.){
  vec4 ground=texAt(uGroundShade,p,uBounds);
  vec4 dynamicGround=texAt(uDynamicGroundShade,p,uDynamicBounds);
- // Ground takes two linear coverage reads rather than four packed data reads.
- // Object receivers retain exact height and self-shadow exclusion.
- if(ground.g==0.&&dynamicGround.g==0.){
- shade=max(ground.r*uSun.z,dynamicGround.r*uDynamicSun.z);
- }else{
- vec3 receiver=cell(texAt(uReceiver,p,uBounds));
- vec3 dynamicReceiver=cell(texAt(uDynamicReceiver,p,uDynamicBounds));
- if(dynamicReceiver.z>0.&&dynamicReceiver.x>=receiver.x)receiver=dynamicReceiver;
- float z=receiver.z>.0?receiver.x:0.;
- vec2 lightPoint=p+vec2(uSun.x,1.+uSun.y)*z;
- vec3 blocker=cell(texAt(uDepth,lightPoint,uLightBounds));
- if(blocker.y==receiver.y&&receiver.y>0.)blocker=cell(texAt(uSecond,lightPoint,uLightBounds));
- shade=blocker.x>z+3.?blocker.z*uSun.z:0.;
- vec2 dynamicPoint=p+vec2(uDynamicSun.x,1.+uDynamicSun.y)*z;
- vec3 dynamicBlocker=cell(texAt(uDynamicDepth,dynamicPoint,uDynamicBounds));
- if(dynamicBlocker.y==receiver.y&&receiver.y>0.)dynamicBlocker=cell(texAt(uDynamicSecond,dynamicPoint,uDynamicBounds));
- if(dynamicBlocker.x>z+3.)shade=max(shade,dynamicBlocker.z*uDynamicSun.z);
+ float groundShadow=max(ground.r*uSun.z,dynamicGround.r*uDynamicSun.z);
+ float contact=max(ground.g,dynamicGround.g);
+ shade=groundShadow;
+ // Preserve the cheap ground path. At receiver boundaries interpolate four
+ // complete comparisons, including receiver selection and self exclusion.
+ if(contact>0.){
+   vec2 stepSize=max(uBounds.zw/vec2(textureSize(uReceiver,0)),
+                    uDynamicBounds.zw/vec2(textureSize(uDynamicReceiver,0)));
+   vec2 grid=(p-uBounds.xy)/stepSize-.5;
+   vec2 base=(floor(grid)+.5)*stepSize+uBounds.xy;
+   vec2 f=fract(grid);
+   float filtered=mix(
+     mix(contactAt(base),contactAt(base+vec2(stepSize.x,0.)),f.x),
+     mix(contactAt(base+vec2(0.,stepSize.y)),contactAt(base+stepSize),f.x),f.y);
+   // The linear receiver mask also makes the fast/contact transition smooth.
+   shade=mix(groundShadow,filtered,contact);
  }
  }
  vec3 illumination=uAmbient.rgb;

@@ -46,6 +46,8 @@ export type ShadowResult = {
   receiver: Uint8Array;
   depth: Uint8Array;
   second: Uint8Array;
+  /** R: softened ground coverage; G: exact receiver lookup required. */
+  groundShade: Uint8Array;
   samples: number;
   buildMs: number;
 };
@@ -90,16 +92,88 @@ function raster(
     );
   const den = (b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y);
   if (Math.abs(den) < 1e-9) return;
-  for (let y = y0; y <= y1; y++)
+  const invDen = 1 / den;
+  const ux = (b.y - c.y) * invDen,
+    uy = (c.x - b.x) * invDen;
+  const vx = (c.y - a.y) * invDen,
+    vy = (a.x - c.x) * invDen;
+  const px = left + (x0 + 0.5) * step - c.x;
+  for (let y = y0; y <= y1; y++) {
+    const py = top + (y + 0.5) * step - c.y;
+    const u0 = ux * px + uy * py,
+      v0 = vx * px + vy * py;
     for (let x = x0; x <= x1; x++) {
-      const px = left + (x + 0.5) * step,
-        py = top + (y + 0.5) * step;
-      const u = ((b.y - c.y) * (px - c.x) + (c.x - b.x) * (py - c.y)) / den;
-      const v = ((c.y - a.y) * (px - c.x) + (a.x - c.x) * (py - c.y)) / den,
+      // Affine barycentrics avoid two divisions for every rasterized cell.
+      const offset = (x - x0) * step;
+      const u = u0 + ux * offset,
+        v = v0 + vx * offset,
         w = 1 - u - v;
       if (u >= -1e-5 && v >= -1e-5 && w >= -1e-5)
         write((y * width + x) * 4, a.z * u + b.z * v + c.z * w);
     }
+  }
+}
+/** Blur coverage only, never packed depth/owner bytes. O(width * height), in worker. */
+export function buildGroundShade(
+  receiver: Uint8Array,
+  depth: Uint8Array,
+  width: number,
+  height: number,
+  groundOwners: ReadonlySet<number>,
+): Uint8Array {
+  const out = new Uint8Array(width * height * 4);
+  const coverage = new Uint8Array(width * height);
+  let left = width,
+    right = -1,
+    top = height,
+    bottom = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const p = y * width + x,
+        i = p * 4;
+      if (receiver[i + 3]) {
+        const z = receiver[i] * 16 + (receiver[i + 1] >> 4);
+        const owner = (receiver[i + 1] & 15) * 256 + receiver[i + 2];
+        // Bilinear G conservatively selects exact lookup at object boundaries.
+        if (z > 0 || !groundOwners.has(owner)) out[i + 1] = 255;
+      }
+      if (depth[i + 3] && depth[i] * 16 + (depth[i + 1] >> 4) > 3) {
+        coverage[p] = depth[i + 3];
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+        top = Math.min(top, y);
+        bottom = Math.max(bottom, y);
+      }
+    }
+  }
+  if (right < 0) return out;
+  // Restrict convolution to occupied shadow bounds, especially for small actors.
+  left = Math.max(0, left - 1);
+  right = Math.min(width - 1, right + 1);
+  const horizontal = new Uint16Array(width * height);
+  for (let y = top; y <= bottom; y++) {
+    for (let x = left; x <= right; x++) {
+      const i = y * width + x;
+      horizontal[i] =
+        (x > 0 ? coverage[i - 1] : 0) +
+        2 * coverage[i] +
+        (x + 1 < width ? coverage[i + 1] : 0);
+    }
+  }
+  top = Math.max(0, top - 1);
+  bottom = Math.min(height - 1, bottom + 1);
+  for (let y = top; y <= bottom; y++) {
+    for (let x = left; x <= right; x++) {
+      const i = y * width + x;
+      out[i * 4] = Math.round(
+        ((y > 0 ? horizontal[i - width] : 0) +
+          2 * horizontal[i] +
+          (y + 1 < height ? horizontal[i + width] : 0)) /
+          16,
+      );
+    }
+  }
+  return out;
 }
 export function buildShadowField(
   request: ShadowRequest,
@@ -241,6 +315,20 @@ export function buildShadowField(
         triangle(v0, v2, v3, s, alpha);
       }
   }
+  const groundOwners = new Set(
+    request.surfaces
+      .filter((s) => s.ground && !s.cast && s.lift === 0)
+      .map((s) => s.owner),
+  );
+  const groundShade = request.surfaces.length
+    ? buildGroundShade(
+        receiver,
+        depth,
+        bounds.width,
+        bounds.height,
+        groundOwners,
+      )
+    : new Uint8Array(n * 4);
   return {
     id: request.id,
     scene: request.scene,
@@ -250,6 +338,7 @@ export function buildShadowField(
     receiver,
     depth,
     second,
+    groundShade,
     samples,
     buildMs: performance.now() - start,
   };

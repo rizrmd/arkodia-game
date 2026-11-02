@@ -12,6 +12,7 @@ self.onmessage = ({ data }: { data: ShadowRequest }) => {
         result.receiver.buffer,
         result.depth.buffer,
         result.second.buffer,
+        result.groundShade.buffer,
       ],
     });
   } catch (error) {

@@ -252,12 +252,35 @@ outside = render()
 assert red(outside, 16, 16) == 255, "out-of-bounds shadow"
 assert red(outside, 128, 128) < 180, "ground fast path lost"
 
+# The new contact channel must shade self-owned feet through the existing pass,
+# combine by max, and retain static/dynamic sun fade and field bounds.
+reset()
+upload("uReceiver", field(lambda x, y: packed(0, 2)))
+upload("uDepth", field(lambda x, y: packed(60, 2)))
+upload("uGroundShade", field(lambda x, y: bytes([0, 255, 140, 0])))
+contact = red(render(), 128, 128)
+assert 200 < contact < 240, "self-owned foot contact missing or too dark"
+upload("uGroundShade", field(lambda x, y: bytes([140, 0, 140, 0])))
+assert abs(red(render(), 128, 128) - contact) <= 1, "contact overlap adds darkness"
+uniform("uSun", 0, -1, 0, 0)
+assert all(v == 255 for v in render()), "static contact survives night"
+reset()
+uniform("uSun", 0, -1, 0, 0)
+uniform("uDynamicSun", 0, -1, 1, 0)
+upload("uDynamicGroundShade", field(lambda x, y: bytes([0, 0, 140, 0])))
+assert abs(red(render(), 128, 128) - contact) <= 1, "dynamic contact missing"
+uniform("uDynamicBounds", 4, 4, 8, 8)
+assert red(render(), 16, 16) == 255, "contact leaks beyond field bounds"
+uniform("uDynamicSun", 0, -1, 0, 0)
+assert all(v == 255 for v in render()), "dynamic contact survives night"
+
 print(json.dumps({"shader": str(shader_path), "contactLevels": len(levels),
                   "maxAdjacentPixelJump": max_jump,
                   "checks": ["diagonal contact antialiasing", "self exclusion", "second caster",
                              "translucency", "raised receiver/bias", "projected blocker edge",
                              "static/dynamic overlap", "dynamic offset/resolution",
-                             "night", "empty fields", "bounds", "ground fast path"]}, indent=2))
+                             "night", "empty fields", "bounds", "ground fast path",
+                             "root contact", "contact max overlap", "dynamic contact", "contact bounds/night"]}, indent=2))
 bind(egl, "eglMakeCurrent", U, P, P, P, P)(display, None, None, None)
 bind(egl, "eglDestroyContext", U, P, P)(display, context)
 bind(egl, "eglDestroySurface", U, P, P)(display, surface)

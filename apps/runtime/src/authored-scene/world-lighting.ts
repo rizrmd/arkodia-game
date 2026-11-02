@@ -123,6 +123,9 @@ void main(){
    // The linear receiver mask also makes the fast/contact transition smooth.
    shade=mix(groundShadow,filtered,contact);
  }
+ // Contact coverage shares the existing filtered texture reads and sun fade.
+ // Max avoids double-darkening where directional and contact shadows overlap.
+ shade=max(shade,max(ground.b*uSun.z,dynamicGround.b*uDynamicSun.z));
  }
  vec3 illumination=uAmbient.rgb;
  for(int i=0;i<32;i++) {if(float(i)>=uLightCount)break;vec4 light=uLights[i];vec2 d=(p-light.xy)/vec2(1.,.55);float falloff=max(0.,1.-length(d)/max(1.,light.z));illumination+=vec3(1.,.48,.17)*falloff*falloff*light.w*uAmbient.a;}

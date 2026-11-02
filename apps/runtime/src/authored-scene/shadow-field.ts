@@ -46,7 +46,7 @@ export type ShadowResult = {
   receiver: Uint8Array;
   depth: Uint8Array;
   second: Uint8Array;
-  /** R: softened ground coverage; G: exact receiver lookup required. */
+  /** R: softened sun coverage; G: receiver mask; B: soft contact coverage. */
   groundShade: Uint8Array;
   samples: number;
   buildMs: number;
@@ -72,6 +72,11 @@ export function decodeCell(a: Uint8Array, i: number) {
   };
 }
 type V = { x: number; y: number; z: number };
+/** Shared screen-world projection for viewport casters and the editor sundial. */
+export function projectSunShadow(v: V, sun: ShadowRequest["sun"]): V {
+  return { x: v.x + sun.dx * v.z, y: v.y + (1 + sun.dy) * v.z, z: v.z };
+}
+
 function raster(
   a: V,
   b: V,
@@ -189,6 +194,15 @@ export function buildShadowField(
     depth = new Uint8Array(n * 4),
     second = new Uint8Array(n * 4);
   const frontOrder = new Int32Array(n).fill(-2147483648);
+  const contacts: {
+    x: number;
+    y: number;
+    rx: number;
+    ry: number;
+    z: number;
+    owner: number;
+    alpha: number;
+  }[] = [];
   let samples = 0;
   const triangle = (a: V, b: V, c: V, s: ShadowSurface, alpha: number) => {
     raster(a, b, c, bounds, (i, z) => {
@@ -202,11 +216,7 @@ export function buildShadowField(
       }
     });
     if (!s.cast || !sun.strength) return;
-    const project = (v: V) => ({
-      x: v.x + sun.dx * v.z,
-      y: v.y + (1 + sun.dy) * v.z,
-      z: v.z,
-    });
+    const project = (v: V) => projectSunShadow(v, sun);
     raster(project(a), project(b), project(c), lightBounds, (i, z) => {
       const oldZ = depth[i] * 16 + (depth[i + 1] >> 4),
         oldOwner = (depth[i + 1] & 15) * 256 + depth[i + 2];
@@ -296,6 +306,12 @@ export function buildShadowField(
           : Math.min(s.cap ?? 4095, Math.max(0, (g - v) * fh * vertical)));
       return { x: a * lx + c * ly + tx, y: b * lx + d * ly + ty, z };
     };
+    // Reuse the alpha walk to find the actual base, rather than canopy width.
+    let footLeft = Infinity,
+      footRight = -Infinity,
+      footY = -Infinity,
+      footAlpha = 0;
+    const contactBand = Math.min(fh * vertical * 0.1, 16);
     for (let y = 0; y < rows; y++)
       for (let x = 0; x < cols; x++) {
         const u = (x + 0.5) / cols,
@@ -311,9 +327,38 @@ export function buildShadowField(
           v1 = point((x + 1) / cols, y / rows),
           v2 = point((x + 1) / cols, (y + 1) / rows),
           v3 = point(x / cols, (y + 1) / rows);
+        if (
+          !s.ground &&
+          s.cast &&
+          sun.strength &&
+          (s.cap ?? 4095) > 3 &&
+          v >= low - 0.1 &&
+          Math.min(v2.z, v3.z) <= s.lift + contactBand
+        ) {
+          footLeft = Math.min(footLeft, v2.x, v3.x);
+          footRight = Math.max(footRight, v2.x, v3.x);
+          footY = Math.max(footY, v2.y, v3.y);
+          footAlpha = Math.max(footAlpha, alpha);
+        }
         triangle(v0, v1, v2, s, alpha);
         triangle(v0, v2, v3, s, alpha);
       }
+    if (footRight > footLeft) {
+      const rx = Math.max(bounds.step, (footRight - footLeft) * 0.6);
+      const ry = Math.max(
+        bounds.step,
+        Math.min(rx * 0.35, fh * vertical * 0.06),
+      );
+      contacts.push({
+        x: (footLeft + footRight) / 2,
+        y: footY - ry * 0.35,
+        rx,
+        ry,
+        z: s.lift,
+        owner: s.owner,
+        alpha: footAlpha * 0.55,
+      });
+    }
   }
   const groundOwners = new Set(
     request.surfaces
@@ -329,6 +374,66 @@ export function buildShadowField(
         groundOwners,
       )
     : new Uint8Array(n * 4);
+  // B is already linearly sampled by the existing pass. Never alter packed
+  // depths/owners or add fake casters to work around the near-ground bias.
+  for (const c of contacts) {
+    // Lift can mean either elevated terrain or an airborne sprite. Require
+    // support beside elevated feet before adding even same-owner contact.
+    if (c.z > 3) {
+      let supported = false;
+      for (let tap = 0; tap < 8; tap++) {
+        const angle = (tap * Math.PI) / 4;
+        const x = Math.floor(
+          (c.x + Math.cos(angle) * (c.rx + bounds.step) - bounds.left) /
+            bounds.step,
+        );
+        const y = Math.floor(
+          (c.y + Math.sin(angle) * (c.ry + bounds.step) - bounds.top) /
+            bounds.step,
+        );
+        if (x < 0 || y < 0 || x >= bounds.width || y >= bounds.height) continue;
+        const i = (y * bounds.width + x) * 4;
+        const owner = (receiver[i + 1] & 15) * 256 + receiver[i + 2];
+        const z = receiver[i] * 16 + (receiver[i + 1] >> 4);
+        if (receiver[i + 3] && owner !== c.owner && Math.abs(z - c.z) <= 3)
+          supported = true;
+      }
+      if (!supported) continue;
+    }
+    const x0 = Math.max(
+      0,
+      Math.floor((c.x - c.rx - bounds.left) / bounds.step),
+    );
+    const x1 = Math.min(
+      bounds.width - 1,
+      Math.ceil((c.x + c.rx - bounds.left) / bounds.step),
+    );
+    const y0 = Math.max(0, Math.floor((c.y - c.ry - bounds.top) / bounds.step));
+    const y1 = Math.min(
+      bounds.height - 1,
+      Math.ceil((c.y + c.ry - bounds.top) / bounds.step),
+    );
+    for (let y = y0; y <= y1; y++)
+      for (let x = x0; x <= x1; x++) {
+        const dx = (bounds.left + (x + 0.5) * bounds.step - c.x) / c.rx;
+        const dy = (bounds.top + (y + 0.5) * bounds.step - c.y) / c.ry;
+        const falloff = 1 - dx * dx - dy * dy;
+        if (falloff <= 0) continue;
+        const i = (y * bounds.width + x) * 4;
+        const z = receiver[i + 3]
+          ? receiver[i] * 16 + (receiver[i + 1] >> 4)
+          : 0;
+        const owner = (receiver[i + 1] & 15) * 256 + receiver[i + 2];
+        // Elevated props need a receiver at their base. Do not shade unrelated
+        // raised surfaces; allow a short band on the caster's own visible roots.
+        if (Math.abs(z - c.z) > (owner === c.owner ? c.ry * 2 + 3 : 3))
+          continue;
+        groundShade[i + 2] = Math.max(
+          groundShade[i + 2],
+          Math.round(255 * c.alpha * falloff * falloff),
+        );
+      }
+  }
   return {
     id: request.id,
     scene: request.scene,

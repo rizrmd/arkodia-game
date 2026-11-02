@@ -77,7 +77,7 @@ uniform sampler2D uGroundShade;uniform sampler2D uDynamicGroundShade;
 uniform sampler2D uTexture;uniform sampler2D uReceiver;uniform sampler2D uDepth;uniform sampler2D uSecond;
 uniform sampler2D uDynamicReceiver;uniform sampler2D uDynamicDepth;uniform sampler2D uDynamicSecond;uniform vec4 uDynamicBounds;uniform vec4 uDynamicSun;
 uniform vec4 uAmbient;uniform vec4 uInverseA;uniform vec2 uInverseT;uniform vec4 uBounds;uniform vec4 uLightBounds;uniform vec4 uSun;
-uniform vec4 uLights[32];uniform float uLightCount;
+uniform vec4 uLights[32];uniform float uLightCount;uniform vec2 uShadowSteps;
 vec3 cell(vec4 c){vec4 b=floor(c*255.+.5);return vec3(b.r*16.+floor(b.g/16.),mod(b.g,16.)*256.+b.b,c.a);}
 vec4 texAt(sampler2D tex,vec2 p,vec4 bounds){vec2 uv=(p-bounds.xy)/bounds.zw;if(any(lessThan(uv,vec2(0.)))||any(greaterThanEqual(uv,vec2(1.))))return vec4(0.);return texture(tex,uv);}
 // Compare each packed sample before filtering: depth and owner IDs stay exact.
@@ -113,8 +113,7 @@ void main(){
  // Preserve the cheap ground path. At receiver boundaries interpolate four
  // complete comparisons, including receiver selection and self exclusion.
  if(contact>0.){
-   vec2 stepSize=max(uBounds.zw/vec2(textureSize(uReceiver,0)),
-                    uDynamicBounds.zw/vec2(textureSize(uDynamicReceiver,0)));
+   vec2 stepSize=vec2(max(uShadowSteps.x,uShadowSteps.y));
    vec2 grid=(p-uBounds.xy)/stepSize-.5;
    vec2 base=(floor(grid)+.5)*stepSize+uBounds.xy;
    vec2 f=fract(grid);
@@ -196,6 +195,8 @@ export function createWorldLighting(
     uSun: { value: new Float32Array(4), type: "vec4<f32>" },
     uLights: { value: new Float32Array(128), type: "vec4<f32>", size: 32 },
     uLightCount: { value: 0, type: "f32" },
+    // World units per texel; GLSL ES 1.00 has no textureSize builtin.
+    uShadowSteps: { value: new Float32Array([1, 1]), type: "vec2<f32>" },
   });
   const filter = new Filter({
     glProgram: GlProgram.from({
@@ -319,6 +320,7 @@ export function createWorldLighting(
       const region = (b: ShadowResult["bounds"]) =>
         new Float32Array([b.left, b.top, b.width * b.step, b.height * b.step]);
       uniforms.uniforms.uBounds = region(data.bounds);
+      uniforms.uniforms.uShadowSteps[0] = data.bounds.step;
       uniforms.uniforms.uLightBounds = region(data.lightBounds);
       uniforms.uniforms.uSun = new Float32Array([
         data.sun.dx,
@@ -362,6 +364,7 @@ export function createWorldLighting(
       updateTexture(dynamicDepth, data.depth, data.lightBounds);
       updateTexture(dynamicSecond, data.second, data.lightBounds);
       const b = data.bounds;
+      uniforms.uniforms.uShadowSteps[1] = b.step;
       uniforms.uniforms.uDynamicBounds = new Float32Array([
         b.left,
         b.top,
@@ -997,6 +1000,12 @@ export function createWorldLighting(
       emissionLayer.destroy();
       if (!root.destroyed)
         root.filters = (root.filters ?? []).filter((f) => f !== filter);
+      // Pixi owns group 0 and retains the last pooled filter input there.
+      // Release it before renderer teardown destroys the input texture/sampler.
+      // Do not destroy the group: other filters share it.
+      const inputGroup = filter.groups[0];
+      inputGroup?.setResource(Texture.EMPTY.source, 1);
+      inputGroup?.setResource(Texture.EMPTY.source.style, 2);
       filter.destroy();
       for (const t of [
         groundShade,

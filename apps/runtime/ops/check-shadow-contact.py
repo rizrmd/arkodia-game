@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import subprocess
 
 libdir = os.environ.get("SHADOW_GL_LIB_DIR", "")
 egl = C.CDLL(str(Path(libdir) / "libEGL.so.1") if libdir else "libEGL.so.1")
@@ -41,12 +42,23 @@ print("Renderer:", bind(gl, "glGetString", C.c_char_p, U)(0x1F01).decode())
 shader_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "src/authored-scene/world-lighting.ts"
 source = shader_path.read_text()
 fragment = re.search(r"const fragment = `([\s\S]*?)`;", source).group(1)
-vertex = """out vec2 vTextureCoord; out vec2 vScreen;
-void main(){
- vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));
- gl_Position=vec4(p*2.-1.,0.,1.);
- vTextureCoord=p; vScreen=p*16.;
-}"""
+vertex = re.search(r"const vertex = `([\s\S]*?)`;", source).group(1)
+# Use the installed Pixi's real preprocessing and GLSL version selection.
+# A forced ES300 header previously hid WebGL1-incompatible builtins.
+processed = json.loads(subprocess.check_output(
+    ["node", "--input-type=module", "-e", """
+import { readFileSync } from 'node:fs';
+import { DOMAdapter, GlProgram } from 'pixi.js';
+DOMAdapter.set({ ...DOMAdapter.get(), createCanvas: () => ({getContext: () => null}) });
+const shader = GlProgram.from(JSON.parse(readFileSync(0, 'utf8')));
+console.log(JSON.stringify({vertex: shader.vertex, fragment: shader.fragment}));
+"""],
+    input=json.dumps({"vertex": vertex, "fragment": fragment, "name": "contact-regression"}).encode(),
+    cwd=next((p for p in shader_path.resolve().parents if (p / "node_modules/pixi.js").exists()),
+             Path(__file__).resolve().parents[1]),
+))
+vertex, fragment = processed["vertex"], processed["fragment"]
+assert "#version 300 es" not in fragment, "test must cover the production ES100 path"
 create_shader = bind(gl, "glCreateShader", U, U)
 shader_source = bind(gl, "glShaderSource", None, U, I, C.POINTER(C.c_char_p), P)
 compile_shader = bind(gl, "glCompileShader", None, U)
@@ -56,7 +68,7 @@ shader_log = bind(gl, "glGetShaderInfoLog", None, U, I, P, P)
 
 def compile_stage(kind, text):
     shader = create_shader(kind)
-    data = C.c_char_p(("#version 300 es\nprecision highp float;\nprecision highp int;\n" + text).encode())
+    data = C.c_char_p(text.encode())
     shader_source(shader, 1, C.byref(data), None)
     compile_shader(shader)
     status = I()
@@ -78,6 +90,16 @@ log = C.create_string_buffer(16384)
 bind(gl, "glGetProgramInfoLog", None, U, I, P, P)(program, len(log), None, log)
 assert status.value, log.value.decode()
 bind(gl, "glUseProgram", None, U)(program)
+# Exercise the production vertex shader, including its attribute/uniform layout.
+buffer = U()
+bind(gl, "glGenBuffers", None, I, C.POINTER(U))(1, C.byref(buffer))
+bind(gl, "glBindBuffer", None, U, U)(0x8892, buffer.value)
+positions = (F * 6)(0, 0, 2, 0, 0, 2)
+bind(gl, "glBufferData", None, U, C.c_ssize_t, P, U)(0x8892, C.sizeof(positions), positions, 0x88E4)
+attribute = bind(gl, "glGetAttribLocation", I, U, C.c_char_p)(program, b"aPosition")
+bind(gl, "glEnableVertexAttribArray", None, U)(attribute)
+bind(gl, "glVertexAttribPointer", None, U, I, U, U, I, P)(attribute, 2, 0x1406, 0, 0, None)
+
 loc = bind(gl, "glGetUniformLocation", I, U, C.c_char_p)
 u1i = bind(gl, "glUniform1i", None, I, I)
 u1f = bind(gl, "glUniform1f", None, I, F)
@@ -91,7 +113,10 @@ def uniform(name, *values):
 
 
 uniform("uAmbient", 1, 1, 1, 0)
-uniform("uInverseA", 1, 0, 0, 1)
+uniform("uInverseA", 1/16, 0, 0, 1/16)
+uniform("uOutputFrame", 0, 0, 256, 256)
+uniform("uInputSize", 256, 256, 1/256, 1/256)
+uniform("uOutputTexture", 256, 256, 1, 0)
 uniform("uInverseT", 0, 0)
 uniform("uLightCount", 0)
 textures = {}
@@ -135,6 +160,7 @@ def reset():
     uniform("uDynamicBounds", 0, 0, 16, 16)
     uniform("uSun", 0, -1, 1, 0)
     uniform("uDynamicSun", 0, -1, 0, 0)
+    uniform("uShadowSteps", 2, 2)
 
 
 def render():
@@ -206,6 +232,7 @@ reset()
 uniform("uSun", 0, -1, 0, 0)
 uniform("uDynamicSun", 0, -1, 1, 0)
 uniform("uDynamicBounds", -1, -1, 18, 18)
+uniform("uShadowSteps", 2, 1.5)
 upload("uDynamicReceiver", field(lambda x, y: packed(0, 4095) if x + y < 9 else bytes(4), 12), 12)
 upload("uDynamicDepth", field(lambda x, y: packed(60, 4095), 12), 12)
 upload("uDynamicGroundShade", field(lambda x, y: bytes([255, 255 if x + y < 9 else 0, 0, 0]), 12), 12)

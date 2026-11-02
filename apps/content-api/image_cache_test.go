@@ -86,3 +86,56 @@ func TestWebPDeliveryAndPersistentCache(t *testing.T) {
 		t.Fatalf("persistent cache miss: %v", err)
 	}
 }
+
+func TestOversizedWebPResizeAndCache(t *testing.T) {
+	for _, size := range [][4]int{
+		{6400, 6400, 5656, 5656},
+		{20000, 2, 16383, 1},
+		{2, 20000, 1, 16383},
+		{64, 32, 64, 32},
+	} {
+		w, h := webPDimensions(size[0], size[1])
+		if w != size[2] || h != size[3] {
+			t.Fatalf("%v: got %dx%d", size, w, h)
+		}
+	}
+	ctx := context.Background()
+	a, err := openAPI(ctx, filepath.Join(t.TempDir(), "resize.db"), "test-token-at-least-32-characters-long", "https://example.com", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer a.DB.Close()
+	img := image.NewNRGBA(image.Rect(0, 0, 20000, 2))
+	for x := 0; x < 20000; x++ {
+		for y := 0; y < 2; y++ {
+			img.SetNRGBA(x, y, color.NRGBA{R: 200, A: 128})
+		}
+	}
+	var raw bytes.Buffer
+	if err := png.Encode(&raw, img); err != nil {
+		t.Fatal(err)
+	}
+	key := hash(raw.Bytes())
+	if _, err := a.DB.ExecContext(ctx, "INSERT INTO content_assets(sha256,size,media_type) VALUES(?,?,?)", key, raw.Len(), "image/png"); err != nil {
+		t.Fatal(err)
+	}
+	converted, err := a.cachedWebP(ctx, key, raw.Bytes(), "image/png")
+	if err != nil {
+		t.Fatal(err)
+	}
+	decoded, _, err := image.Decode(bytes.NewReader(converted))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if decoded.Bounds().Dx() != 16383 || decoded.Bounds().Dy() != 1 {
+		t.Fatalf("unexpected size: %v", decoded.Bounds())
+	}
+	_, _, _, alpha := decoded.At(100, 0).RGBA()
+	if alpha == 0 || alpha == 65535 {
+		t.Fatal("resized alpha lost")
+	}
+	cached, err := a.cachedWebP(ctx, key, []byte("invalid source"), "image/png")
+	if err != nil || !bytes.Equal(cached, converted) {
+		t.Fatalf("resized cache miss: %v", err)
+	}
+}

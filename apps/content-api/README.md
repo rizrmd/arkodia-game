@@ -80,11 +80,16 @@ for original bytes. Clients that verify manifest SHA-256/size must request the
 original representation (the default when WebP is not explicitly accepted).
 
 Converted bytes are persisted in SQLite `content_image_cache`, keyed by source
-SHA-256 and codec version (`webp-q90-v1`), and survive restarts. Conversion is
+SHA-256 and codec version (`webp-q90-resize-v2`), and survive restarts. Conversion is
 serialized to bound memory use. Public variants have one-year immutable HTTP
 caching, representation-specific ETags, conditional GET and HEAD support, and
 `Vary: Accept`. Authenticated previews retain `no-store` for privacy while using
 the server-side conversion cache. Originals and release manifests never change.
-Audio/video/binary data, animated GIF/WebP and images exceeding 32 million pixels
-or the WebP dimension limit retain their original representation. These limits
-prevent animation loss and excessive decoder memory use.
+Images exceeding 32 million pixels or 16,383 pixels on either side are resized
+proportionally to fit both limits before quality-90 encoding and caching. Smaller
+images retain their dimensions. Resizing preserves transparency; original bytes
+remain available via `?format=original`. Consumers using pixel-based atlas/frame
+coordinates should request originals. Source decoding still requires memory for
+the full input raster; codec work is serialized.
+Audio/video/binary data and animated GIF/WebP retain their original representation
+to preserve animation.

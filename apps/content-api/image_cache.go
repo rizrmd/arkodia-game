@@ -7,6 +7,9 @@ import (
 	"errors"
 	"image"
 	"image/gif"
+	"math"
+
+	"golang.org/x/image/draw"
 	"mime"
 	"net/http"
 	"strconv"
@@ -18,7 +21,14 @@ import (
 // Serialize expensive codecs, bounding peak memory and coalescing cache misses.
 var imageEncoder = make(chan struct{}, 1)
 
-const imageCodec = "webp-q90-v1"
+const imageCodec = "webp-q90-resize-v2"
+
+// Fit WebP dimensions and the output raster budget without changing aspect ratio.
+func webPDimensions(w, h int) (int, int) {
+	scale := math.Min(1, math.Min(16383/float64(w), 16383/float64(h)))
+	scale = math.Min(scale, math.Sqrt(32_000_000/(float64(w)*float64(h))))
+	return max(1, int(float64(w)*scale)), max(1, int(float64(h)*scale))
+}
 
 func wantsWebP(r *http.Request) bool {
 	if f := r.URL.Query().Get("format"); f != "" {
@@ -64,10 +74,7 @@ func (a *API) cachedWebP(ctx context.Context, key string, original []byte, media
 	if err != nil {
 		return nil, err
 	}
-	// Avoid unbounded raster allocations from compressed image bombs.
-	if cfg.Width > 16383 || cfg.Height > 16383 || int64(cfg.Width)*int64(cfg.Height) > 32_000_000 {
-		return nil, nil
-	}
+	width, height := webPDimensions(cfg.Width, cfg.Height)
 	// Keep animations intact rather than silently flattening them.
 	if media == "image/gif" {
 		anim, err := gif.DecodeAll(bytes.NewReader(original))
@@ -84,6 +91,11 @@ func (a *API) cachedWebP(ctx context.Context, key string, original []byte, media
 	img, _, err := image.Decode(bytes.NewReader(original))
 	if err != nil {
 		return nil, err
+	}
+	if width != cfg.Width || height != cfg.Height {
+		resized := image.NewNRGBA(image.Rect(0, 0, width, height))
+		draw.ApproxBiLinear.Scale(resized, resized.Bounds(), img, img.Bounds(), draw.Src, nil)
+		img = resized
 	}
 	var out bytes.Buffer
 	if err = webp.Encode(&out, img, webp.Options{Quality: 90, Method: 4}); err != nil {

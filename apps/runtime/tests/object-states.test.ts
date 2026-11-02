@@ -1,3 +1,4 @@
+import { instanceId } from "../src/authored-scene/instanceIdentity";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -151,7 +152,7 @@ test("scene loader preserves state definitions/selections and rejects unknown cu
   const o = scene.instances[0];
   o.definition.stateDefinitions = states().map((s) => ({ ...s, partIds: [] }));
   o.stateValues = { position: "open", lock: "locked", condition: "broken" };
-  assert.deepEqual(parseScene(JSON.parse(JSON.stringify(scene))), scene);
+  assert.deepEqual(parseScene(JSON.parse(JSON.stringify(scene))), {...scene,instances:scene.instances.map((o:any)=>({...o,id:instanceId(o.id)}))});
   o.stateValues.position = "invalid";
   assert.throws(() => parseScene(scene), /Invalid current state values/);
 });

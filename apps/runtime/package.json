@@ -10,6 +10,7 @@
     "smoke": "tsx ops/smoke.ts"
   },
   "dependencies": {
+    "@noble/hashes": "^2.4.0",
     "nixie-fx": "0.1.22",
     "pixi.js": "^8.14.3",
     "three": "^0.185.0"

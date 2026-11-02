@@ -1,3 +1,4 @@
+import { instanceId } from "./instanceIdentity";
 import {
   validStateAnimation,
   namedObjectStates,
@@ -331,5 +332,8 @@ export function parseScene(input: unknown): Scene {
       }
     }
   }
-  return scene;
+  return {
+    ...scene,
+    instances: scene.instances.map((o) => ({ ...o, id: instanceId(o.id) })),
+  };
 }

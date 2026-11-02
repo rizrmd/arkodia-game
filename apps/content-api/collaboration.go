@@ -278,8 +278,23 @@ func validateEnvironment(doc contracts.AuthoringDocument) error {
 			format, _ := e.Data["format"].(string)
 			legacy, _ := e.Data["legacyId"].(string)
 			native, ok := e.Data["native"].(map[string]any)
+			if format == "arkodia.object.instance.v2" {
+				instance, _ := e.Data["instanceId"].(string)
+				if domain != "environments" || !ok || !instanceUUID.MatchString(instance) || instance != id || native["id"] != instance {
+					return errors.New("environment_identity_mismatch")
+				}
+				for _, field := range []string{"x", "y"} {
+					if _, ok := native[field].(float64); !ok {
+						return errors.New("invalid_environment_transform")
+					}
+				}
+				if source, ok := native["source"].(string); ok && !instanceUUID.MatchString(source) {
+					return errors.New("environment_source_identity_mismatch")
+				}
+				continue
+			}
 			kind := strings.TrimSuffix(strings.TrimPrefix(format, "arkodia.environment."), ".v1")
-			if !ok || legacy == "" || len(legacy) > 1000 || format != "arkodia.environment."+kind+".v1" || (domain == "objects" && kind != "definition") || (domain == "environments" && kind != "instance" && kind != "override" && kind != "settings") || id != fmt.Sprintf("%s-%x", kind, sha256.Sum256([]byte(legacy))) {
+			if !ok || legacy == "" || len(legacy) > 1000 || format != "arkodia.environment."+kind+".v1" || (domain == "objects" && kind != "definition") || (domain == "environments" && kind != "instance" && kind != "override" && kind != "settings") || (id != fmt.Sprintf("%s-%x", kind, sha256.Sum256([]byte(legacy))) && !(kind == "instance" && id == legacy && instanceUUID.MatchString(id))) {
 				return errors.New("unsupported_environment_entity")
 			}
 			if kind == "settings" {
@@ -409,6 +424,22 @@ func (a *API) collaborationWrite(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fail(w, 500, "database_error")
 		return
+	}
+	// Old browser tabs must reload rather than recreate path-based entities after cutover.
+	canonical := false
+	for _, e := range doc.Data.Domains["environments"] {
+		if e.Data["format"] == "arkodia.object.instance.v2" {
+			canonical = true
+			break
+		}
+	}
+	if canonical && in.Action == "commit" {
+		for _, op := range in.Operations {
+			if op.Entity != nil && (op.Entity.Data["format"] == "arkodia.environment.override.v1" || op.Entity.Data["format"] == "arkodia.environment.instance.v1") {
+				fail(w, 409, "legacy_instance_id_reload_required")
+				return
+			}
+		}
 	}
 	now := time.Now().UnixMilli()
 	for k, p := range s.Presence {

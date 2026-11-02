@@ -668,6 +668,10 @@ func openAPI(ctx context.Context, dsn, token, publicURL string, objects Objects)
 		so.API = api
 		api.Objects = so
 	}
+	if err := api.migrateInstanceIDs(ctx); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("instance identity migration: %w", err)
+	}
 	return api, nil
 }
 func buildRevision() string {

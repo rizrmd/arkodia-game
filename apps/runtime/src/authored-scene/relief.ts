@@ -370,6 +370,89 @@ export function buildNaturalHillSprite(
   return sprite;
 }
 
+/** Physical receiver/caster mesh shared by visible terrain and scenery artwork. */
+export function reliefShadowTriangles(
+  f: ReliefFeature,
+  features: readonly ReliefFeature[],
+  shadowBase: ReliefFeature = f,
+): Float32Array {
+  const data: number[] = [];
+  const localFeature = {
+    ...f,
+    u0: shadowBase.u0,
+    u1: shadowBase.u1,
+    v0: shadowBase.v0,
+    v1: shadowBase.v1,
+    outline: shadowBase.outline,
+  };
+  const localFeatures = features.map((entry) =>
+    entry === f ? localFeature : entry,
+  );
+  const nu = Math.max(1, Math.ceil((shadowBase.u1 - shadowBase.u0) * 2)),
+    nv = Math.max(1, Math.ceil((shadowBase.v1 - shadowBase.v0) * 2));
+  const point = (u: number, v: number) => {
+    const p = mapToCourt(u, v),
+      z = heightAt(p.x, p.y, localFeatures) * PX_PER_METER;
+    return [p.x, p.y - z, z];
+  };
+  for (let v = 0; v < nv; v++)
+    for (let u = 0; u < nu; u++) {
+      const u0 = shadowBase.u0 + ((shadowBase.u1 - shadowBase.u0) * u) / nu,
+        u1 = shadowBase.u0 + ((shadowBase.u1 - shadowBase.u0) * (u + 1)) / nu;
+      const v0 = shadowBase.v0 + ((shadowBase.v1 - shadowBase.v0) * v) / nv,
+        v1 = shadowBase.v0 + ((shadowBase.v1 - shadowBase.v0) * (v + 1)) / nv;
+      const a = point(u0, v0),
+        b = point(u1, v0),
+        c = point(u1, v1),
+        d = point(u0, v1);
+      data.push(...a, ...b, ...c, ...a, ...c, ...d);
+      const face = (p: number[], q: number[]) => {
+        if (p[2] <= 0 && q[2] <= 0) return;
+        const pb = [p[0], p[1] + p[2], 0],
+          qb = [q[0], q[1] + q[2], 0];
+        data.push(...p, ...q, ...qb, ...p, ...qb, ...pb);
+      };
+      if (v === 0) face(a, b);
+      if (v === nv - 1) face(c, d);
+      if (u === 0) face(d, a);
+      if (u === nu - 1) face(b, c);
+    }
+  return new Float32Array(data);
+}
+
+/** Keep scenery artwork unchanged, but stop treating its raised floor as a flat decal. */
+export function bindSceneryShadow(
+  sprite: Sprite,
+  feature: ReliefFeature,
+  features: readonly ReliefFeature[],
+) {
+  sprite.updateLocalTransform();
+  const inverse = sprite.localTransform.clone().invert();
+  const originalHeightScale = Math.hypot(
+    sprite.localTransform.c,
+    sprite.localTransform.d,
+  );
+  if (!originalHeightScale) return;
+  const original = structuredClone(feature);
+  setLightingGeometry(sprite, {
+    ground: false,
+    cast: true,
+    replaceChildren: true,
+    revision: () => JSON.stringify(feature),
+    triangles: () => {
+      const triangles = reliefShadowTriangles(feature, features, original);
+      for (let i = 0; i < triangles.length; i += 3) {
+        const x = triangles[i],
+          y = triangles[i + 1];
+        triangles[i] = inverse.a * x + inverse.c * y + inverse.tx;
+        triangles[i + 1] = inverse.b * x + inverse.d * y + inverse.ty;
+        triangles[i + 2] /= originalHeightScale;
+      }
+      return triangles;
+    },
+  });
+}
+
 export function createReliefLayer(
   textures: Record<string, Texture | undefined>,
   features: readonly ReliefFeature[] = DEFAULT_RELIEF_FEATURES,
@@ -473,54 +556,7 @@ export function createReliefLayer(
       replaceChildren: true,
       revision: () => JSON.stringify(f),
       triangles: () => {
-        const data: number[] = [];
-        const localFeature = {
-          ...f,
-          u0: shadowBase.u0,
-          u1: shadowBase.u1,
-          v0: shadowBase.v0,
-          v1: shadowBase.v1,
-          outline: shadowBase.outline,
-        };
-        const localFeatures = features.map((entry) =>
-          entry === f ? localFeature : entry,
-        );
-        const nu = Math.max(1, Math.ceil((shadowBase.u1 - shadowBase.u0) * 2)),
-          nv = Math.max(1, Math.ceil((shadowBase.v1 - shadowBase.v0) * 2));
-        const point = (u: number, v: number) => {
-          const p = mapToCourt(u, v),
-            z = heightAt(p.x, p.y, localFeatures) * PX_PER_METER;
-          return [p.x, p.y - z, z];
-        };
-        for (let v = 0; v < nv; v++)
-          for (let u = 0; u < nu; u++) {
-            const u0 =
-                shadowBase.u0 + ((shadowBase.u1 - shadowBase.u0) * u) / nu,
-              u1 =
-                shadowBase.u0 +
-                ((shadowBase.u1 - shadowBase.u0) * (u + 1)) / nu;
-            const v0 =
-                shadowBase.v0 + ((shadowBase.v1 - shadowBase.v0) * v) / nv,
-              v1 =
-                shadowBase.v0 +
-                ((shadowBase.v1 - shadowBase.v0) * (v + 1)) / nv;
-            const a = point(u0, v0),
-              b = point(u1, v0),
-              c = point(u1, v1),
-              d = point(u0, v1);
-            data.push(...a, ...b, ...c, ...a, ...c, ...d);
-            const face = (p: number[], q: number[]) => {
-              if (p[2] <= 0 && q[2] <= 0) return;
-              const pb = [p[0], p[1] + p[2], 0],
-                qb = [q[0], q[1] + q[2], 0];
-              data.push(...p, ...q, ...qb, ...p, ...qb, ...pb);
-            };
-            if (v === 0) face(a, b);
-            if (v === nv - 1) face(c, d);
-            if (u === 0) face(d, a);
-            if (u === nu - 1) face(b, c);
-          }
-        return new Float32Array(data);
+        return reliefShadowTriangles(f, features, shadowBase);
       },
     });
     nodes.push({

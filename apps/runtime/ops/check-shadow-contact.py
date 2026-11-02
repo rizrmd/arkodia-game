@@ -176,11 +176,33 @@ def red(pixels, x, y):
     return pixels[(y * 256 + x) * 4]
 
 
+# Optional real-asset worker fixture: render the production pass directly.
+if os.environ.get("SHADOW_SCENE_FIXTURE"):
+    import base64, struct, zlib
+    fixture = json.loads(Path(os.environ["SHADOW_SCENE_FIXTURE"]).read_text())
+    reset()
+    uniform("uInverseA", 1, 0, 0, 1)
+    uniform("uBounds", 0, 0, 256, 256)
+    uniform("uLightBounds", 0, 0, 256, 256)
+    uniform("uSun", *fixture["sun"], 0)
+    uniform("uShadowSteps", 1, 1)
+    for name, data in fixture["textures"].items():
+        upload(name, base64.b64decode(data), 256)
+    pixels = render()
+    def chunk(kind, data):
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+    rows = b"".join(b"\0" + pixels[y*256*4:(y+1)*256*4] for y in range(256))
+    png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 256, 256, 8, 6, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(rows)) + chunk(b"IEND", b"")
+    target = Path(os.environ["SHADOW_SCENE_OUTPUT"])
+    target.write_bytes(png)
+    print(json.dumps({"output": str(target), "shader": str(shader_path)}))
+    sys.exit(0)
+
 # A diagonal sprite foot with a shadow directly outside it. The original shader
 # gives only 171 or 255 here; filtered contacts must have intermediate coverage.
 reset()
 upload("uReceiver", field(lambda x, y: packed(0, 271) if x + y < 8 else bytes(4)))
-upload("uDepth", field(lambda x, y: packed(60, 271)))
+upload("uDepth", field(lambda x, y: packed(1, 271) if x + y < 8 else packed(60, 271)))
 upload("uGroundShade", field(lambda x, y: bytes([255, 255 if x + y < 8 else 0, 0, 0])))
 diagonal = render()
 levels = {red(diagonal, x, y) for y in range(32, 224) for x in range(32, 224)}
@@ -194,7 +216,7 @@ assert max_jump < 12, ("contact edge discontinuity", max_jump)
 # in second depth still casts on this receiver after excluding its own depth.
 reset()
 upload("uReceiver", field(lambda x, y: packed(20, 256)))
-upload("uDepth", field(lambda x, y: packed(80, 256)))
+upload("uDepth", field(lambda x, y: packed(21, 256)))
 upload("uGroundShade", field(lambda x, y: bytes([255, 255, 0, 0])))
 assert red(render(), 128, 128) == 255, "self owner must be excluded"
 upload("uSecond", field(lambda x, y: packed(60, 255, 128)))
@@ -203,6 +225,19 @@ upload("uSecond", field(lambda x, y: packed(22, 255)))
 assert red(render(), 128, 128) == 255, "height bias changed"
 upload("uSecond", field(lambda x, y: packed(24, 255)))
 assert red(render(), 128, 128) < 180, "raised receiver lost other caster"
+
+# A genuinely higher part of the SAME object must shade its base/root.
+reset()
+upload("uReceiver", field(lambda x, y: packed(0, 271)))
+upload("uDepth", field(lambda x, y: packed(60, 271)))
+upload("uGroundShade", field(lambda x, y: bytes([255, 255, 0, 0])))
+assert red(render(), 128, 128) < 180, "canopy shadow discarded on own root"
+upload("uDepth", field(lambda x, y: packed(1, 271)))
+assert red(render(), 128, 128) == 255, "same-surface acne"
+uniform("uSun", 0, -1, 0, 0)
+uniform("uDynamicSun", 0, -1, 1, 0)
+upload("uDynamicDepth", field(lambda x, y: packed(60, 271)))
+assert red(render(), 128, 128) < 180, "dynamic own-root shadow discarded"
 
 # A projected blocker boundary on a continuous raised receiver must also be
 # filtered, rather than only softening the receiver footprint itself.
@@ -222,7 +257,7 @@ upload("uGroundShade", field(lambda x, y: bytes([255, 255, 0, 0])))
 upload("uDynamicReceiver", field(lambda x, y: packed(50, 1025)))
 uniform("uDynamicSun", 0, -1, 1, 0)
 assert red(render(), 128, 128) == 255, "static caster incorrectly shadows a higher dynamic receiver"
-upload("uDynamicDepth", field(lambda x, y: packed(80, 1025)))
+upload("uDynamicDepth", field(lambda x, y: packed(51, 1025)))
 assert red(render(), 128, 128) == 255, "dynamic receiver casts on itself"
 upload("uDynamicSecond", field(lambda x, y: packed(75, 2049)))
 assert red(render(), 128, 128) < 180, "second dynamic caster lost"
@@ -234,7 +269,7 @@ uniform("uDynamicSun", 0, -1, 1, 0)
 uniform("uDynamicBounds", -1, -1, 18, 18)
 uniform("uShadowSteps", 2, 1.5)
 upload("uDynamicReceiver", field(lambda x, y: packed(0, 4095) if x + y < 9 else bytes(4), 12), 12)
-upload("uDynamicDepth", field(lambda x, y: packed(60, 4095), 12), 12)
+upload("uDynamicDepth", field(lambda x, y: packed(1, 4095) if x + y < 9 else packed(60, 4095), 12), 12)
 upload("uDynamicGroundShade", field(lambda x, y: bytes([255, 255 if x + y < 9 else 0, 0, 0]), 12), 12)
 dynamic = render()
 assert red(dynamic, 32, 32) == 255, "dynamic self shadow"
@@ -252,35 +287,12 @@ outside = render()
 assert red(outside, 16, 16) == 255, "out-of-bounds shadow"
 assert red(outside, 128, 128) < 180, "ground fast path lost"
 
-# The new contact channel must shade self-owned feet through the existing pass,
-# combine by max, and retain static/dynamic sun fade and field bounds.
-reset()
-upload("uReceiver", field(lambda x, y: packed(0, 2)))
-upload("uDepth", field(lambda x, y: packed(60, 2)))
-upload("uGroundShade", field(lambda x, y: bytes([0, 255, 140, 0])))
-contact = red(render(), 128, 128)
-assert 200 < contact < 240, "self-owned foot contact missing or too dark"
-upload("uGroundShade", field(lambda x, y: bytes([140, 0, 140, 0])))
-assert abs(red(render(), 128, 128) - contact) <= 1, "contact overlap adds darkness"
-uniform("uSun", 0, -1, 0, 0)
-assert all(v == 255 for v in render()), "static contact survives night"
-reset()
-uniform("uSun", 0, -1, 0, 0)
-uniform("uDynamicSun", 0, -1, 1, 0)
-upload("uDynamicGroundShade", field(lambda x, y: bytes([0, 0, 140, 0])))
-assert abs(red(render(), 128, 128) - contact) <= 1, "dynamic contact missing"
-uniform("uDynamicBounds", 4, 4, 8, 8)
-assert red(render(), 16, 16) == 255, "contact leaks beyond field bounds"
-uniform("uDynamicSun", 0, -1, 0, 0)
-assert all(v == 255 for v in render()), "dynamic contact survives night"
-
 print(json.dumps({"shader": str(shader_path), "contactLevels": len(levels),
                   "maxAdjacentPixelJump": max_jump,
-                  "checks": ["diagonal contact antialiasing", "self exclusion", "second caster",
+                  "checks": ["diagonal contact antialiasing", "same-surface rejection", "own-canopy occlusion", "second caster",
                              "translucency", "raised receiver/bias", "projected blocker edge",
                              "static/dynamic overlap", "dynamic offset/resolution",
-                             "night", "empty fields", "bounds", "ground fast path",
-                             "root contact", "contact max overlap", "dynamic contact", "contact bounds/night"]}, indent=2))
+                             "night", "empty fields", "bounds", "ground fast path"]}, indent=2))
 bind(egl, "eglMakeCurrent", U, P, P, P, P)(display, None, None, None)
 bind(egl, "eglDestroyContext", U, P, P)(display, context)
 bind(egl, "eglDestroySurface", U, P, P)(display, surface)

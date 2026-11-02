@@ -55,6 +55,7 @@ import {
 } from "./environment-map";
 import {
   FRONTIER_PROPS,
+  FROZEN_FRONTIER_SPRITES,
   buildFrontierColumns,
   createFrontierLayer,
   type FrontierLayerResult,
@@ -64,6 +65,8 @@ import {
   DEFAULT_RELIEF_FEATURES,
   cliff,
   createReliefLayer,
+  bindSceneryShadow,
+  inside,
   heightAt,
   liftAt,
   normalizeReliefFeatures,
@@ -219,9 +222,30 @@ export function createEnvironmentRuntime(
   const courtSurface = createCourtSurface(pavingTex, { snowTexture: snowTex });
 
   const reliefLiftFn = (x: number, y: number) => liftAt(x, y, reliefFeatures);
+  // Native scenery placements already encode podium/stair height in their
+  // artwork and explicit prop.lift. Sampling that same scenery here lifts
+  // the podium by its own height and doubles the lift of its columns.
+  const nativeReliefFeatures = reliefFeatures.filter(
+    (f) => f.visual !== "scenery",
+  );
   const frontier = createFrontierLayer(frontierProps, textures, {
-    liftAt: reliefLiftFn,
+    liftAt: (x, y) => liftAt(x, y, nativeReliefFeatures),
   });
+  // Scenery platforms already have artwork, so createReliefLayer skips drawing
+  // them. Their physical receiver/caster geometry must still participate.
+  for (const prop of frontierProps) {
+    const feature = reliefFeatures.find(
+      (f) =>
+        f.visual === "scenery" &&
+        (f.id === prop.asset ||
+          (f.type === "ramp" &&
+            prop.layer === "ground" &&
+            FROZEN_FRONTIER_SPRITES[prop.asset]?.heightM > 0 &&
+            inside(f, prop.u, prop.v))),
+    );
+    const sprite = frontier.sprites.get(prop.id);
+    if (feature && sprite) bindSceneryShadow(sprite, feature, reliefFeatures);
+  }
   const relief = createReliefLayer(textures, reliefFeatures);
 
   const foundationsUnder = new Container();

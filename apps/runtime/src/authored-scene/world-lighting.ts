@@ -92,11 +92,13 @@ float contactAt(vec2 p){
  float z=receiver.z>0.?receiver.x:0.;
  vec2 lightPoint=p+vec2(uSun.x,1.+uSun.y)*z;
  vec3 blocker=cell(texAt(uDepth,lightPoint,uLightBounds));
- if(blocker.y==receiver.y&&receiver.y>0.)blocker=cell(texAt(uSecond,lightPoint,uLightBounds));
+ // Reject a same-surface sample, not every surface belonging to this sprite.
+ // A higher canopy/ledge can legitimately occlude its own roots/base.
+ if(blocker.y==receiver.y&&receiver.y>0.&&blocker.x<=z+3.)blocker=cell(texAt(uSecond,lightPoint,uLightBounds));
  float shade=blocker.x>z+3.?blocker.z*uSun.z:0.;
  vec2 dynamicPoint=p+vec2(uDynamicSun.x,1.+uDynamicSun.y)*z;
  vec3 dynamicBlocker=cell(texAt(uDynamicDepth,dynamicPoint,uDynamicBounds));
- if(dynamicBlocker.y==receiver.y&&receiver.y>0.)dynamicBlocker=cell(texAt(uDynamicSecond,dynamicPoint,uDynamicBounds));
+ if(dynamicBlocker.y==receiver.y&&receiver.y>0.&&dynamicBlocker.x<=z+3.)dynamicBlocker=cell(texAt(uDynamicSecond,dynamicPoint,uDynamicBounds));
  if(dynamicBlocker.x>z+3.)shade=max(shade,dynamicBlocker.z*uDynamicSun.z);
  return shade;
 }
@@ -123,9 +125,6 @@ void main(){
    // The linear receiver mask also makes the fast/contact transition smooth.
    shade=mix(groundShadow,filtered,contact);
  }
- // Contact coverage shares the existing filtered texture reads and sun fade.
- // Max avoids double-darkening where directional and contact shadows overlap.
- shade=max(shade,max(ground.b*uSun.z,dynamicGround.b*uDynamicSun.z));
  }
  vec3 illumination=uAmbient.rgb;
  for(int i=0;i<32;i++) {if(float(i)>=uLightCount)break;vec4 light=uLights[i];vec2 d=(p-light.xy)/vec2(1.,.55);float falloff=max(0.,1.-length(d)/max(1.,light.z));illumination+=vec3(1.,.48,.17)*falloff*falloff*light.w*uAmbient.a;}
@@ -160,9 +159,11 @@ export function createWorldLighting(
 ) {
   const markGround = (node: Container) => {
     setLightingGeometry(node, {
-      ...geometry.get(node),
       ground: true,
       cast: false,
+      // A ground render layer may contain raised scenery with physical geometry.
+      // Layer defaults must not overwrite that explicit surface contract.
+      ...geometry.get(node),
     });
     for (const child of node.children) markGround(child);
   };

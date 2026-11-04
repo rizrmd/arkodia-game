@@ -116,7 +116,7 @@ async function fetchContentAsset(entry) {
   ]) {
     try {
       const r = await fetch(
-        `${base}/v1/releases/${entry.source.releaseId}/assets/${entry.sha256}`,
+        `${base}/v1/releases/${entry.source.releaseId}/assets/${entry.sha256}?format=original`,
         { signal: AbortSignal.timeout(20000), redirect: "error" },
       );
       if (!r.ok) continue;
@@ -151,7 +151,8 @@ export const server = http.createServer(async (req, res) => {
       res.end();
       return;
     }
-    const path = new URL(req.url, "http://runtime").pathname;
+    const requestUrl = new URL(req.url, "http://runtime");
+    const path = requestUrl.pathname;
     // Bootstrap readiness only. Artifact installation still verifies the exact public build SHA.
     if (path === "/" && !(await stat(resolve(root, "index.html")).catch(() => null))) {
       res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
@@ -159,12 +160,14 @@ export const server = http.createServer(async (req, res) => {
       return;
     }
     if (path.startsWith("/content/")) {
-      const upstream = path.slice(8);
-      if (!publicPath(upstream)) {
+      const route = path.slice(8);
+      if (!publicPath(route)) {
         res.writeHead(404);
         res.end();
         return;
       }
+      // Byte-integrity consumers send ?format=original; the query must reach the Content API.
+      const upstream = route + requestUrl.search;
       const r = await fetch("https://arkodia-content-api-arkodia.fural.space" + upstream, {
         signal: AbortSignal.timeout(20000),
         redirect: "error",

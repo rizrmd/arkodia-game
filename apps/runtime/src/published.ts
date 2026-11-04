@@ -33,19 +33,30 @@ export async function loadPublished(
     ID.test(channel) && (!release || ID.test(release)),
     "Invalid release/channel identity",
   );
+  // Artwork up to 16 MiB can take well over half a minute on a slow connection,
+  // and the gateway occasionally fails one request. Retry transient transport
+  // failures; integrity and budget failures are deterministic and not retried.
   const bytes = async (path: string, max: number) => {
-    const r = await fetch(base + path, {
-      credentials: "omit",
-      redirect: "error",
-      cache: "no-cache",
-      signal: AbortSignal.timeout(30000),
-    });
-    check(r.ok, `Content API request failed (${r.status})`);
-    const length = Number(r.headers.get("content-length"));
-    check(!length || length <= max, "Content response exceeds budget");
-    const b = await r.arrayBuffer();
-    check(b.byteLength <= max, "Content response exceeds budget");
-    return b;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const r = await fetch(base + path, {
+          credentials: "omit",
+          redirect: "error",
+          cache: "no-cache",
+          signal: AbortSignal.timeout(180000),
+        });
+        check(r.ok, `Content API request failed (${r.status})`);
+        const length = Number(r.headers.get("content-length"));
+        check(!length || length <= max, "Content response exceeds budget");
+        const b = await r.arrayBuffer();
+        check(b.byteLength <= max, "Content response exceeds budget");
+        return b;
+      } catch (e) {
+        if (attempt >= 2 || e instanceof Error && /budget/.test(e.message))
+          throw e;
+        await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+      }
+    }
   };
   const json = async (path: string) =>
     JSON.parse(new TextDecoder().decode(await bytes(path, 4 * 1024 * 1024)));
@@ -157,7 +168,7 @@ export async function loadPublished(
         );
         check(
           b.byteLength === a.size && (await digest(b)) === a.sha256,
-          "Published asset integrity mismatch",
+          `Published asset integrity mismatch (${a.sha256.slice(0, 12)})`,
         );
         assets.set(a.sha256, { bytes: b, mediaType: a.mediaType });
         if (onAsset) {

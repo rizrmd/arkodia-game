@@ -117,7 +117,7 @@ async function fetchContentAsset(entry) {
     try {
       const r = await fetch(
         `${base}/v1/releases/${entry.source.releaseId}/assets/${entry.sha256}?format=original`,
-        { signal: AbortSignal.timeout(20000), redirect: "error" },
+        { signal: AbortSignal.timeout(120000), redirect: "error" },
       );
       if (!r.ok) continue;
       const buf = Buffer.from(await r.arrayBuffer());
@@ -169,7 +169,7 @@ export const server = http.createServer(async (req, res) => {
       // Byte-integrity consumers send ?format=original; the query must reach the Content API.
       const upstream = route + requestUrl.search;
       const r = await fetch("https://arkodia-content-api-arkodia.fural.space" + upstream, {
-        signal: AbortSignal.timeout(20000),
+        signal: AbortSignal.timeout(120000),
         redirect: "error",
       });
       res.writeHead(r.status, {

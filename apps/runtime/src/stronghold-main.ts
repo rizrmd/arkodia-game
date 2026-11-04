@@ -287,6 +287,9 @@ async function load() {
       "/content",
       channel,
       (s) => {
+        // Sibling workers keep running after Promise.all rejects. Never let a
+        // late progress update overwrite the error message.
+        if (state === "error") return;
         message = s;
         const m = s.match(/(\d+)\/(\d+)/);
         progress = m ? 0.1 + (0.78 * Number(m[1])) / Number(m[2]) : 0.06;

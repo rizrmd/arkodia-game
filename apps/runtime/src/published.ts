@@ -33,12 +33,13 @@ export async function loadPublished(
     ID.test(channel) && (!release || ID.test(release)),
     "Invalid release/channel identity",
   );
+  // Artwork up to 16 MiB can take well over half a minute on a slow connection.
   const bytes = async (path: string, max: number) => {
     const r = await fetch(base + path, {
       credentials: "omit",
       redirect: "error",
       cache: "no-cache",
-      signal: AbortSignal.timeout(30000),
+      signal: AbortSignal.timeout(180000),
     });
     check(r.ok, `Content API request failed (${r.status})`);
     const length = Number(r.headers.get("content-length"));
@@ -47,8 +48,22 @@ export async function loadPublished(
     check(b.byteLength <= max, "Content response exceeds budget");
     return b;
   };
+  // The gateway occasionally drops or truncates one response under concurrent
+  // load. Retrying the whole read (and its integrity check) recovers those.
+  const withRetry = async <T>(action: () => Promise<T>): Promise<T> => {
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await action();
+      } catch (e) {
+        if (attempt >= 2) throw e;
+        await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+      }
+    }
+  };
   const json = async (path: string) =>
-    JSON.parse(new TextDecoder().decode(await bytes(path, 4 * 1024 * 1024)));
+    withRetry(async () =>
+      JSON.parse(new TextDecoder().decode(await bytes(path, 4 * 1024 * 1024))),
+    );
   progress("Checking published contracts");
   const registry = await json("/v1/contracts");
   check(
@@ -98,14 +113,17 @@ export async function loadPublished(
     );
     docIDs.add(e.id);
     progress(`Verifying ${e.id}`);
-    const b = await bytes(
-      `/v1/releases/${id}/documents/${e.id}`,
-      4 * 1024 * 1024,
-    );
-    check(
-      (await digest(b)) === e.sha256,
-      "Published document integrity mismatch",
-    );
+    const b = await withRetry(async () => {
+      const snapshot = await bytes(
+        `/v1/releases/${id}/documents/${e.id}`,
+        4 * 1024 * 1024,
+      );
+      check(
+        (await digest(snapshot)) === e.sha256,
+        "Published document integrity mismatch",
+      );
+      return snapshot;
+    });
     const d = JSON.parse(new TextDecoder().decode(b)) as LegacyDocument;
     check(
       d.schemaVersion === 2 &&
@@ -144,6 +162,18 @@ export async function loadPublished(
         : 0),
   );
   const assets: Published["assets"] = new Map();
+  const loadAsset = async (a: Manifest["assets"][number]) =>
+    withRetry(async () => {
+      const b = await bytes(
+        `/v1/releases/${id}/assets/${a.sha256}?format=original`,
+        16 * 1024 * 1024,
+      );
+      check(
+        b.byteLength === a.size && (await digest(b)) === a.sha256,
+        `Published asset integrity mismatch (${a.sha256.slice(0, 12)})`,
+      );
+      return b;
+    });
   // Four bounded workers keep mobile startup responsive without unbounded parallel image downloads.
   let cursor = 0,
     done = 0;
@@ -151,14 +181,7 @@ export async function loadPublished(
     Array.from({ length: 4 }, async () => {
       while (cursor < m.assets.length) {
         const a = m.assets[cursor++];
-        const b = await bytes(
-          `/v1/releases/${id}/assets/${a.sha256}?format=original`,
-          16 * 1024 * 1024,
-        );
-        check(
-          b.byteLength === a.size && (await digest(b)) === a.sha256,
-          "Published asset integrity mismatch",
-        );
+        const b = await loadAsset(a);
         assets.set(a.sha256, { bytes: b, mediaType: a.mediaType });
         if (onAsset) {
           const path = Object.keys(bindings).find(

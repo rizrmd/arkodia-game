@@ -104,3 +104,72 @@ test("explicit v2 loader pins release and preserves SHA/size checks and trusted 
     globalThis.fetch = original;
   }
 });
+test("transient asset transport failures are retried", async () => {
+  const encoder = new TextEncoder(),
+    asset = new Uint8Array([9, 8, 7]).buffer,
+    sha = await digest(asset);
+  const make = (kind: string, format: string) => ({
+    schemaVersion: 2,
+    kind,
+    name: "Fixture",
+    assets: [sha],
+    data: { format, payload: {}, bindings: { "/fixture.png": sha } },
+  });
+  const raw = [
+    encoder.encode(
+      JSON.stringify(make("base", "arkadia.stronghold-prefab.v1")),
+    ),
+    encoder.encode(
+      JSON.stringify(make("asset-manifest", "arkadia.asset-manifest.v1")),
+    ),
+  ];
+  const manifest = {
+    schemaVersion: 1,
+    id: "pinned",
+    documents: await Promise.all(
+      raw.map(async (b, i) => ({
+        id: "doc-" + i,
+        revision: 1,
+        schemaVersion: 2,
+        kind: i ? "asset-manifest" : "base",
+        format: i
+          ? "arkadia.asset-manifest.v1"
+          : "arkadia.stronghold-prefab.v1",
+        sha256: await digest(b.buffer),
+        url: "https://hostile.invalid",
+      })),
+    ),
+    assets: [
+      { sha256: sha, size: 3, mediaType: "image/png", url: "https://hostile.invalid" },
+    ],
+  };
+  const original = globalThis.fetch;
+  let assetRequests = 0;
+  globalThis.fetch = async (input) => {
+    const path = String(input);
+    if (path.endsWith("/contracts"))
+      return Response.json({
+        schemaVersions: [1, 2],
+        schemaSha256: "a".repeat(64),
+      });
+    if (path.endsWith("/channels/stronghold-original"))
+      return Response.json({ releaseId: "pinned" });
+    if (path.endsWith("/releases/pinned")) return Response.json(manifest);
+    if (path.endsWith("/doc-0")) return new Response(raw[0]);
+    if (path.endsWith("/doc-1")) return new Response(raw[1]);
+    assetRequests++;
+    if (assetRequests === 1) throw new TypeError("fetch failed");
+    return new Response(asset);
+  };
+  try {
+    const result = await loadPublished(
+      "/content",
+      "stronghold-original",
+      () => {},
+    );
+    assert.equal(result.assets.size, 1);
+    assert.equal(assetRequests, 2);
+  } finally {
+    globalThis.fetch = original;
+  }
+});

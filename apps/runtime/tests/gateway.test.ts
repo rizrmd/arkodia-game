@@ -21,6 +21,32 @@ test("gateway permits only public contract/channel/release reads", () => {
   ])
     assert(!publicPath(path));
 });
+test("gateway forwards asset query parameters to the Content API", async () => {
+  const originalFetch = globalThis.fetch;
+  const requested: string[] = [];
+  globalThis.fetch = (async (input: RequestInfo | URL) => {
+    requested.push(String(input));
+    return new Response("original-bytes", {
+      status: 200,
+      headers: { "content-type": "image/png" },
+    });
+  }) as typeof fetch;
+  await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  try {
+    const asset = "a".repeat(64);
+    const response = await originalFetch(
+      `${base}/content/v1/releases/abc/assets/${asset}?format=original`,
+    );
+    assert.equal(response.status, 200);
+    assert.deepEqual(requested, [
+      `https://arkodia-content-api-arkodia.fural.space/v1/releases/abc/assets/${asset}?format=original`,
+    ]);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await new Promise<void>((r) => server.close(r));
+  }
+});
 test("gateway rejects writes and private routes at HTTP boundary", async () => {
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
   const base = `http://127.0.0.1:${server.address().port}`;

@@ -2,6 +2,7 @@ package main
 
 import (
 	contracts "arkodia/game/packages/content-contracts"
+	contentv1 "arkodia/game/packages/content-contracts/gen/go/arkadia/content/v1"
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
@@ -14,6 +15,7 @@ import (
 	"fmt"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	"github.com/santhosh-tekuri/jsonschema/v5"
+	"google.golang.org/protobuf/proto"
 	"io"
 	"log"
 	"net/http"
@@ -281,31 +283,54 @@ func (a *API) saveDraft(w http.ResponseWriter, r *http.Request) {
 		fail(w, 400, "invalid_id")
 		return
 	}
-	var in struct {
-		Revision int64           `json:"revision"`
-		Document json.RawMessage `json:"document"`
+	var revision int64
+	var document json.RawMessage
+	if r.Header.Get("Content-Type") == contracts.ProtobufMediaType {
+		body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 4<<20))
+		if err != nil {
+			fail(w, 400, "invalid_protobuf")
+			return
+		}
+		var req contentv1.DraftSaveRequest
+		if err := proto.Unmarshal(body, &req); err != nil {
+			fail(w, 400, "invalid_protobuf")
+			return
+		}
+		revision = req.GetRevision()
+		document, err = marshalDraftDocument(&req)
+		if err != nil {
+			fail(w, 400, "invalid_protobuf")
+			return
+		}
+	} else {
+		var in struct {
+			Revision int64           `json:"revision"`
+			Document json.RawMessage `json:"document"`
+		}
+		if !decode(w, r, &in) {
+			return
+		}
+		revision = in.Revision
+		document = in.Document
 	}
-	if !decode(w, r, &in) {
-		return
-	}
-	if in.Revision < 0 {
+	if revision < 0 {
 		fail(w, 400, "invalid_revision")
 		return
 	}
-	doc, err := a.validate(r.Context(), in.Document)
+	doc, err := a.validate(r.Context(), document)
 	if err != nil {
 		fail(w, 422, err.Error())
 		return
 	}
-	if doc.SchemaVersion == 3 && in.Revision != 0 {
+	if doc.SchemaVersion == 3 && revision != 0 {
 		fail(w, 409, "authoring_transaction_required")
 		return
 	}
 	var rev int64
-	if in.Revision == 0 {
-		err = a.query(r.Context()).QueryRow(r.Context(), "INSERT INTO content_drafts(id,kind,revision,document) VALUES($1,$2,1,$3) ON CONFLICT DO NOTHING RETURNING revision", id, doc.Kind, []byte(in.Document)).Scan(&rev)
+	if revision == 0 {
+		err = a.query(r.Context()).QueryRow(r.Context(), "INSERT INTO content_drafts(id,kind,revision,document) VALUES($1,$2,1,$3) ON CONFLICT DO NOTHING RETURNING revision", id, doc.Kind, []byte(document)).Scan(&rev)
 	} else {
-		err = a.query(r.Context()).QueryRow(r.Context(), "UPDATE content_drafts SET document=$1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=$2 AND revision=$3 AND kind=$4 AND CAST(json_extract(CAST(document AS TEXT),'$.schemaVersion') AS TEXT)=$5 AND COALESCE(CAST(json_extract(CAST(document AS TEXT),'$.data.format') AS TEXT),'')=$6 AND COALESCE(CAST(json_extract(CAST(document AS TEXT),'$.provenance.legacyId') AS TEXT),'')=$7 RETURNING revision", []byte(in.Document), id, in.Revision, doc.Kind, fmt.Sprint(doc.SchemaVersion), fmt.Sprint(valueOrEmpty(doc.Data["format"])), fmt.Sprint(valueOrEmpty(doc.Provenance["legacyId"]))).Scan(&rev)
+		err = a.query(r.Context()).QueryRow(r.Context(), "UPDATE content_drafts SET document=$1,revision=revision+1,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=$2 AND revision=$3 AND kind=$4 AND CAST(json_extract(CAST(document AS TEXT),'$.schemaVersion') AS TEXT)=$5 AND COALESCE(CAST(json_extract(CAST(document AS TEXT),'$.data.format') AS TEXT),'')=$6 AND COALESCE(CAST(json_extract(CAST(document AS TEXT),'$.provenance.legacyId') AS TEXT),'')=$7 RETURNING revision", []byte(document), id, revision, doc.Kind, fmt.Sprint(doc.SchemaVersion), fmt.Sprint(valueOrEmpty(doc.Data["format"])), fmt.Sprint(valueOrEmpty(doc.Provenance["legacyId"]))).Scan(&rev)
 	}
 	if errors.Is(err, sql.ErrNoRows) {
 		fail(w, 409, "revision_conflict")
@@ -316,7 +341,24 @@ func (a *API) saveDraft(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("ETag", fmt.Sprintf(`"%d"`, rev))
-	respond(w, 200, Draft{id, rev, in.Document})
+	respond(w, 200, Draft{id, rev, document})
+}
+
+// marshalDraftDocument renders the oneof document of a protobuf save request as
+// the JSON the storage and validation layers use.
+func marshalDraftDocument(req *contentv1.DraftSaveRequest) (json.RawMessage, error) {
+	any := req.GetDocument()
+	if any == nil {
+		return nil, errors.New("missing document")
+	}
+	msg, err := contracts.ResolveAny(any)
+	if err != nil {
+		return nil, err
+	}
+	if err := any.UnmarshalTo(msg); err != nil {
+		return nil, err
+	}
+	return contracts.MarshalMessageToJSONCompact(msg)
 }
 func (a *API) deleteDraft(w http.ResponseWriter, r *http.Request) {
 	var rev int64
@@ -572,6 +614,7 @@ func immutableJSON(w http.ResponseWriter, r *http.Request, b []byte) {
 	etag := `"` + hash(b) + `"`
 	w.Header().Set("ETag", etag)
 	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	w.Header().Set("Vary", "Accept")
 	if r.Header.Get("If-None-Match") == etag {
 		w.WriteHeader(304)
 		return
@@ -579,18 +622,114 @@ func immutableJSON(w http.ResponseWriter, r *http.Request, b []byte) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 }
+
+// wantsProtobuf reports whether the client asked for the protobuf
+// representation through Accept.
+func wantsProtobuf(r *http.Request) bool {
+	for _, part := range strings.Split(r.Header.Get("Accept"), ",") {
+		mediaType := strings.TrimSpace(strings.SplitN(part, ";", 2)[0])
+		if mediaType == contracts.ProtobufMediaType || mediaType == "application/x-protobuf" {
+			return true
+		}
+	}
+	return false
+}
+
+// immutableProtobuf serves the protobuf wire representation with the same
+// immutability and conditional-request semantics as immutableJSON.
+func immutableProtobuf(w http.ResponseWriter, r *http.Request, wire []byte) {
+	etag := `"` + hash(wire) + `"`
+	w.Header().Set("ETag", etag)
+	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	w.Header().Set("Vary", "Accept")
+	if r.Header.Get("If-None-Match") == etag {
+		w.WriteHeader(304)
+		return
+	}
+	w.Header().Set("Content-Type", contracts.ProtobufMediaType)
+	w.Write(wire)
+}
 func (a *API) manifest(w http.ResponseWriter, r *http.Request) {
 	var b []byte
 	if err := a.query(r.Context()).QueryRow(r.Context(), "SELECT manifest FROM content_releases WHERE id=$1", r.PathValue("release")).Scan(&b); err != nil {
 		fail(w, 404, "release_not_found")
 		return
 	}
+	if wantsProtobuf(r) {
+		msg, err := contracts.MarshalManifestJSONToMessage(b)
+		if err != nil {
+			fail(w, 415, "protobuf_unavailable")
+			return
+		}
+		if err := a.annotateProtobufHashes(r, r.PathValue("release"), msg); err != nil {
+			fail(w, 500, "protobuf_unavailable")
+			return
+		}
+		wire, err := contracts.MarshalManifestMessageToBytes(msg)
+		if err != nil {
+			fail(w, 415, "protobuf_unavailable")
+			return
+		}
+		immutableProtobuf(w, r, wire)
+		return
+	}
 	immutableJSON(w, r, b)
+}
+
+// annotateProtobufHashes fills DocumentEntry.protobuf_sha256 with the SHA-256 of
+// each published document's protobuf representation, so protobuf readers get the
+// same integrity anchor JSON readers get from sha256.
+func (a *API) annotateProtobufHashes(r *http.Request, release string, msg *contentv1.Manifest) error {
+	rows, err := a.query(r.Context()).Query(r.Context(), "SELECT document_id, document FROM content_release_documents WHERE release_id=$1", release)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	hashes := map[string]string{}
+	for rows.Next() {
+		var id string
+		var raw []byte
+		if err := rows.Scan(&id, &raw); err != nil {
+			return err
+		}
+		wire, err := contracts.MarshalDocumentJSONToBytes(raw)
+		if err != nil {
+			continue
+		}
+		hashes[id] = hash(wire)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	for _, entry := range msg.Documents {
+		if h, ok := hashes[entry.Id]; ok {
+			entry.ProtobufSha256 = h
+		}
+	}
+	return nil
 }
 func (a *API) publishedDocument(w http.ResponseWriter, r *http.Request) {
 	var b []byte
 	if err := a.query(r.Context()).QueryRow(r.Context(), "SELECT document FROM content_release_documents WHERE release_id=$1 AND document_id=$2", r.PathValue("release"), r.PathValue("id")).Scan(&b); err != nil {
 		fail(w, 404, "published_document_not_found")
+		return
+	}
+	if wantsProtobuf(r) {
+		msg, err := contracts.MessageForJSON(b)
+		if err != nil {
+			fail(w, 415, "protobuf_unavailable")
+			return
+		}
+		if err := contracts.MarshalJSONToMessage(b, msg); err != nil {
+			fail(w, 415, "protobuf_unavailable")
+			return
+		}
+		wire, err := contracts.MarshalMessageToBytes(msg)
+		if err != nil {
+			fail(w, 415, "protobuf_unavailable")
+			return
+		}
+		immutableProtobuf(w, r, wire)
 		return
 	}
 	immutableJSON(w, r, b)

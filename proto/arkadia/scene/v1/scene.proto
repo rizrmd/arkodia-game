@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+package arkadia.scene.v1;
+
+option go_package = "arkodia/game/packages/content-contracts/gen/go/arkadia/scene/v1;scenev1";
+
+// The authored scene handoff contract (schema "arkodia.scene", version 1).
+message Scene {
+  string schema = 1;
+  int32 version = 2;
+  string coordinate_system = 3;
+  World world = 4;
+  optional Playback playback = 5;
+  repeated Instance instances = 6;
+}
+
+message World {
+  int32 width = 1;
+  int32 height = 2;
+  int32 rotation = 3;
+  string projection = 4;
+}
+
+message Playback {
+  bool playing = 1;
+  double time = 2;
+}
+
+message Vector2 {
+  double x = 1;
+  double y = 2;
+}
+
+message Instance {
+  string id = 1;
+  string name = 2;
+  string asset = 3;
+  string category = 4;
+  double x = 5;
+  double y = 6;
+  double scale = 7;
+  double rotation = 8;
+  bool visible = 9;
+  optional Vector2 pivot = 10;
+  map<string, string> state_values = 11;
+  optional string object_state = 12;
+  Definition definition = 13;
+  optional bool locked = 14;
+  optional bool collision = 15;
+  optional PartAnimation animation = 16;
+}
+
+message Definition {
+  string id = 1;
+  string name = 2;
+  repeated Part parts = 3;
+  repeated NamedObjectState state_definitions = 4;
+  optional string image = 5;
+  repeated ObjectState states = 6;
+  repeated ObjectTransition transitions = 7;
+}
+
+message Part {
+  string id = 1;
+  string name = 2;
+  string kind = 3;
+  string asset = 4;
+  optional string sha256 = 5;
+  repeated double source_transform = 6;
+  double x = 7;
+  double y = 8;
+  double scale = 9;
+  double rotation = 10;
+  string color = 11;
+  optional string category = 12;
+  optional PartAnimation animation = 13;
+  optional Vector2 pivot = 14;
+  optional Profile presentation = 15;
+}
+
+message PartAnimation {
+  double fps = 1;
+  bool loop = 2;
+  repeated FrameRect frames = 3;
+}
+
+message FrameRect {
+  int32 x = 1;
+  int32 y = 2;
+  int32 width = 3;
+  int32 height = 4;
+}
+
+message Profile {
+  double width = 1;
+  double anchor_y = 2;
+  repeated double footprint = 3;
+  bool plane = 4;
+  int32 layer = 5;
+}
+
+message NamedObjectState {
+  string id = 1;
+  string name = 2;
+  repeated ObjectState values = 3;
+  repeated ObjectTransition transitions = 4;
+  repeated string part_ids = 5;
+}
+
+message ObjectState {
+  string id = 1;
+  string name = 2;
+  int32 frame = 3;
+}
+
+message ObjectTransition {
+  string from = 1;
+  string to = 2;
+  int32 start_frame = 3;
+  int32 end_frame = 4;
+  double fps = 5;
+}

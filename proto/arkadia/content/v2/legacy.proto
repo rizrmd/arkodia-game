@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package arkadia.content.v2;
+
+option go_package = "arkadia/game/packages/content-contracts/gen/go/arkadia/content/v2;contentv2";
+
+import "google/protobuf/struct.proto";
+
+// v2 source-grounded document. Payload profiles are retained as arbitrary JSON
+// until each profile is typed; the format tag selects the consumer.
+message LegacyDocument {
+  int32 schema_version = 1;
+  string kind = 2;
+  string name = 3;
+  repeated string assets = 4;
+  repeated Dependency dependencies = 5;
+  Provenance provenance = 6;
+  DocumentData data = 7;
+}
+
+message Dependency {
+  string id = 1;
+  string kind = 2;
+  int32 revision = 3;
+}
+
+message Provenance {
+  string repository = 1;
+  string source_path = 2;
+  string selector = 3;
+  string source_sha256 = 4;
+  string legacy_id = 5;
+}
+
+message DocumentData {
+  string format = 1;
+  google.protobuf.Struct payload = 2;
+  map<string, string> bindings = 3;
+}

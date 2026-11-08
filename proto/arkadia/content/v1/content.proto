@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package arkadia.content.v1;
+
+option go_package = "arkadia/game/packages/content-contracts/gen/go/arkadia/content/v1;contentv1";
+
+import "google/protobuf/any.proto";
+
+// Release manifest, the v1 contract served at /v1/releases/{release}.
+message Manifest {
+  int32 schema_version = 1;
+  string id = 2;
+  string created_at = 3;
+  repeated DocumentEntry documents = 4;
+  repeated Asset assets = 5;
+}
+
+message Asset {
+  string sha256 = 1;
+  int32 size = 2;
+  string media_type = 3;
+  string url = 4;
+}
+
+message DocumentEntry {
+  string id = 1;
+  int32 revision = 2;
+  string sha256 = 3;
+  string url = 4;
+  string kind = 5;
+  int32 schema_version = 6;
+  string format = 7;
+  // SHA-256 of the protobuf representation of this document. It is populated
+  // only when the manifest is served as protobuf, so protobuf readers have the
+  // same integrity anchor JSON readers get from sha256.
+  string protobuf_sha256 = 8;
+}
+
+// v1 environment/base document. The data shape is the runtime scene profile.
+message EnvironmentDocument {
+  int32 schema_version = 1;
+  string kind = 2;
+  string name = 3;
+  repeated string assets = 4;
+  SceneData data = 5;
+}
+
+// v1 animation/vfx document.
+message AnimationDocument {
+  int32 schema_version = 1;
+  string kind = 2;
+  string name = 3;
+  repeated string assets = 4;
+  AnimationData data = 5;
+}
+
+message Vector2 {
+  double x = 1;
+  double y = 2;
+}
+
+message SceneData {
+  string runtime_profile = 1;
+  int32 width = 2;
+  int32 height = 3;
+  Vector2 spawn = 4;
+  double speed = 5;
+  repeated Layer layers = 6;
+  optional string audio = 7;
+}
+
+message Layer {
+  string id = 1;
+  repeated EntitySpec objects = 2;
+}
+
+message EntitySpec {
+  string id = 1;
+  double x = 2;
+  double y = 3;
+  string animation = 4;
+  optional bool player = 5;
+  double scale = 6;
+}
+
+message AnimationData {
+  double fps = 1;
+  bool loop = 2;
+  repeated Frame frames = 3;
+}
+
+message Frame {
+  string asset = 1;
+  int32 x = 2;
+  int32 y = 3;
+  int32 width = 4;
+  int32 height = 5;
+}
+
+// Write request body for PUT /v1/drafts/{id} when Content-Type is protobuf.
+message DraftSaveRequest {
+  int64 revision = 1;
+  google.protobuf.Any document = 2;
+}

@@ -1,7 +1,15 @@
+import { fromBinary, toJson } from "@bufbuild/protobuf";
+import {
+  ManifestSchema,
+  EnvironmentDocumentSchema,
+  AnimationDocumentSchema,
+} from "../../../packages/content-contracts/gen/ts/arkadia/content/v1/content_pb";
 import type {
   Manifest,
   ContentDocument,
 } from "../../../packages/content-contracts/index";
+
+const PROTOBUF_MEDIA_TYPE = "application/vnd.arkadia.protobuf";
 export type Frame = {
   asset: string;
   x: number;
@@ -237,17 +245,26 @@ export function validateDocuments(
   return { scene, name, clips };
 }
 /** Public reads only. Never follows manifest URLs off the trusted Content API origin. */
+export type LoadContentOptions = {
+  format?: "json" | "protobuf";
+};
+
 export async function loadContent(
   base: string,
   channel = "runtime-demo",
   onProgress = (s: string) => {},
   releaseId?: string,
+  options: LoadContentOptions = {},
 ): Promise<Bundle> {
+  const format = options.format ?? "json";
+  const accept: Record<string, string> =
+    format === "protobuf" ? { Accept: PROTOBUF_MEDIA_TYPE } : {};
   check(ID.test(channel), "Invalid channel");
   if (releaseId) check(ID.test(releaseId), "Invalid release ID");
   const root = base.replace(/\/$/, "");
-  async function bytes(path: string, max: number) {
+  async function fetchBytes(path: string, max: number, headers: Record<string, string> = {}) {
     const r = await fetch(root + path, {
+      headers,
       signal: AbortSignal.timeout(20000),
       credentials: "omit",
       cache: "no-cache",
@@ -257,8 +274,13 @@ export async function loadContent(
     check(!declared || declared <= max, "Content response too large");
     const b = await r.arrayBuffer();
     check(b.byteLength <= max, "Content response too large");
-    return b;
+    return {
+      body: b,
+      etag: r.headers.get("etag")?.replace(/^"|"$/g, "") ?? "",
+    };
   }
+  const bytes = async (path: string, max: number) =>
+    (await fetchBytes(path, max)).body;
   const json = async (path: string) =>
     JSON.parse(new TextDecoder().decode(await bytes(path, 4 * 1024 * 1024)));
   onProgress("Checking published contracts");
@@ -270,20 +292,56 @@ export async function loadContent(
   onProgress("Resolving published release");
   const id = releaseId || (await json(`/v1/channels/${channel}`)).releaseId;
   check(typeof id === "string" && ID.test(id), "Invalid channel pointer");
-  const manifest = (await json(`/v1/releases/${id}`)) as Manifest;
+  const manifestResponse = await fetchBytes(
+    `/v1/releases/${id}`,
+    4 * 1024 * 1024,
+    accept,
+  );
+  let manifest: Manifest;
+  if (format === "protobuf") {
+    const msg = fromBinary(ManifestSchema, new Uint8Array(manifestResponse.body));
+    manifest = toJson(ManifestSchema, msg, {
+      alwaysEmitImplicit: true,
+    }) as unknown as Manifest;
+  } else {
+    manifest = JSON.parse(
+      new TextDecoder().decode(manifestResponse.body),
+    ) as Manifest;
+  }
   validateManifest(manifest, id);
   const docs = new Map<string, ContentDocument>();
   for (const e of manifest.documents) {
     onProgress(`Verifying document ${e.id}`);
-    const b = await bytes(
+    const res = await fetchBytes(
       `/v1/releases/${id}/documents/${e.id}`,
       4 * 1024 * 1024,
+      accept,
     );
-    check(
-      (await digest(b)) === e.sha256,
-      "Published document integrity mismatch",
-    );
-    docs.set(e.id, JSON.parse(new TextDecoder().decode(b)));
+    if (format === "protobuf") {
+      const entry = e as Manifest["documents"][number] & {
+        protobufSha256?: string;
+      };
+      const integrity = entry.protobufSha256 || res.etag;
+      check(
+        integrity !== "" && (await digest(res.body)) === integrity,
+        "Published document integrity mismatch",
+      );
+      const schema =
+        e.kind === "animation" || e.kind === "vfx"
+          ? AnimationDocumentSchema
+          : EnvironmentDocumentSchema;
+      const msg = fromBinary(schema, new Uint8Array(res.body));
+      docs.set(
+        e.id,
+        toJson(schema, msg, { alwaysEmitImplicit: true }) as unknown as ContentDocument,
+      );
+    } else {
+      check(
+        (await digest(res.body)) === e.sha256,
+        "Published document integrity mismatch",
+      );
+      docs.set(e.id, JSON.parse(new TextDecoder().decode(res.body)));
+    }
   }
   const parsed = validateDocuments(manifest, docs);
   const assets: Bundle["assets"] = new Map();

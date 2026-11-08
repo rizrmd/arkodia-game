@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package arkadia.authoring.v1;
+
+option go_package = "arkadia/game/packages/content-contracts/gen/go/arkadia/authoring/v1;authoringv1";
+
+import "google/protobuf/struct.proto";
+
+// v3 editor authoring project document. The domains are arbitrary JSON keyed by
+// domain and entity id; the envelope stays typed.
+message AuthoringProject {
+  int32 schema_version = 1;
+  string kind = 2;
+  string name = 3;
+  repeated string assets = 4;
+  AuthoringData data = 5;
+}
+
+message AuthoringData {
+  string organization_id = 1;
+  string project_id = 2;
+  // Domain -> entity id -> entity. The entity payload is arbitrary JSON, so the
+  // domains stay a Struct until each domain is typed.
+  google.protobuf.Struct domains = 3;
+}

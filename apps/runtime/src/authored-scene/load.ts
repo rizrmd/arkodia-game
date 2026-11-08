@@ -1,5 +1,5 @@
 import { Application, Container, Text } from "pixi.js";
-import { parseScene, type Scene } from "./scene";
+import { decodeScenePayload, type Scene } from "./scene";
 import {
   createSceneNode,
   resizeScene,
@@ -62,7 +62,7 @@ export async function loadAuthoredScene(
       data = await response.text();
     }
     if (data.length > 10 * 1024 * 1024) throw Error("Scene exceeds budget");
-    const parsed = parseScene(JSON.parse(data));
+    const parsed = decodeScenePayload(data);
     sceneGround(root, parsed, {
       lightingTarget: root,
       screenWidth: app.screen.width,

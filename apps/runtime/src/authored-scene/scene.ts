@@ -1,3 +1,5 @@
+import { create, fromBinary, toBinary, toJson } from "@bufbuild/protobuf";
+import { SceneSchema } from "./scene_pb";
 import { instanceId } from "./instanceIdentity";
 import {
   validStateAnimation,
@@ -336,4 +338,64 @@ export function parseScene(input: unknown): Scene {
     ...scene,
     instances: scene.instances.map((o) => ({ ...o, id: instanceId(o.id) })),
   };
+}
+
+// Scene handoff payload: JSON by default, or "proto1:" followed by base64url
+// protobuf bytes. The prefix keeps the two representations unambiguous.
+export const SCENE_PROTOBUF_PREFIX = "proto1:";
+
+function base64UrlEncode(bytes: Uint8Array): string {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function base64UrlDecode(text: string): Uint8Array {
+  const base64 = text.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+export function encodeSceneProtobuf(scene: Scene): string {
+  const message = create(SceneSchema, scene as never);
+  return SCENE_PROTOBUF_PREFIX + base64UrlEncode(toBinary(SceneSchema, message));
+}
+
+// alwaysEmitImplicit adds empty arrays and objects for unset repeated and map
+// fields; parseScene treats those as present, so drop them before validating.
+function stripEmpty(value: any): any {
+  if (Array.isArray(value)) return value.map(stripEmpty);
+  if (value && typeof value === "object") {
+    const out: Record<string, any> = {};
+    for (const [key, entry] of Object.entries(value)) {
+      if (Array.isArray(entry) && entry.length === 0) continue;
+      if (
+        entry &&
+        typeof entry === "object" &&
+        !Array.isArray(entry) &&
+        Object.keys(entry).length === 0
+      ) {
+        continue;
+      }
+      out[key] = stripEmpty(entry);
+    }
+    return out;
+  }
+  return value;
+}
+
+export function decodeScenePayload(payload: string): Scene {
+  if (payload.startsWith(SCENE_PROTOBUF_PREFIX)) {
+    const message = fromBinary(
+      SceneSchema,
+      base64UrlDecode(payload.slice(SCENE_PROTOBUF_PREFIX.length)),
+    );
+    return parseScene(
+      stripEmpty(toJson(SceneSchema, message, { alwaysEmitImplicit: true })),
+    );
+  }
+  return parseScene(JSON.parse(payload));
 }

@@ -1,4 +1,5 @@
 import { setLightingGeometry } from "./world-lighting";
+import { blurOptions } from "./quality";
 import {
   BlurFilter,
   ColorMatrixFilter,
@@ -955,7 +956,7 @@ function buildShadowFilter() {
       0, 0, 0, 0, 44 / 255,
       0, 0, 0, 1, 0,
     ];
-    return [tint, new BlurFilter({ strength: 3, quality: 2 })];
+    return [tint, new BlurFilter(blurOptions(3, 2))];
   } catch {
     return [];
   }

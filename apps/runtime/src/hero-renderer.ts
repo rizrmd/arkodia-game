@@ -13,12 +13,13 @@ export const heroClips = [
 export async function createHeroRenderer(
   hero: string,
   base = new URL("/models/", location.origin).href,
+  options: { antialias?: boolean } = {},
 ) {
   if (!["rift-runner", "ember-warden"].includes(hero))
     throw Error("Unknown hero");
   const renderer = new THREE.WebGLRenderer({
     alpha: true,
-    antialias: true,
+    antialias: options.antialias ?? true,
     preserveDrawingBuffer: true,
   });
   renderer.setSize(456, 560);
@@ -129,7 +130,7 @@ export async function createHeroRenderer(
                 : Infinity,
             ),
           );
-        } else mixer.update(Math.min(dt, 0.05));
+        } else mixer.update(Math.min(dt, 0.1)); // throttled redraws carry up to 1/10 s
         root.rotation.y = yaw;
         renderer.render(scene, camera);
         renderer.domElement.dataset.clip = clip;

@@ -16,13 +16,16 @@ import { installMsdfFx } from "./arkodia/typography/msdf";
 import { preference, saveHero, type HeroId } from "./arkodia/heroes";
 import { StrongholdWorld } from "./arkodia/world";
 import { Input } from "./foundations";
+import { GameQuality } from "./quality-settings";
 declare const __COMMIT__: string;
+// Quality is decided before the canvas exists: MSAA and resolution are canvas properties.
+const quality = new GameQuality();
 const app = new Application();
 await app.init({
   resizeTo: window,
   background: 0x14171b,
-  antialias: true,
-  resolution: Math.min(devicePixelRatio, 2),
+  antialias: quality.profile.antialias,
+  resolution: quality.resolution,
   autoDensity: true,
   preference: "webgl",
 });
@@ -63,6 +66,31 @@ function drawMusic() {
 }
 drawMusic();
 window.addEventListener("resize", drawMusic);
+
+// Quality: Auto (detected, steps down on slow frames) → Low → Medium → High. Always reachable.
+const qualityUI = new Container();
+app.stage.addChild(qualityUI);
+function drawQuality() {
+  const width = 176;
+  qualityUI.position.set(
+    Math.max(8, app.screen.width - width - 8),
+    musicUI.visible ? 60 : 8,
+  );
+  if (qualityUI.children.length) {
+    (qualityUI.children[1] as Text).text = quality.label;
+    return;
+  }
+  qualityUI.addChild(new Graphics().roundRect(0, 0, width, 44, 6).fill({ color: 0x14171b, alpha: 0.9 }).stroke({color: 0xd0b37b, width: 1}));
+  const t = new Text({text: quality.label, style: {fontFamily: "Arial", fontSize: 13, fill: 0xf3e6c6}});
+  t.anchor.set(0.5); t.position.set(width / 2, 22); qualityUI.addChild(t);
+  qualityUI.eventMode = "static"; qualityUI.cursor = "pointer";
+  qualityUI.on("pointerdown", e => e.stopPropagation());
+  qualityUI.on("pointertap", e => { e.stopPropagation(); quality.cycle(); });
+}
+quality.attach(app);
+quality.onChange(drawQuality);
+drawQuality();
+window.addEventListener("resize", drawQuality);
 Object.defineProperty(window, "__arkodiaMusic", { configurable: true, get: () => music.status });
 
 let resources: Resources | undefined,
@@ -253,7 +281,9 @@ function draw() {
   }
 }
 async function enter(hero: HeroId) {
-  const heroRenderer = await createHeroRenderer(hero, new URL("/models/", location.origin).href);
+  const heroRenderer = await createHeroRenderer(hero, new URL("/models/", location.origin).href, {
+    antialias: quality.profile.antialias,
+  });
   selected = hero;
   picker?.stopFx();
   picker?.removeFromParent();
@@ -266,6 +296,7 @@ async function enter(hero: HeroId) {
   stage.addChild(world.world, world.environment.biomeParallax.container);
   music.destroy();
   musicUI.visible = false;
+  drawQuality();
   state = "ready";
   draw();
 }
@@ -481,6 +512,14 @@ Object.defineProperty(window, "__ARKODIA_RUNTIME__", {
     picker: picker?.targets(),
     highlights: picker?.highlights,
     sourceCommit: resources?.data.sourceCommit,
+    quality: {
+      setting: quality.setting,
+      tier: quality.profile.tier,
+      detected: quality.detected,
+      resolution: app.renderer.resolution,
+      maxFPS: app.ticker.maxFPS,
+      gpu: quality.gpu,
+    },
   }),
 });
 void load();

@@ -12,6 +12,7 @@ import {
   UniformGroup,
 } from "pixi.js";
 import { DAY_MS, daylightAt, sunAt } from "./daylight";
+import { activeQuality } from "./quality";
 import type {
   ShadowImage,
   ShadowRequest,
@@ -219,7 +220,8 @@ export function createWorldLighting(
       uDynamicDepth: dynamicDepth.source,
       uDynamicSecond: dynamicSecond.source,
     },
-    resolution: 1,
+    // The whole scene passes through this filter: Low renders it below full resolution.
+    resolution: activeQuality().sceneFilterResolution,
     padding: 0,
   });
   root.filters = [...(root.filters ?? []), filter];
@@ -791,6 +793,7 @@ export function createWorldLighting(
     filter,
     tick(frame: LightingFrame) {
       if (disposed || root.destroyed) return;
+      filter.resolution = activeQuality().sceneFilterResolution;
       lastFrame = frame;
       current = daylightAt(frame.nowMs);
       const sun = sunAt(frame.nowMs),

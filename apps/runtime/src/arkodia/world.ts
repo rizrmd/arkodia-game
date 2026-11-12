@@ -4,6 +4,7 @@ import {
   type WorldLighting,
 } from "../authored-scene/world-lighting";
 import { createHeroRenderer } from "../hero-renderer";
+import { activeQuality } from "../authored-scene/quality";
 import {
   Container,
   Graphics,
@@ -42,6 +43,10 @@ export class StrongholdWorld {
   private horizontal = false;
   private heroTexture: Texture;
   private yaw = 0;
+  // Hero redraw throttle: the 3D pass and its texture upload run at the tier's character rate.
+  private heroClock = 0;
+  private heroPose = "";
+  private heroYaw = 0;
   private gateFrames: Texture[] = [];
   private gate = new Sprite();
   private gateClock = 0;
@@ -356,8 +361,24 @@ export class StrongholdWorld {
     }
 
     if (moving) this.yaw = Math.atan2(d.x, d.y * 2);
-    this.heroRenderer.render(moving ? "run" : "idle", this.yaw, dt);
-    this.heroTexture.source.update();
+    // Each redraw renders a second WebGL context and re-uploads its canvas into Pixi, the most
+    // expensive per-frame step on weak GPUs. Below High it runs at the tier's character rate;
+    // pose and facing changes redraw at once, and the skipped time is carried into the next pose.
+    const pose = moving ? "run" : "idle",
+      characterFPS = activeQuality().characterFPS;
+    this.heroClock += dt;
+    if (
+      !characterFPS ||
+      this.heroClock >= 1 / characterFPS ||
+      pose !== this.heroPose ||
+      Math.abs(this.yaw - this.heroYaw) > 0.35
+    ) {
+      this.heroRenderer.render(pose, this.yaw, this.heroClock);
+      this.heroTexture.source.update();
+      this.heroClock = 0;
+      this.heroPose = pose;
+      this.heroYaw = this.yaw;
+    }
     const liftAnchorOffset =
       this.playerLift / Math.max(1, this.heroTexture.height * 0.165);
     this.player.anchor.set(0.5, this.heroRenderer.pivotY + liftAnchorOffset);

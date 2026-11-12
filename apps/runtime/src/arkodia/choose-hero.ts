@@ -22,6 +22,7 @@ import {
   type FxLoop,
   type FxSlot,
 } from "./picker-effects";
+import { blurOptions } from "../authored-scene/quality";
 
 // Choose Your Hero, the production screen: Pixi only, every word live MSDF text in the CHOOSE_HERO_TEXT roles, art and
 // split 9-slice frames from public/assets/choose-hero (scripts/choose-hero/build-ui.mjs, built from the Choosing Hero
@@ -483,7 +484,7 @@ export class ChooseHero extends Container {
       logo = st.addChild(new Sprite(this.logo));
     logoShadow.tint = 0x000000;
     logoShadow.alpha = 0.75;
-    logoShadow.filters = [new BlurFilter({ strength: 4, quality: 3 })];
+    logoShadow.filters = [new BlurFilter(blurOptions(4, 3))];
     let title: number,
       backBox: Box,
       backHit: Rectangle,

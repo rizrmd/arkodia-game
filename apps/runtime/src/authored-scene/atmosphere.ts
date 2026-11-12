@@ -17,6 +17,7 @@ import {
 } from "./environment-map";
 import type { FrontierProp } from "./frontier";
 import { DEFAULT_RELIEF_FEATURES, reliefHides } from "./relief";
+import { blurOptions } from "./quality";
 
 import {
   DAY_MS,
@@ -578,7 +579,7 @@ export function createProjectedShadowLayer(
       1,
       0,
     ];
-    container.filters = [tint, new BlurFilter({ strength: 4, quality: 2 })];
+    container.filters = [tint, new BlurFilter(blurOptions(4, 2))];
   } catch {
     // Headless fallback
   }

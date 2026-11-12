@@ -1,4 +1,5 @@
 import type { CollisionGeometry } from "./object-collision";
+import { blurOptions } from "./quality";
 import {
   BlurFilter,
   Container,
@@ -626,7 +627,7 @@ export function createCourtSurface(
     .poly([top.x, top.y, right.x, right.y, bottom.x, bottom.y, left.x, left.y])
     .stroke({ color: 0x29392d, width: 30, alpha: 0.16, join: "round" });
   try {
-    contactShadow.filters = [new BlurFilter({ strength: 10, quality: 2 })];
+    contactShadow.filters = [new BlurFilter(blurOptions(10, 2))];
   } catch {
     // Headless Node environment without DOM canvas
   }

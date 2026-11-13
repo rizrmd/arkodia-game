@@ -71,6 +71,9 @@ export type LightingFrame = {
 };
 // Shadow cadence is independent of scene animation.
 const DYNAMIC_SHADOW_INTERVAL_MS = 32;
+/** Moving shadows refresh less often on lower tiers (the field is a CPU capture plus a worker pass). */
+const dynamicShadowInterval = () =>
+  Math.max(DYNAMIC_SHADOW_INTERVAL_MS, activeQuality().shadowIntervalMs || 0);
 const vertex = `in vec2 aPosition;out vec2 vTextureCoord;out vec2 vScreen;uniform vec4 uInputSize;uniform vec4 uOutputFrame;uniform vec4 uOutputTexture;
 void main(){vec2 p=aPosition*uOutputFrame.zw+uOutputFrame.xy;vScreen=p;gl_Position=vec4(p.x*2.0/uOutputTexture.x-1.0,p.y*(2.0*uOutputTexture.z/uOutputTexture.y)-uOutputTexture.z,0.,1.);vTextureCoord=aPosition*uOutputFrame.zw*uInputSize.zw;}`;
 const fragment = `in vec2 vTextureCoord;in vec2 vScreen;out vec4 finalColor;
@@ -872,8 +875,7 @@ export function createWorldLighting(
       if (
         dynamicWorker &&
         !dynamicBusy &&
-        Math.floor(performance.now() / DYNAMIC_SHADOW_INTERVAL_MS) !==
-          dynamicFrame
+        Math.floor(performance.now() / dynamicShadowInterval()) !== dynamicFrame
       ) {
         const moving = collected.dynamic.capture();
         const nextDynamicKey = `${JSON.stringify(bounds)}:${collected.dynamic.signature()}:${shadowPhaseKey}`;
@@ -940,7 +942,7 @@ export function createWorldLighting(
           dynamicBusy = true;
           stats.dynamicRequests++;
           dynamicFrame = Math.floor(
-            performance.now() / DYNAMIC_SHADOW_INTERVAL_MS,
+            performance.now() / dynamicShadowInterval(),
           );
           dynamicWorker.postMessage(request, [
             ...request.images.map((i) => i.alpha.buffer),

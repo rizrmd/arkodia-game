@@ -50,6 +50,13 @@ export type QualityProfile = {
   maxEffects: number;
   /** Redraw/upload rate of 3D-rendered characters; 0 = every frame. */
   characterFPS: number;
+  /**
+   * Editor viewports render at this fraction of their resolution (fewer pixels for every
+   * filter, shader and blend). Pointer and layout maths use CSS pixels, so only sharpness changes.
+   */
+  renderScale: number;
+  /** Minimum time between moving-shadow field rebuilds (gate, actors). */
+  shadowIntervalMs: number;
 };
 
 export const QUALITY_PROFILES: Readonly<
@@ -68,6 +75,8 @@ export const QUALITY_PROFILES: Readonly<
     particleDensity: 0.35,
     maxEffects: 3,
     characterFPS: 15,
+    renderScale: 0.75,
+    shadowIntervalMs: 120,
   },
   medium: {
     tier: "medium",
@@ -82,6 +91,8 @@ export const QUALITY_PROFILES: Readonly<
     particleDensity: 0.7,
     maxEffects: 6,
     characterFPS: 30,
+    renderScale: 1,
+    shadowIntervalMs: 64,
   },
   high: {
     tier: "high",
@@ -96,6 +107,8 @@ export const QUALITY_PROFILES: Readonly<
     particleDensity: 1,
     maxEffects: 0,
     characterFPS: 0,
+    renderScale: 1,
+    shadowIntervalMs: 32,
   },
 };
 
@@ -183,9 +196,11 @@ const LOW_END_GPU =
 export function detectQualityTier(h: DeviceHints): QualityTier {
   if (h.gpu && LOW_END_GPU.test(h.gpu)) return "low";
   let score = 0;
-  if (h.cores !== undefined) score += h.cores <= 2 ? -2 : h.cores <= 4 ? -1 : h.cores >= 8 ? 1 : 0;
+  if (h.cores !== undefined)
+    score += h.cores <= 2 ? -2 : h.cores <= 4 ? -1 : h.cores >= 8 ? 1 : 0;
   if (h.memoryGB !== undefined)
-    score += h.memoryGB <= 2 ? -2 : h.memoryGB <= 4 ? -1 : h.memoryGB >= 8 ? 1 : 0;
+    score +=
+      h.memoryGB <= 2 ? -2 : h.memoryGB <= 4 ? -1 : h.memoryGB >= 8 ? 1 : 0;
   if (h.maxTextureSize !== undefined)
     score += h.maxTextureSize < 4096 ? -2 : h.maxTextureSize >= 16384 ? 1 : 0;
   // Phones with dense screens pay for many pixels on a small GPU.

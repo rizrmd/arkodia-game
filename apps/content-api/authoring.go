@@ -9,6 +9,28 @@ import (
 	"net/http"
 )
 
+const maxAuthoringHistoryBytes = 4 << 20
+
+func trimAuthoringHistory(h *authoringHistory, maxBytes int) {
+	if len(h.Groups) > 50 {
+		for _, g := range h.Groups[:len(h.Groups)-50] {
+			h.Cursor -= len(g.Steps)
+		}
+		h.Groups = h.Groups[len(h.Groups)-50:]
+	}
+	for len(h.Groups) > 0 {
+		b, err := json.Marshal(h)
+		if err != nil || len(b) <= maxBytes {
+			break
+		}
+		h.Cursor -= len(h.Groups[0].Steps)
+		h.Groups = h.Groups[1:]
+	}
+	if h.Cursor < 0 {
+		h.Cursor = 0
+	}
+}
+
 type authoringActor struct {
 	UserID string `json:"userId"`
 	JobID  string `json:"jobId,omitempty"`
@@ -188,12 +210,7 @@ func (a *API) authoringTransaction(w http.ResponseWriter, r *http.Request) {
 		}
 		h.Groups = append(kept, group)
 		h.Cursor += len(group.Steps)
-		if len(h.Groups) > 50 {
-			for _, g := range h.Groups[:len(h.Groups)-50] {
-				h.Cursor -= len(g.Steps)
-			}
-			h.Groups = h.Groups[len(h.Groups)-50:]
-		}
+		trimAuthoringHistory(&h, maxAuthoringHistoryBytes)
 	} else {
 		if len(in.Operations) != 0 {
 			fail(w, 400, "unexpected_authoring_operations")

@@ -802,6 +802,9 @@ func openAPI(ctx context.Context, dsn, token, publicURL string, objects Objects)
 		db.Close()
 		return nil, fmt.Errorf("schema initialization: %w", err)
 	}
+	// Keep the Go heap well below the sandbox cgroup memory limit and prune stale idempotency rows.
+	debug.SetMemoryLimit(768 << 20)
+	_, _ = db.ExecContext(ctx, "DELETE FROM content_idempotency WHERE created_at < strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 day')")
 	compiler := jsonschema.NewCompiler()
 	if err = compiler.AddResource("document.json", strings.NewReader(contracts.DocumentSchema)); err != nil {
 		db.Close()

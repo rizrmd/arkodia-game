@@ -208,3 +208,26 @@ func TestAuthoringHistoryLimit(t *testing.T) {
 	}
 }
 func fmtSprint(i int) string { b, _ := json.Marshal(i); return string(b) }
+
+func TestTrimAuthoringHistoryCapsBytes(t *testing.T) {
+	largePayload := strings.Repeat("x", 300)
+	h := authoringHistory{
+		Groups: []authoringGroup{
+			{ID: "g1", Label: "one", Steps: []authoringStep{{Forward: contracts.AuthoringOperation{Label: largePayload}}}},
+			{ID: "g2", Label: "two", Steps: []authoringStep{{Forward: contracts.AuthoringOperation{Label: largePayload}}}},
+			{ID: "g3", Label: "three", Steps: []authoringStep{{Forward: contracts.AuthoringOperation{Label: largePayload}}}},
+		},
+		Cursor: 3,
+	}
+	trimAuthoringHistory(&h, 700)
+	if len(h.Groups) != 1 || h.Groups[0].ID != "g3" {
+		t.Fatalf("expected only newest group g3 to remain, got %+v", h.Groups)
+	}
+	if h.Cursor != 1 {
+		t.Fatalf("expected cursor 1, got %d", h.Cursor)
+	}
+	trimAuthoringHistory(&h, 50)
+	if len(h.Groups) != 0 || h.Cursor != 0 {
+		t.Fatalf("expected empty history when single group exceeds budget, got groups=%d cursor=%d", len(h.Groups), h.Cursor)
+	}
+}

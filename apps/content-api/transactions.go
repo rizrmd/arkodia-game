@@ -9,9 +9,12 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync/atomic"
 )
 
 type transactionKey struct{}
+
+var idempotencyInsertCount atomic.Uint64
 
 type queryDB interface {
 	Exec(context.Context, string, ...any) (sql.Result, error)
@@ -195,6 +198,9 @@ func (a *API) idempotent(h http.HandlerFunc) http.HandlerFunc {
 			headers, _ := json.Marshal(buf.header)
 			_, err = tx.ExecContext(r.Context(), "INSERT INTO content_idempotency(scope,key,request_hash,status,headers,response) VALUES($1,$2,$3,$4,$5,$6)", scope, key, reqHash, buf.status, headers, buf.body.Bytes())
 			if err == nil {
+				if idempotencyInsertCount.Add(1)%256 == 0 {
+					_, _ = tx.ExecContext(r.Context(), "DELETE FROM content_idempotency WHERE rowid IN (SELECT rowid FROM content_idempotency WHERE created_at < strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 day') LIMIT 500)")
+				}
 				err = tx.Commit()
 			}
 			if err != nil {

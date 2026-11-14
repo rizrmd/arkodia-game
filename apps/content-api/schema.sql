@@ -82,3 +82,8 @@ CREATE TABLE IF NOT EXISTS content_image_cache (
  codec TEXT NOT NULL, data BLOB NOT NULL,
  PRIMARY KEY(source_sha256, codec)
 );
+CREATE TABLE IF NOT EXISTS content_audio_cache (
+ source_sha256 TEXT NOT NULL REFERENCES content_assets(sha256),
+ codec TEXT NOT NULL, data BLOB NOT NULL,
+ PRIMARY KEY(source_sha256, codec)
+);

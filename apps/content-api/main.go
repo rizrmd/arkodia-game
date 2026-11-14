@@ -436,6 +436,15 @@ func (a *API) serveAsset(w http.ResponseWriter, r *http.Request, key string, pub
 		if converted != nil {
 			b, mime, etag = converted, "image/webp", hash(converted)
 		}
+	} else if wantsWebP(r) && isOptimizableAudio(mime) {
+		converted, convertedMime, e := a.cachedAudio(r.Context(), key, b, mime)
+		if e != nil {
+			fail(w, 503, "audio_conversion_error")
+			return
+		}
+		if converted != nil {
+			b, mime, etag = converted, convertedMime, hash(converted)
+		}
 	}
 	w.Header().Set("Content-Type", mime)
 	w.Header().Set("Content-Length", fmt.Sprint(len(b)))

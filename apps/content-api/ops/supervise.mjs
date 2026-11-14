@@ -35,6 +35,7 @@ process.on('SIGTERM',()=>stop());
 process.on('SIGINT',()=>stop());
 const sqlitePath=`${home}/data/content.db`;
 run(`${home}/app/content-api`,[],{
+ PATH:`${home}/.local/bin:${env.PATH||''}`,
  SQLITE_PATH:sqlitePath,
  DATABASE_URL:`sqlite://${sqlitePath}`,
  ASSET_DIR:`${home}/data/assets`,
